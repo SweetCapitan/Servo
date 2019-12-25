@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import get
 import os
 import youtube_dl
+# from .CONFIG import BOT_TOKEN
 
 bot = commands.Bot(command_prefix='?')
 '''
@@ -20,9 +21,17 @@ bot = commands.Bot(command_prefix='?')
 #     if message.author == client.user:
 #         if message.content.startwith('?play'):
 
+def check():
+    for file in os.listdir('../'):
+        if file.endswith('.mp3'):
+            global name
+            name = file
+            print('Переименовыван файл: %s' % file)
+            os.rename(file, 'song.mp3')
+
 @bot.event
 async def on_ready():
-    print('Готово. Зашел под именем: %s'%bot.user.name)
+    print('Готово. Зашел под именами: %s'%bot.user.name)
 
 '''
 Недо логер, которые ломает все к хуям. TODO: переписать это в адекватный логгер сообщений
@@ -71,47 +80,51 @@ async def leave(ctx):
              description='This command initiates the playback of\n sound from url in the voice channel in \nwhich the bot is located.',
              brief='СОЗДАТЕЛЯЭТОГОБЛЯДСКОГОAPIТОЛПАЧЕЧЕНОВЕБАЛАВЖОПУКОГДАОНПИСАЛЕГО')
 async def play(ctx, url:str):
-
-    song_there = os.path.isfile('song.mp3')
-    try:
-        if song_there:
-            os.remove('song.mp3')
-            print('Удален сарый файл музыки')
-    except PermissionError:
-        print('Попытка удаления файла, но похоже он сейчас играет')
-        await ctx.send('Error: Music playing')
-        return
-
     voice = get(bot.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        song_there = os.path.isfile('song.mp3')
+        try:
+            if song_there:
+                os.remove('song.mp3')
+                print('Удален старый файл музыки')
+        except PermissionError:
+            print('Попытка удаления файла, но похоже он сейчас играет')
+            await ctx.send('Error: Music playing')
+            return
 
-    await ctx.send('Downloading audio from YouTube')
+        ydl_opts = {
+            'format': 'bestaudio/best',
+            'postprocessors': [{
+                'key': 'FFmpegExtractAudio',
+                'preferredcodec': 'mp3',
+                'preferredquality': '120',
+            }],
+        }
 
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '120',
-        }],
-    }
+        await ctx.send('I am looking for audio on YouTube')
+        try:
+            with youtube_dl.YoutubeDL(ydl_opts) as ydl:
+                ydl.download([url])
+                await ctx.send('Downloading audio from YouTube')
+                print('Скачивается аудио с YouTube')
 
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        print('Скачивается аудио с YouTube')
-        ydl.download([url])
+        except:
+            c_path = os.path.dirname(os.path.realpath(__file__))
+            os.system('youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % (url) + '"' + ' --extract-audio --audio-format mp3')
 
-    for file in os.listdir('./'):
-        if file.endswith('.mp3'):
-            name = file
-            print('Переименовыван файл: %s' % file)
-            os.rename(file, 'song.mp3')
+        check()
 
-    voice.play(discord.FFmpegPCMAudio('song.mp3'), after=lambda e: print('%s закончил воиспроизведение' % name))
-    voice.source = discord.PCMVolumeTransformer(voice.source)
-    voice.source.volume = 0.07
+        voice.play(discord.FFmpegPCMAudio('song.mp3'), after=lambda e: print('%s закончил воиспроизведение' % name))
+        voice.source = discord.PCMVolumeTransformer(voice.source)
+        voice.source.volume = 0.07
 
-    nname = name.rsplit('-', 2)
-    await ctx.send('Playing: %s' % nname[0])
-    print('Воиспроизведение аудио стартовало!')
+        nname = name.rsplit('-', 2)
+        await ctx.send('Playing: %s' % nname[0])
+        print('Воиспроизведение аудио стартовало!')
+    else:
+        await ctx.send('Go into the voice channel and enter the command "join"')
+        print('Error:Бот не в голосовом канале')
+
 
 
 @bot.command(pass_context=True,aliases=['p'],description='This command pauses and unpauses audio playback.',brief='Pause/Unpause Audio')
@@ -137,5 +150,34 @@ async def stop(ctx):
         await ctx.send('Audio already stoped')
         print('Ну как бы была попытка остановки, но чет пошло не так ...')
 
+@bot.command(pass_context=True,aliases=['spot','spf'],description='This command downloads and plays a track from the Spotify library in the voice channel',brief='Audio from the Spotify')
+async def spotify(ctx,url:str):
+    voice = get(bot.voice_clients, guild=ctx.guild)
+    if voice and voice.is_connected():
+        check()
+        song_there = os.path.isfile('song.mp3')
+        try:
+            if song_there:
+                os.remove('song.mp3')
+                print('Удален сарый файл музыки')
+        except PermissionError:
+            print('Попытка удаления файла, но похоже он сейчас играет')
+            await ctx.send('Error: Music playing')
+            return
+
+        if voice and voice.is_connected():
+            print("Скачиваю аудио из Spotify")
+            await ctx.send('Download audio of Spotify')
+            c_path = os.path.dirname(os.path.realpath(__file__))
+            os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)  # make sure there are spaces in the -s
+
+            check()
+
+            voice.play(discord.FFmpegPCMAudio('song.mp3'), after=lambda e: print('%s закончил воиспроизведение' % name))
+            voice.source = discord.PCMVolumeTransformer(voice.source)
+            voice.source.volume = 0.07
+    else:
+        await ctx.send('Go into the voice channel and enter the command "join"')
+        print('Error:Бот не в голосовом канале')
 
 bot.run(os.environ.get('BOT_TOKEN'))
