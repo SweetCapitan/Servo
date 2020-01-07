@@ -209,8 +209,8 @@ async def rainbow(role):
             while not bot.is_closed():
                 try:
                     await role.edit(color=random.choice(colours))
-                except Exception:
-                    print('Permissions error')
+                except Exception as e:
+                    print('Error: '+e)
                 await asyncio.sleep(1)
 
 bot.run(os.environ.get('BOT_TOKEN'))
