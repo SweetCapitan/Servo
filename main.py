@@ -5,7 +5,7 @@ import asyncio
 import os
 import youtube_dl
 import random
-# from .CONFIG import BOT_TOKEN
+# from SERVO_BOT.CONFIG import BOT_TOKEN
 
 colours = [discord.Color.dark_orange(),
            discord.Color.orange(),
@@ -203,7 +203,7 @@ async def spotify(ctx,url:str):
         print('Error:Бот не в голосовом канале')
 
 async def rainbow(role):
-    for role in bot.get_guild(server_id).roles:
+    for role in bot.get_guild(str(server_id)).roles:
         if str(role) == str(rainbowrolename):
             print("Rainbow: Role detected")
             while not bot.is_closed():
@@ -214,3 +214,4 @@ async def rainbow(role):
                 await asyncio.sleep(1)
 
 bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(BOT_TOKEN)
