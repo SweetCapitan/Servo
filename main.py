@@ -4,7 +4,25 @@ from discord.utils import get
 import asyncio
 import os
 import youtube_dl
+import random
 # from .CONFIG import BOT_TOKEN
+
+colours = [discord.Color.dark_orange(),
+           discord.Color.orange(),
+           discord.Color.dark_gold(),
+           discord.Color.gold(),
+           discord.Color.dark_magenta(),
+           discord.Color.magenta(),
+           discord.Color.red(),
+           discord.Color.dark_red(),
+           discord.Color.blue(),
+           discord.Color.dark_blue(),
+           discord.Color.teal(),
+           discord.Color.dark_teal(),
+           discord.Color.green(),
+           discord.Color.dark_green(),
+           discord.Color.purple(),
+           discord.Color.dark_purple()]
 
 bot = commands.Bot(command_prefix='?')
 '''
