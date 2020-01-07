@@ -211,7 +211,7 @@ async def rainbow(role):
                     await role.edit(color=random.choice(colours))
                 except Exception as e:
                     print('Error: '+e)
-                await asyncio.sleep(1)
+                await asyncio.sleep(5)
 
 bot.run(os.environ.get('BOT_TOKEN'))
 # bot.run(BOT_TOKEN)
