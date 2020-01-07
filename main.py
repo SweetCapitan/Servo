@@ -1,6 +1,7 @@
 import discord
 from discord.ext import commands
 from discord.utils import get
+import asyncio
 import os
 import youtube_dl
 # from .CONFIG import BOT_TOKEN
@@ -32,6 +33,7 @@ def check():
 @bot.event
 async def on_ready():
     print('Готово. Зашел под именами: %s'%bot.user.name)
+    bot.loop.create_task(rainbow(rainbowrolename))
 
 '''
 Недо логер, которые ломает все к хуям. TODO: переписать это в адекватный логгер сообщений
@@ -179,5 +181,18 @@ async def spotify(ctx,url:str):
     else:
         await ctx.send('Go into the voice channel and enter the command "join"')
         print('Error:Бот не в голосовом канале')
+
+rainbowrolename = os.environ.get('ROLE_RAINBOW')
+server_id = os.environ.get('SERVER_ID')
+async def rainbow(role):
+    for role in bot.get_guild(server_id).roles:
+        if str(role) == str(rainbowrolename):
+            print("Rainbow: Role detected")
+            while not bot.is_closed():
+                try:
+                    await role.edit(color=random.choice(colours))
+                except Exception:
+                    print('Permissions error')
+                await asyncio.sleep(1)
 
 bot.run(os.environ.get('BOT_TOKEN'))
