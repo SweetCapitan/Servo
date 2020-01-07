@@ -25,6 +25,8 @@ colours = [discord.Color.dark_orange(),
            discord.Color.dark_purple()]
 
 bot = commands.Bot(command_prefix='?')
+rainbowrolename = os.environ.get('ROLE_RAINBOW')
+server_id = os.environ.get('SERVER_ID')
 '''
 Когда-нибудь я удалю этот блок кода ...
 '''
@@ -200,8 +202,6 @@ async def spotify(ctx,url:str):
         await ctx.send('Go into the voice channel and enter the command "join"')
         print('Error:Бот не в голосовом канале')
 
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
-server_id = os.environ.get('SERVER_ID')
 async def rainbow(role):
     for role in bot.get_guild(server_id).roles:
         if str(role) == str(rainbowrolename):
