@@ -25,6 +25,8 @@ colours = [discord.Color.dark_orange(),
            discord.Color.purple(),
            discord.Color.dark_purple()]
 
+BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
+
 bot = commands.Bot(command_prefix='?')
 rainbowrolename = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')
