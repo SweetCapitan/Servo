@@ -5,7 +5,10 @@ import asyncio
 import os
 import youtube_dl
 import random
-# from SERVO_BOT.CONFIG import BOT_TOKEN
+from SERVO_BOT.CONFIG import BOT_TOKEN, ROLE_RAINBOW, SERVER_ID, RAINBOW_STATUS
+
+rainbowrolename = ROLE_RAINBOW
+server_id = SERVER_ID
 
 colours = [discord.Color.dark_orange(),
            discord.Color.orange(),
@@ -25,23 +28,6 @@ colours = [discord.Color.dark_orange(),
            discord.Color.dark_purple()]
 
 bot = commands.Bot(command_prefix='?')
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
-server_id = os.environ.get('SERVER_ID')
-'''
-Когда-нибудь я удалю этот блок кода ...
-'''
-# @client.event
-# async def on_ready():
-#     print('{0.user.id} вошел в систему под именем {0.user}\n'.format(client,client))
-#
-# @client.event
-# async def on_message(message):
-#     print('Сообщение: {0.content} от {0.author}'.format(message))
-#
-# async def on_message(message):
-#     if message.author == client.user:
-#         if message.content.startwith('?play'):
-
 def check():
     for file in os.listdir('../'):
         if file.endswith('.mp3'):
@@ -54,13 +40,6 @@ def check():
 async def on_ready():
     print('Готово. Зашел под именами: %s'%bot.user.name)
     bot.loop.create_task(rainbow(rainbowrolename))
-
-'''
-Недо логер, которые ломает все к хуям. TODO: переписать это в адекватный логгер сообщений
-'''
-# @bot.event
-# async def on_message(message):
-#     print('Сообщение: {0.content} от {0.author}'.format(message))
 
 @bot.command(pass_context=True,aliases=['j'],description='Join voice channel',brief='Join in voice')
 async def join(ctx):
@@ -203,15 +182,15 @@ async def spotify(ctx,url:str):
         print('Error:Бот не в голосовом канале')
 
 async def rainbow(role):
-    for role in bot.get_guild(int(server_id)).roles:
-        if str(role) == str(rainbowrolename):
-            print("Rainbow: Role detected")
-            while not bot.is_closed():
-                try:
-                    await role.edit(color=random.choice(colours))
-                except Exception:
-                    print('Permissions error')
-                await asyncio.sleep(1)
+    if RAINBOW_STATUS:
+        for role in bot.get_guild(int(server_id)).roles:
+            if str(role) == str(rainbowrolename):
+                print("Rainbow: Role detected")
+                while not bot.is_closed():
+                    try:
+                        await role.edit(color=random.choice(colours))
+                    except Exception as e:
+                        print('Error: ' + e)
+                    await asyncio.sleep(5)
 
-bot.run(os.environ.get('BOT_TOKEN'))
-# bot.run(BOT_TOKEN)
+bot.run(BOT_TOKEN)
