@@ -5,6 +5,7 @@ import asyncio
 import os
 import youtube_dl
 import random
+import requests
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
 colours = [discord.Color.dark_orange(),
@@ -49,6 +50,13 @@ def check():
             name = file
             print('Переименовыван файл: %s' % file)
             os.rename(file, 'song.mp3')
+
+def get_btc_price():
+    r = requests.get(BTC_PRICE_URL_coinmarketcap)
+    response_json = r.json()
+    usd_price = response_json[0]['price_usd']
+    rub_rpice = response_json[0]['price_rub']
+    return usd_price, rub_rpice
 
 @bot.event
 async def on_ready():
@@ -201,6 +209,19 @@ async def spotify(ctx,url:str):
     else:
         await ctx.send('Go into the voice channel and enter the command "join"')
         print('Error:Бот не в голосовом канале')
+
+@bot.command(pass_context=True,aliases=['btc'],
+             description='This command sends you the current value of bitcoin in rubles and dollars.'
+                         '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯',
+             brief='Bitcoin price')
+async def btcprice(ctx):
+    btc_price_usd, btc_price_rub = get_btc_price()
+    embed = discord.Embed(title="BITCOIN price",
+                          description="The cost of btc at the moment according to the coinmarketcap exchange.",
+                          color=0xd5de21)
+    embed.add_field(name="RUB", value=btc_price_rub, inline=True)
+    embed.add_field(name="USD", value=btc_price_usd, inline=True)
+    await ctx.send(embed=embed)
 
 async def rainbow(role):
     for role in bot.get_guild(int(server_id)).roles:
