@@ -203,7 +203,7 @@ async def spotify(ctx,url:str):
         print('Error:Бот не в голосовом канале')
 
 async def rainbow(role):
-    for role in bot.get_guild(str(server_id)).roles:
+    for role in bot.get_guild(int(server_id)).roles:
         if str(role) == str(rainbowrolename):
             print("Rainbow: Role detected")
             while not bot.is_closed():
