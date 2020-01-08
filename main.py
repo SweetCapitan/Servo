@@ -60,7 +60,10 @@ def get_btc_price():
     response_json = r.json()
     usd_price = response_json[0]['price_usd']
     rub_rpice = response_json[0]['price_rub']
-    return usd_price, rub_rpice
+    percent_change_1h = response_json[0]['percent_change_1h']
+    percent_change_24h = response_json[0]['percent_change_24h']
+    percent_change_7d = response_json[0]['percent_change_7d']
+    return usd_price, rub_rpice, percent_change_1h, percent_change_24h, percent_change_7d
 
 @bot.event
 async def on_ready():
@@ -218,8 +221,8 @@ async def spotify(ctx,url:str):
              description='This command sends you the current value of bitcoin in rubles and dollars.'
                          '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯',
              brief='Bitcoin price')
-async def btcprice(ctx):
-    btc_price_usd, btc_price_rub = get_btc_price()
+async def btcprice(ctx,args:str):
+    btc_price_usd, btc_price_rub, percent1, percent24, percent7 = get_btc_price()
     btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
     btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
     btc_price_changes_usd = int(float(btc_price_usd)) - int(float(btc_price_old[1]))
@@ -230,8 +233,27 @@ async def btcprice(ctx):
                           color=0xd5de21)
     embed.add_field(name="RUB", value=btc_price_rub, inline=True)
     embed.add_field(name="USD", value=btc_price_usd, inline=True)
-    embed.add_field(name='Changes', value=btc_price_changes,inline=True)
+    if not args:
+        embed.add_field(name='Changes', value=btc_price_changes, inline=True)
+    elif args == '7d':
+        btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent7)))
+        btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent7)))
+        btc_price_changes = 'Курс за 7 дней изменился на RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
+        embed.add_field(name='Changes in 7 days', value=btc_price_changes, inline=True)
+    elif args == '1d':
+        btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent24)))
+        btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent24)))
+        btc_price_changes = 'Курс за 1 день изменился на RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
+        embed.add_field(name='Changes in 7 days', value=btc_price_changes, inline=True)
+    elif args == '1h':
+        btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent1)))
+        btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent1)))
+        btc_price_changes = 'Курс за 1 час изменился на RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
+        embed.add_field(name='Changes in 7 days', value=btc_price_changes, inline=True)
+
     await ctx.send(embed=embed)
+
+
 
 async def rainbow(role):
     if bool(RAINBOW_STATUS):
