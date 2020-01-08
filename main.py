@@ -219,7 +219,8 @@ async def spotify(ctx,url:str):
 
 @bot.command(pass_context=True,aliases=['btc'],
              description='This command sends you the current value of bitcoin in rubles and dollars.'
-                         '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯',
+                         '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
+                         '\n args: <7d,1d,1h,None>',
              brief='Bitcoin price')
 async def btcprice(ctx,*args:str):
     btc_price_usd, btc_price_rub, percent1, percent24, percent7 = get_btc_price()
