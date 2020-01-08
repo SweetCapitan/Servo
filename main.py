@@ -8,6 +8,10 @@ import random
 import requests
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
+rainbowrolename = os.environ.get('ROLE_RAINBOW')
+server_id = os.environ.get('SERVER_ID')
+RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
+
 colours = [discord.Color.dark_orange(),
            discord.Color.orange(),
            discord.Color.dark_gold(),
@@ -28,8 +32,6 @@ colours = [discord.Color.dark_orange(),
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 
 bot = commands.Bot(command_prefix='?')
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
-server_id = os.environ.get('SERVER_ID')
 '''
 Когда-нибудь я удалю этот блок кода ...
 '''
@@ -218,23 +220,27 @@ async def spotify(ctx,url:str):
              brief='Bitcoin price')
 async def btcprice(ctx):
     btc_price_usd, btc_price_rub = get_btc_price()
+    btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
+    btc_price_changes = 'RUB: '+(btc_price_rub - btc_price_old[0])+' | USD: '+(btc_price_usd - btc_price_old[1])
     embed = discord.Embed(title="BITCOIN price",
                           description="The cost of btc at the moment according to the coinmarketcap exchange.",
                           color=0xd5de21)
     embed.add_field(name="RUB", value=btc_price_rub, inline=True)
     embed.add_field(name="USD", value=btc_price_usd, inline=True)
+    embed.add_field(name='Changes', value=btc_price_changes,inline=True)
     await ctx.send(embed=embed)
 
 async def rainbow(role):
-    for role in bot.get_guild(int(server_id)).roles:
-        if str(role) == str(rainbowrolename):
-            print("Rainbow: Role detected")
-            while not bot.is_closed():
-                try:
-                    await role.edit(color=random.choice(colours))
-                except Exception as e:
-                    print('Error: '+e)
-                await asyncio.sleep(5)
+    if bool(RAINBOW_STATUS):
+        for role in bot.get_guild(int(server_id)).roles:
+            if str(role) == str(rainbowrolename):
+                print("Rainbow: Role detected")
+                while not bot.is_closed():
+                    try:
+                        await role.edit(color=random.choice(colours))
+                    except Exception as e:
+                        print('Error: ' + e)
+                    await asyncio.sleep(5)
 
 bot.run(os.environ.get('BOT_TOKEN'))
 # bot.run(BOT_TOKEN)

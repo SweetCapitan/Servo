@@ -1,5 +1,4 @@
 discord.py
 youtube_dl
-PyNaCl
 discord.py[voice]
 requests
