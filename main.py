@@ -233,7 +233,7 @@ async def btcprice(ctx,*args:str):
                           color=0xd5de21)
     embed.add_field(name="RUB", value=btc_price_rub, inline=True)
     embed.add_field(name="USD", value=btc_price_usd, inline=True)
-    if not args[0]:
+    if not args:
         embed.add_field(name='Changes', value=btc_price_changes, inline=True)
     elif args[0] == '7d':
         btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent7)))
