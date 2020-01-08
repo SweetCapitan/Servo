@@ -227,7 +227,7 @@ async def btcprice(ctx,*args:str):
     btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
     btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
     btc_price_changes_usd = int(float(btc_price_usd)) - int(float(btc_price_old[1]))
-    btc_price_changes = 'RUB: ' + str(btc_price_changes_rub).split('.')[0] + ' | USD: ' + str(btc_price_changes_usd).split('.')[0]
+    btc_price_changes = 'RUB: ' + str(btc_price_changes_rub.split('.')[0]) + ' | USD: ' + str(btc_price_changes_usd.split('.')[0])
     os.environ['BTC_PR_OLD'] = '%s,%s' % (btc_price_rub, btc_price_usd)
     embed = discord.Embed(title="BITCOIN price",
                           description="The cost of btc at the moment according to the coinmarketcap exchange.",
