@@ -221,7 +221,7 @@ async def spotify(ctx,url:str):
              description='This command sends you the current value of bitcoin in rubles and dollars.'
                          '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯',
              brief='Bitcoin price')
-async def btcprice(ctx,**args:str):
+async def btcprice(ctx,*args:str):
     btc_price_usd, btc_price_rub, percent1, percent24, percent7 = get_btc_price()
     btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
     btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
@@ -233,7 +233,7 @@ async def btcprice(ctx,**args:str):
                           color=0xd5de21)
     embed.add_field(name="RUB", value=btc_price_rub, inline=True)
     embed.add_field(name="USD", value=btc_price_usd, inline=True)
-    if not args:
+    if not args[0]:
         embed.add_field(name='Changes', value=btc_price_changes, inline=True)
     elif args[0] == '7d':
         btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent7)))
