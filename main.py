@@ -221,7 +221,7 @@ async def spotify(ctx,url:str):
 async def btcprice(ctx):
     btc_price_usd, btc_price_rub = get_btc_price()
     btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
-    btc_price_changes = 'RUB: '+float(int(btc_price_rub) - int(btc_price_old[0]))+' | USD: '+float(int(btc_price_usd) - int(btc_price_old[1]))
+    btc_price_changes = 'RUB: '+(float(int(btc_price_rub)) - float(int(btc_price_old[0])))+' | USD: '+(float(int(btc_price_usd)) - float(int(btc_price_old[1])))
     embed = discord.Embed(title="BITCOIN price",
                           description="The cost of btc at the moment according to the coinmarketcap exchange.",
                           color=0xd5de21)
