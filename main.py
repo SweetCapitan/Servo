@@ -8,9 +8,7 @@ import random
 import requests
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
-server_id = os.environ.get('SERVER_ID')
-RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
+bot = commands.Bot(command_prefix='?')
 
 colours = [discord.Color.dark_orange(),
            discord.Color.orange(),
@@ -31,21 +29,9 @@ colours = [discord.Color.dark_orange(),
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 
-bot = commands.Bot(command_prefix='?')
-'''
-Когда-нибудь я удалю этот блок кода ...
-'''
-# @client.event
-# async def on_ready():
-#     print('{0.user.id} вошел в систему под именем {0.user}\n'.format(client,client))
-#
-# @client.event
-# async def on_message(message):
-#     print('Сообщение: {0.content} от {0.author}'.format(message))
-#
-# async def on_message(message):
-#     if message.author == client.user:
-#         if message.content.startwith('?play'):
+rainbowrolename = os.environ.get('ROLE_RAINBOW')
+server_id = os.environ.get('SERVER_ID')
+RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
 def check():
     for file in os.listdir('../'):
@@ -70,12 +56,7 @@ async def on_ready():
     print('Готово. Зашел под именами: %s'%bot.user.name)
     bot.loop.create_task(rainbow(rainbowrolename))
 
-'''
-Недо логер, которые ломает все к хуям. TODO: переписать это в адекватный логгер сообщений
-'''
-# @bot.event
-# async def on_message(message):
-#     print('Сообщение: {0.content} от {0.author}'.format(message))
+# TODO: Написать нормальный логгер сообщений, так и всех событий в целом.
 
 @bot.command(pass_context=True,aliases=['j'],description='Join voice channel',brief='Join in voice')
 async def join(ctx):
