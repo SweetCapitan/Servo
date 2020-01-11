@@ -5,6 +5,7 @@ import asyncio
 import os
 import youtube_dl
 import random
+import time
 from SERVO_BOT.CONFIG import BOT_TOKEN, ROLE_RAINBOW, SERVER_ID, RAINBOW_STATUS
 
 rainbowrolename = ROLE_RAINBOW
@@ -40,6 +41,20 @@ def check():
 async def on_ready():
     print('Готово. Зашел под именами: %s'%bot.user.name)
     bot.loop.create_task(rainbow(rainbowrolename))
+
+
+@bot.event
+async def on_message(message):
+    mes = message.content
+    aut = message.author
+    chan = message.channel
+    gld = message.guild
+    log = ('%s | Message From Server: %s | In the channel : %s | Content : "%s" | From : %s'%(time.ctime(),gld,chan,mes,aut))
+    print(log)
+    with open('logs.txt','a',encoding='utf-8') as l:
+        l.write(str(log)+'\n')
+
+    await bot.process_commands(message)
 
 @bot.command(pass_context=True,aliases=['j'],description='Join voice channel',brief='Join in voice')
 async def join(ctx):
