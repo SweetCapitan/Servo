@@ -6,6 +6,7 @@ import os
 import youtube_dl
 import random
 import requests
+
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
 bot = commands.Bot(command_prefix='?')
@@ -33,6 +34,7 @@ rainbowrolename = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')
 RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
+
 def check():
     for file in os.listdir('../'):
         if file.endswith('.mp3'):
@@ -40,6 +42,7 @@ def check():
             name = file
             print('Переименовыван файл: %s' % file)
             os.rename(file, 'song.mp3')
+
 
 def get_btc_price():
     r = requests.get(BTC_PRICE_URL_coinmarketcap)
@@ -51,19 +54,22 @@ def get_btc_price():
     percent_change_7d = response_json[0]['percent_change_7d']
     return usd_price, rub_rpice, percent_change_1h, percent_change_24h, percent_change_7d
 
+
 @bot.event
 async def on_ready():
-    print('Готово. Зашел под именами: %s'%bot.user.name)
-    bot.loop.create_task(rainbow(rainbowrolename))
+    print('Готово. Зашел под именами: %s' % bot.user.name)
+    bot.loop.create_task(rainbow())
+
 
 # TODO: Написать нормальный логгер сообщений, так и всех событий в целом.
 
-@bot.command(pass_context=True,aliases=['j'],description='Join voice channel',brief='Join in voice')
+
+@bot.command(pass_context=True, aliases=['j'], description='Join voice channel', brief='Join in voice')
 async def join(ctx):
     global voice
     print('Command: %s' % join)
     channel = ctx.message.author.voice.channel
-    voice = get(bot.voice_clients,guild=ctx.guild)
+    voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
         await voice.move_to(channel)
     else:
@@ -75,29 +81,31 @@ async def join(ctx):
         await voice.move_to(channel)
     else:
         voice = await channel.connect()
-        print('Joined in %s'%(channel)+' at %s'%(ctx.guild))
+        print('Joined in %s' % channel + ' at %s' % ctx.guild)
 
-    await ctx.send('Joined at %s'% channel)
+    await ctx.send('Joined at %s' % channel)
 
-@bot.command(pass_context=True,aliases=['l'],description='Leave voice channel',brief='Leave voice')
+
+@bot.command(pass_context=True, aliases=['l'], description='Leave voice channel', brief='Leave voice')
 async def leave(ctx):
-    print('Command: %s'% leave)
+    print('Command: %s' % leave)
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
         await voice.disconnect()
-        print('Diconnected from %s'%channel+' at %s'%ctx.guild)
+        print('Diconnected from %s' % channel + ' at %s' % ctx.guild)
         await ctx.send('Left %s ' % channel)
     else:
         await ctx.send('Невозможно выполнить комманду "leave" т.к. бот не находится не в каком голосовом канале')
         print('Error: Bot not in voice channel')
 
 
-
-@bot.command(pass_context=True,aliases=['pl','start'],
-             description='This command initiates the playback of\n sound from url in the voice channel in \nwhich the bot is located.',
+@bot.command(pass_context=True, aliases=['pl', 'start'],
+             description='This command initiates the playback of\n'
+                         'sound from url in the voice channel in \n'
+                         'which the bot is located.',
              brief='СОЗДАТЕЛЯЭТОГОБЛЯДСКОГОAPIТОЛПАЧЕЧЕНОВЕБАЛАВЖОПУКОГДАОНПИСАЛЕГО')
-async def play(ctx, url:str):
+async def play(ctx, url: str):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
         song_there = os.path.isfile('song.mp3')
@@ -127,8 +135,8 @@ async def play(ctx, url:str):
                 print('Скачивается аудио с YouTube')
 
         except:
-            c_path = os.path.dirname(os.path.realpath(__file__))
-            os.system('youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % (url) + '"' + ' --extract-audio --audio-format mp3')
+            os.system(
+                'youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % url + '"' + ' --extract-audio --audio-format mp3')
 
         check()
 
@@ -144,8 +152,8 @@ async def play(ctx, url:str):
         print('Error:Бот не в голосовом канале')
 
 
-
-@bot.command(pass_context=True,aliases=['p'],description='This command pauses and unpauses audio playback.',brief='Pause/Unpause Audio')
+@bot.command(pass_context=True, aliases=['p'], description='This command pauses and unpauses audio playback.',
+             brief='Pause/Unpause Audio')
 async def pause(ctx):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -157,7 +165,9 @@ async def pause(ctx):
         await ctx.send('Resume playing')
         print('Продолжить воиспроизведение')
 
-@bot.command(pass_context=True,aliases=['st','s'],description='This command stops audio playback.',brief='Stop audio')
+
+@bot.command(pass_context=True, aliases=['st', 's'], description='This command stops audio playback.',
+             brief='Stop audio')
 async def stop(ctx):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_playing():
@@ -168,8 +178,11 @@ async def stop(ctx):
         await ctx.send('Audio already stoped')
         print('Ну как бы была попытка остановки, но чет пошло не так ...')
 
-@bot.command(pass_context=True,aliases=['spot','spf'],description='This command downloads and plays a track from the Spotify library in the voice channel',brief='Audio from the Spotify')
-async def spotify(ctx,url:str):
+
+@bot.command(pass_context=True, aliases=['spot', 'spf'],
+             description='This command downloads and plays a track from the Spotify library in the voice channel',
+             brief='Audio from the Spotify')
+async def spotify(ctx, url: str):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
         check()
@@ -185,7 +198,7 @@ async def spotify(ctx,url:str):
 
         if voice and voice.is_connected():
             print("Скачиваю аудио из Spotify")
-            await ctx.send('Download audio from Spotify')
+            await ctx.send('Downloading audio from Spotify')
             c_path = os.path.dirname(os.path.realpath(__file__))
             os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)  # make sure there are spaces in the -s
 
@@ -198,12 +211,13 @@ async def spotify(ctx,url:str):
         await ctx.send('Go into the voice channel and enter the command "join"')
         print('Error:Бот не в голосовом канале')
 
-@bot.command(pass_context=True,aliases=['btc'],
+
+@bot.command(pass_context=True, aliases=['btc'],
              description='This command sends you the current value of bitcoin in rubles and dollars.'
                          '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
                          '\n args: <7d,1d,1h,None>',
              brief='Bitcoin price')
-async def btcprice(ctx,*args:str):
+async def btcprice(ctx, *args: str):
     btc_price_usd, btc_price_rub, percent1, percent24, percent7 = get_btc_price()
     btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
     btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
@@ -235,7 +249,9 @@ async def btcprice(ctx,*args:str):
 
     await ctx.send(embed=embed)
 
-emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>','<:image0:641676982651715584>','<:emoji_6:615000140423626754>']
+
+emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>', '<:emoji_6:615000140423626754>']
+
 
 @bot.event
 async def on_message(message):
@@ -244,14 +260,16 @@ async def on_message(message):
             emoji = emo
             await message.add_reaction(emoji)
 
+
 @bot.event
-async def on_reaction_add(reaction):
+async def on_reaction_add(reaction, _):
     for emo in emoji_react:
         if emo.lower() in str(reaction).lower():
             emoji = emo
             await reaction.message.add_reaction(emoji)
 
-async def rainbow(role):
+
+async def rainbow():
     if bool(RAINBOW_STATUS):
         for role in bot.get_guild(int(server_id)).roles:
             if str(role) == str(rainbowrolename):
@@ -260,8 +278,9 @@ async def rainbow(role):
                     try:
                         await role.edit(color=random.choice(colours))
                     except Exception as e:
-                        print('Error: ' + e)
+                        print('Error: ' + str(e))
                     await asyncio.sleep(5)
+
 
 bot.run(os.environ.get('BOT_TOKEN'))
 # bot.run(BOT_TOKEN)
