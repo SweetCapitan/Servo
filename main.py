@@ -235,7 +235,21 @@ async def btcprice(ctx,*args:str):
 
     await ctx.send(embed=embed)
 
+emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>','<:image0:641676982651715584>','<:emoji_6:615000140423626754>']
 
+@bot.event
+async def on_message(message):
+    for emo in emoji_react:
+        if emo.lower() in message.content.lower():
+            emoji = emo
+            await message.add_reaction(emoji)
+
+@bot.event
+async def on_reaction_add(reaction):
+    for emo in emoji_react:
+        if emo.lower() in str(reaction).lower():
+            emoji = emo
+            await reaction.message.add_reaction(emoji)
 
 async def rainbow(role):
     if bool(RAINBOW_STATUS):
