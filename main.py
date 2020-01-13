@@ -185,7 +185,7 @@ async def spotify(ctx,url:str):
 
         if voice and voice.is_connected():
             print("Скачиваю аудио из Spotify")
-            await ctx.send('Download audio of Spotify')
+            await ctx.send('Download audio from Spotify')
             c_path = os.path.dirname(os.path.realpath(__file__))
             os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)  # make sure there are spaces in the -s
 
