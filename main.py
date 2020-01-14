@@ -62,6 +62,7 @@ def get_btc_price():
 async def on_ready():
     print('Готово. Зашел под именами: %s' % bot.user.name)
     bot.loop.create_task(rainbow())
+    bot.loop.create_task(status())
 
 
 
@@ -297,8 +298,6 @@ async def status():
     while not bot.is_closed():
         try:
             uptime_sec, uptime_min, uptime_hour, uptime_day = get_uptime()
-
-
             def pluralize(source, first, second, third):
                 if str(source) == '0':
                     return third
