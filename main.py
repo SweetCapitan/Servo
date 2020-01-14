@@ -303,8 +303,8 @@ async def result_embed(result_state, description, message):
 @bot.command(aliases=['ex', 'exec'],
              description='This command allows you to execute python code directly from the chat itself.\n'
                          'P.s. Temporarily runs on Iteratorw code\n'
-                         'Usage: "execute ```code```"',
-             brief='Execute Python code :"execute ```code```"')
+                         'Usage:execute ` ` `code` ` ` (without spaces)',
+             brief='Execute Python code "')
 async def execute(ctx):
     code = ctx.message.content.split("```")
     if len(code) < 3:
