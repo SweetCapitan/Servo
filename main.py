@@ -109,7 +109,7 @@ async def leave(ctx):
              description='This command initiates the playback of\n'
                          'sound from url in the voice channel in \n'
                          'which the bot is located.',
-             brief='СОЗДАТЕЛЯЭТОГОБЛЯДСКОГОAPIТОЛПАЧЕЧЕНОВЕБАЛАВЖОПУКОГДАОНПИСАЛЕГО')
+             brief='Start playing audio in voice channel')
 async def play(ctx, url: str):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
