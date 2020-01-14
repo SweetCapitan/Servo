@@ -65,27 +65,25 @@ async def on_ready():
     bot.loop.create_task(status())
 
 
-
 # TODO: Написать нормальный логгер сообщений, так и всех событий в целом.
 
 
 @bot.command(pass_context=True, aliases=['j'], description='Join voice channel', brief='Join in voice')
 async def join(ctx):
-    global voice
     print('Command: %s' % join)
     channel = ctx.message.author.voice.channel
     voice = get(bot.voice_clients, guild=ctx.guild)
+    # if voice and voice.is_connected():
+    #     #     await voice.move_to(channel)
+    #     # else:
+    #     #     voice = await channel.connect()
+    #     #
+    #     # await voice.disconnect()
+
     if voice and voice.is_connected():
         await voice.move_to(channel)
     else:
-        voice = await channel.connect()
-
-    await voice.disconnect()
-
-    if voice and voice.is_connected():
-        await voice.move_to(channel)
-    else:
-        voice = await channel.connect()
+        await channel.connect()
         print('Joined in %s' % channel + ' at %s' % ctx.guild)
 
     await ctx.send('Joined at %s' % channel)
@@ -138,7 +136,6 @@ async def play(ctx, url: str):
                 ydl.download([url])
                 await ctx.send('Downloading audio from YouTube')
                 print('Скачивается аудио с YouTube')
-
         except:
             os.system(
                 'youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % url + '"' + ' --extract-audio --audio-format mp3')
@@ -286,41 +283,46 @@ async def rainbow():
                         print('Error: ' + str(e))
                     await asyncio.sleep(5)
 
+
 def get_uptime():
     t = round(time.time() - start_time)
     t_min = round((t - (t // 86400) * 86400 - ((t - (t // 86400) * 86400) // 3600) * 3600) // 60)
     t_sec = round(t - (t // 86400) * 86400 - ((t - (t // 86400) * 86400) // 3600) * 3600 - t_min * 60)
     t_hour = round((t - (t // 86400) * 86400) // 3600)
     t_day = round(t // 86400)
-    return t_sec,t_min,t_hour,t_day
+    return t_sec, t_min, t_hour, t_day
+
 
 async def status():
     while not bot.is_closed():
         try:
             uptime_sec, uptime_min, uptime_hour, uptime_day = get_uptime()
+
             def pluralize(source, first, second, third):
-                if str(source) == '0':
+                if int(str(source)[-1]) == 0:
                     return third
-                elif str(source) == '1':
+                elif int(str(source)[-2:]) in range(11, 21):
+                    return third
+                elif int(str(source)[-1]) == 1:
                     return first
-                elif int(str(source)[-1]) in range(2,5):
+                elif int(str(source)[-1]) in range(2, 5):
                     return second
-                elif int(str(source)[-1]) in range(5,10):
-                    return third
-                elif int(str(source)[-2:]) in range(11,19):
+                elif int(str(source)[-1]) in range(5, 10):
                     return third
 
-
-            uptime_name = 'Без падений уже: %s {}, %s {},%s {},%s {}'.format(pluralize(uptime_day,'день','дня','дней'),
-                                                                                 pluralize(uptime_hour,'час','часа','часов'),
-                                                                                 pluralize(uptime_min,'минуту','минуты','минут'),
-                                                                                 pluralize(uptime_sec,'секунду','секунды','секунд')) %\
+            uptime_name = 'Без падений уже: %s {}, %s {},%s {},%s {}'.format(
+                pluralize(uptime_day, 'день', 'дня', 'дней'),
+                pluralize(uptime_hour, 'час', 'часа', 'часов'),
+                pluralize(uptime_min, 'минуту', 'минуты', 'минут'),
+                pluralize(uptime_sec, 'секунду', 'секунды', 'секунд')) % \
                           (uptime_day, uptime_hour, uptime_min, uptime_sec)
-            print(uptime_name)
-            await bot.change_presence(activity=discord.Streaming(name=uptime_name, url='https://www.twitch.tv/dancho67'))
+
+            await bot.change_presence(
+                activity=discord.Streaming(name=uptime_name, url='https://www.twitch.tv/dancho67'))
         except Exception as e:
             print(e)
         await asyncio.sleep(5)
+
 
 bot.run(os.environ.get('BOT_TOKEN'))
 # bot.run(BOT_TOKEN)
