@@ -70,7 +70,7 @@ async def on_ready():
 # TODO: Написать нормальный логгер сообщений, так и всех событий в целом.
 
 
-@bot.command(pass_context=True, aliases=['j'], description='Join voice channel', brief='Join in voice')
+@bot.command(aliases=['j'], description='Join voice channel', brief='Join in voice')
 async def join(ctx):
     print('Command: %s' % join)
     channel = ctx.message.author.voice.channel
@@ -91,7 +91,7 @@ async def join(ctx):
     await ctx.send('Joined at %s' % channel)
 
 
-@bot.command(pass_context=True, aliases=['l'], description='Leave voice channel', brief='Leave voice')
+@bot.command(aliases=['l'], description='Leave voice channel', brief='Leave voice')
 async def leave(ctx):
     print('Command: %s' % leave)
     channel = ctx.message.author.voice.channel
@@ -105,7 +105,7 @@ async def leave(ctx):
         print('Error: Bot not in voice channel')
 
 
-@bot.command(pass_context=True, aliases=['pl', 'start'],
+@bot.command(aliases=['pl', 'start'],
              description='This command initiates the playback of\n'
                          'sound from url in the voice channel in \n'
                          'which the bot is located.',
@@ -157,7 +157,7 @@ async def play(ctx, url: str):
         print('Error:Бот не в голосовом канале')
 
 
-@bot.command(pass_context=True, aliases=['p'], description='This command pauses and unpauses audio playback.',
+@bot.command(aliases=['p'], description='This command pauses and unpauses audio playback.',
              brief='Pause/Unpause Audio')
 async def pause(ctx):
     voice = get(bot.voice_clients, guild=ctx.guild)
@@ -171,7 +171,7 @@ async def pause(ctx):
         print('Продолжить воиспроизведение')
 
 
-@bot.command(pass_context=True, aliases=['st', 's'], description='This command stops audio playback.',
+@bot.command(aliases=['st', 's'], description='This command stops audio playback.',
              brief='Stop audio')
 async def stop(ctx):
     voice = get(bot.voice_clients, guild=ctx.guild)
@@ -184,7 +184,7 @@ async def stop(ctx):
         print('Ну как бы была попытка остановки, но чет пошло не так ...')
 
 
-@bot.command(pass_context=True, aliases=['spot', 'spf'],
+@bot.command(aliases=['spot', 'spf'],
              description='This command downloads and plays a track from the Spotify library in the voice channel',
              brief='Audio from the Spotify')
 async def spotify(ctx, url: str):
@@ -218,7 +218,7 @@ async def spotify(ctx, url: str):
         print('Error:Бот не в голосовом канале')
 
 
-@bot.command(pass_context=True, aliases=['btc'],
+@bot.command(aliases=['btc'],
              description='This command sends you the current value of bitcoin in rubles and dollars.'
                          '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
                          '\n args: <7d,1d,1h,None>',
@@ -300,7 +300,7 @@ async def result_embed(result_state, description, message):
     await message.send(embed=embed)
 
 
-@bot.command(pass_context=True, aliases=['ex', 'exec'],
+@bot.command(aliases=['ex', 'exec'],
              description='This command allows you to execute python code directly from the chat itself.\n'
                          'P.s. Temporarily runs on Iteratorw code\n'
                          'Usage: execute ```code```',
