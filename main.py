@@ -7,6 +7,8 @@ import youtube_dl
 import random
 import requests
 import time
+from contextlib import redirect_stdout
+import io
 
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
@@ -41,8 +43,8 @@ start_time = time.time()
 def check():
     for file in os.listdir('../'):
         if file.endswith('.mp3'):
-            global name
-            name = file
+            global name_song
+            name_song = file
             print('Переименовыван файл: %s' % file)
             os.rename(file, 'song.mp3')
 
@@ -142,11 +144,12 @@ async def play(ctx, url: str):
 
         check()
 
-        voice.play(discord.FFmpegPCMAudio('song.mp3'), after=lambda e: print('%s закончил воиспроизведение' % name))
+        voice.play(discord.FFmpegPCMAudio('song.mp3'),
+                   after=lambda e: print('%s закончил воиспроизведение' % name_song))
         voice.source = discord.PCMVolumeTransformer(voice.source)
         voice.source.volume = 0.07
 
-        nname = name.rsplit('-', 2)
+        nname = name_song.rsplit('-', 2)
         await ctx.send('Playing: %s' % nname[0])
         print('Воиспроизведение аудио стартовало!')
     else:
@@ -206,7 +209,8 @@ async def spotify(ctx, url: str):
 
             check()
 
-            voice.play(discord.FFmpegPCMAudio('song.mp3'), after=lambda e: print('%s закончил воиспроизведение' % name))
+            voice.play(discord.FFmpegPCMAudio('song.mp3'),
+                       after=lambda e: print('%s закончил воиспроизведение' % name_song))
             voice.source = discord.PCMVolumeTransformer(voice.source)
             voice.source.volume = 0.07
     else:
@@ -252,7 +256,72 @@ async def btcprice(ctx, *args: str):
     await ctx.send(embed=embed)
 
 
-emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>', '<:emoji_6:615000140423626754>','<:OREHUS_YES:666640633502498865>']
+# TODO: Переписать эту поебень нахуй, т.к. я не очень горю быть зависимым от чужого кода
+# -----------------------------------------Start of Iterator Code ------------------------------------------------------
+class MyGlobals(dict):
+    def __init__(self, globs, locs):
+        super().__init__()
+        self.globals = globs
+        self.locals = locs
+
+    def __getitem__(self, name):
+        try:
+            return self.locals[name]
+        except KeyError:
+            return self.globals[name]
+
+    def __setitem__(self, name, value):
+        self.globals[name] = value
+
+    def __delitem__(self, name):
+        del self.globals[name]
+
+
+def _exec(code, g, l):
+    out = io.StringIO()
+    d = MyGlobals(g, l)
+    try:
+        error = False
+        with redirect_stdout(out):
+            exec(code, d)
+    except Exception as ex:
+        error = True
+        out.write(str(ex))
+
+    return out.getvalue(), error
+
+
+def _await(coro):  # це костыль для выполнения асинхронных функций в exec
+    asyncio.ensure_future(coro)
+
+
+async def result_embed(result_state, description, message):
+    embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
+    await message.send(embed=embed)
+
+
+@bot.command(pass_context=True, aliases=['ex', 'exec'],
+             description='This command allows you to execute python code directly from the chat itself.\n'
+                         'P.s. Temporarily runs on Iteratorw code\n'
+                         'Usage: execute ```code```',
+             brief='Execute Python code :execute ```code```')
+async def execute(ctx):
+    code = ctx.message.content.split("```")
+    if len(code) < 3:
+        await result_embed('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', 'Код где блять ?', ctx)
+    out, is_error = _exec(code[1].strip().rstrip(), globals(), locals())
+
+    if is_error:
+        await result_embed('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', out, ctx)
+
+    else:
+        await result_embed('Код успешно выполнен!', out, ctx)
+
+
+# # --------------------------------------End of ITERATOR Code---------------------------------------------------------
+
+emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
+               '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
 
 
 @bot.event
