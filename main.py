@@ -252,7 +252,7 @@ async def btcprice(ctx, *args: str):
     await ctx.send(embed=embed)
 
 
-emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>', '<:emoji_6:615000140423626754>']
+emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>', '<:emoji_6:615000140423626754>','<:OREHUS_YES:666640633502498865>']
 
 
 @bot.event
@@ -310,7 +310,7 @@ async def status():
                 elif int(str(source)[-1]) in range(5, 10):
                     return third
 
-            uptime_name = 'Без падений уже: %s {}, %s {},%s {},%s {}'.format(
+            uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
                 pluralize(uptime_day, 'день', 'дня', 'дней'),
                 pluralize(uptime_hour, 'час', 'часа', 'часов'),
                 pluralize(uptime_min, 'минуту', 'минуты', 'минут'),
