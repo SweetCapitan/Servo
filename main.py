@@ -94,7 +94,7 @@ async def leave(ctx):
 
 @bot.command(pass_context=True,aliases=['pl','start'],
              description='This command initiates the playback of\n sound from url in the voice channel in \nwhich the bot is located.',
-             brief='СОЗДАТЕЛЯЭТОГОБЛЯДСКОГОAPIТОЛПАЧЕЧЕНОВЕБАЛАВЖОПУКОГДАОНПИСАЛЕГО')
+             brief='Start playing audio in voice channel')
 async def play(ctx, url:str):
     voice = get(bot.voice_clients, guild=ctx.guild)
     if voice and voice.is_connected():
@@ -183,7 +183,7 @@ async def spotify(ctx,url:str):
 
         if voice and voice.is_connected():
             print("Скачиваю аудио из Spotify")
-            await ctx.send('Download audio of Spotify')
+            await ctx.send('Downloading audio from Spotify')
             c_path = os.path.dirname(os.path.realpath(__file__))
             os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)  # make sure there are spaces in the -s
 
