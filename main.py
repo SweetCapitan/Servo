@@ -330,6 +330,7 @@ async def on_message(message):
         if emo.lower() in message.content.lower():
             emoji = emo
             await message.add_reaction(emoji)
+    await bot.process_commands(message)
 
 
 @bot.event
