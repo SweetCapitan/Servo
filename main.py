@@ -9,6 +9,7 @@ import requests
 import time
 from contextlib import redirect_stdout
 import io
+import datetime
 
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
@@ -319,6 +320,28 @@ async def execute(ctx):
 
 
 # # --------------------------------------End of ITERATORW Code---------------------------------------------------------
+# TODO: Перестать быть ленивой жопой и добавить описание команды clear и примеры ее использования.
+# TODO: Придумать и реализовать систему прав(Ну либо подглядеть у кого нибудь идею и АдАпТиРоВаТь ее)
+@bot.command()
+async def clear(ctx,*args):
+    print(args)
+    chan = ctx.message.channel
+    if len(args) == 7:
+        def check(msg):
+            return msg.author == ctx.message.mentions[0]
+        deleted = await chan.purge(check=check,after=datetime.datetime(int(args[5]),int(args[4]),int(args[3]),int(args[0]),int(args[1]),int(args[2])))
+    elif len(args) == 6:
+        deleted = await chan.purge(after=datetime.datetime(int(args[5]),int(args[4]),int(args[3]),int(args[0]),int(args[1]),int(args[2])))
+    elif len(args) == 2:
+        def check(msg):
+            return msg.author == ctx.message.mentions[0]
+        deleted = await chan.purge(limit=int(args[0]),check=check)
+    else:
+        deleted = await chan.purge(limit=int(args[0]))
+
+
+    await chan.send('Удалено %s сообщение' % len(deleted))
+
 
 emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
