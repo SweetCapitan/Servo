@@ -358,7 +358,10 @@ async def clear(ctx, *args):
     else:
         deleted = await chan.purge(limit=int(args[0]))
 
-    await chan.send('Удалено %s {}'.format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted))
+    # await chan.send('Удалено %s {}'.format(pluralize(len(deleted),
+    #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
+    await result_embed('Успешно!', 'Удалено %s {}'
+                       .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
 
 
 emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
@@ -415,6 +418,7 @@ def pluralize(source, first, second, third):
         return second
     elif int(str(source)[-1]) in range(5, 10):
         return third
+
 
 async def status():
     while not bot.is_closed():
