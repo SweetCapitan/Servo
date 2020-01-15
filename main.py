@@ -320,25 +320,43 @@ async def execute(ctx):
 
 
 # # --------------------------------------End of ITERATORW Code---------------------------------------------------------
-# TODO: Перестать быть ленивой жопой и добавить описание команды clear и примеры ее использования.
+
 # TODO: Придумать и реализовать систему прав(Ну либо подглядеть у кого нибудь идею и АдАпТиРоВаТь ее)
-@bot.command()
-async def clear(ctx,*args):
+@bot.command(aliases=['cl'],
+             description='This command allows you to delete messages '
+                         'from the channel in which the command was called.\n'
+                         '- Usual variant -\n'
+                         'This option allows to delete n messages. If a user is mentioned at the end,'
+                         'then ONLY messages of the specified user will be deleted.'
+                         ' Example: clear <Messages to search. This is not the number of messages !>'
+                         '<(optional)@ User whose messages you want to delete>.\n'
+                         '- Delete by date and time - \n'
+                         'This option allows you to delete all messages from the channel starting '
+                         'from the specified date and time. If you specify a user at the end,'
+                         ' they will delete ONLY past posts of the user '
+                         'Example: clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
+                         '<(Optional)@User whose posts you want to delete>.',
+             brief='Delete N- number of messages from the channel.')
+async def clear(ctx, *args):
     print(args)
     chan = ctx.message.channel
     if len(args) == 7:
         def check(msg):
             return msg.author == ctx.message.mentions[0]
-        deleted = await chan.purge(check=check,after=datetime.datetime(int(args[5]),int(args[4]),int(args[3]),int(args[0]),int(args[1]),int(args[2])))
+
+        deleted = await chan.purge(check=check,
+                                   after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]), int(args[0]),
+                                                           int(args[1]), int(args[2])))
     elif len(args) == 6:
-        deleted = await chan.purge(after=datetime.datetime(int(args[5]),int(args[4]),int(args[3]),int(args[0]),int(args[1]),int(args[2])))
+        deleted = await chan.purge(
+            after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]), int(args[0]), int(args[1]), int(args[2])))
     elif len(args) == 2:
         def check(msg):
             return msg.author == ctx.message.mentions[0]
-        deleted = await chan.purge(limit=int(args[0]),check=check)
+
+        deleted = await chan.purge(limit=int(args[0]), check=check)
     else:
         deleted = await chan.purge(limit=int(args[0]))
-
 
     await chan.send('Удалено %s сообщение' % len(deleted))
 
