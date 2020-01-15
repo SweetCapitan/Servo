@@ -358,7 +358,7 @@ async def clear(ctx, *args):
     else:
         deleted = await chan.purge(limit=int(args[0]))
 
-    await chan.send('Удалено %s сообщение' % len(deleted))
+    await chan.send('Удалено %s {}'.format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted))
 
 
 emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
@@ -404,23 +404,22 @@ def get_uptime():
     return t_sec, t_min, t_hour, t_day
 
 
+def pluralize(source, first, second, third):
+    if int(str(source)[-1]) == 0:
+        return third
+    elif int(str(source)[-2:]) in range(11, 21):
+        return third
+    elif int(str(source)[-1]) == 1:
+        return first
+    elif int(str(source)[-1]) in range(2, 5):
+        return second
+    elif int(str(source)[-1]) in range(5, 10):
+        return third
+
 async def status():
     while not bot.is_closed():
         try:
             uptime_sec, uptime_min, uptime_hour, uptime_day = get_uptime()
-
-            def pluralize(source, first, second, third):
-                if int(str(source)[-1]) == 0:
-                    return third
-                elif int(str(source)[-2:]) in range(11, 21):
-                    return third
-                elif int(str(source)[-1]) == 1:
-                    return first
-                elif int(str(source)[-1]) in range(2, 5):
-                    return second
-                elif int(str(source)[-1]) in range(5, 10):
-                    return third
-
             uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
                 pluralize(uptime_day, 'день', 'дня', 'дней'),
                 pluralize(uptime_hour, 'час', 'часа', 'часов'),
