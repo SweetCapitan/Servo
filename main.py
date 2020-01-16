@@ -10,7 +10,7 @@ import time
 from contextlib import redirect_stdout
 import io
 import datetime
-
+# TODO: Начать потихоньку рефакторинг кода и попробовать разбить код на модули для более простого орентирования
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
 bot = commands.Bot(command_prefix='?')
@@ -433,7 +433,7 @@ def pluralize(source, first, second, third):
     elif int(str(source)[-1]) in range(5, 10):
         return third
 
-
+# TODO: Попробовать реализовать аптайм через RPC
 async def status():
     while not bot.is_closed():
         try:
