@@ -363,6 +363,20 @@ async def clear(ctx, *args):
     await result_embed('Успешно!', 'Удалено %s {}'
                        .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
 
+# TODO: Отрефакторить этот ужас
+@bot.command(description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
+             brief='Random quote with bash.im')
+async def bash(ctx):
+    from bs4 import BeautifulSoup
+    url = 'https://bash.im/random'
+    # url = 'https://bash.im/quote/447599'
+    # text = get_text(url)
+    rs = requests.get(url)
+
+    root = BeautifulSoup(rs.text, 'html.parser')
+    mydivs = root.find("div", {"class": "quote__body"})
+    quote = mydivs.getText('\n', strip=True)
+    await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
 
 emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
