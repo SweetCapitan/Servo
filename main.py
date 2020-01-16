@@ -11,6 +11,7 @@ from contextlib import redirect_stdout
 import io
 import datetime
 # TODO: Начать потихоньку рефакторинг кода и попробовать разбить код на модули для более простого орентирования
+# TODO: Добавить старые фишки со старых ботов ради ностальгии и Ржомбы !
 # from SERVO_BOT.CONFIG import BOT_TOKEN
 
 bot = commands.Bot(command_prefix='?')
