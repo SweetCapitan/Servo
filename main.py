@@ -2,7 +2,7 @@ import os
 
 import discord
 # noinspection PyUnresolvedReferences,PyPackageRequirements
-from config import BOT_TOKEN
+# from config import BOT_TOKEN
 from discord.ext import commands
 
 
