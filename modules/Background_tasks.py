@@ -23,8 +23,8 @@ rainbowrolename = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')
 RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
-start_time = time.time()
-
+# start_time = time.time()
+start_time = os.environ.get('TIME')
 colours = [discord.Color.dark_orange(),
            discord.Color.orange(),
            discord.Color.dark_gold(),
