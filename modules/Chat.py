@@ -1,7 +1,8 @@
-import discord
-from discord.ext import commands
 import datetime
-from .main import result_embed, pluralize
+
+from discord.ext import commands
+
+from main import result_embed, pluralize
 
 
 # async def result_embed(result_state, description, message):
@@ -50,11 +51,11 @@ class Chat(commands.Cog):
 
             deleted = await chan.purge(check=check,
                                        after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
-                                                               int(args[0]),int(args[1]), int(args[2])))
+                                                               int(args[0]), int(args[1]), int(args[2])))
         elif len(args) == 6:
             deleted = await chan.purge(
                 after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
-                                        int(args[0]), int(args[1]),int(args[2])))
+                                        int(args[0]), int(args[1]), int(args[2])))
         elif len(args) == 2:
             def check(msg):
                 return msg.author == ctx.message.mentions[0]
@@ -66,25 +67,26 @@ class Chat(commands.Cog):
         # await chan.send('Удалено %s {}'.format(pluralize(len(deleted),
         #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
         await result_embed('Успешно!', 'Удалено %s {}'
-                                .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(
-            deleted), ctx)
+                           .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
 
+    # noinspection SpellCheckingInspection
     emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                    '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
 
     @commands.Cog.listener()
-    async def on_message(self,message):
+    async def on_message(self, message):
         for emo in self.emoji_react:
             if emo.lower() in message.content.lower():
                 emoji = emo
                 await message.add_reaction(emoji)
 
     @commands.Cog.listener()
-    async def on_reaction_add(self,reaction, _):
+    async def on_reaction_add(self, reaction, _):
         for emo in self.emoji_react:
             if emo.lower() in str(reaction).lower():
                 emoji = emo
                 await reaction.message.add_reaction(emoji)
+
 
 def setup(bot):
     bot.add_cog(Chat(bot))

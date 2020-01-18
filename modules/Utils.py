@@ -2,10 +2,12 @@ import asyncio
 import io
 import os
 from contextlib import redirect_stdout
+
 import discord
 import requests
 from discord.ext import commands
-from .main import result_embed
+
+from main import result_embed
 
 # async def result_embed(result_state, description, message):
 #     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -24,18 +26,18 @@ class Utils(commands.Cog):
         r = requests.get(BTC_PRICE_URL_coinmarketcap)
         response_json = r.json()
         usd_price = response_json[0]['price_usd']
-        rub_rpice = response_json[0]['price_rub']
+        rub_price = response_json[0]['price_rub']
         percent_change_1h = response_json[0]['percent_change_1h']
         percent_change_24h = response_json[0]['percent_change_24h']
         percent_change_7d = response_json[0]['percent_change_7d']
-        return usd_price, rub_rpice, percent_change_1h, percent_change_24h, percent_change_7d
+        return usd_price, rub_price, percent_change_1h, percent_change_24h, percent_change_7d
 
     @commands.command(aliases=['btc'],
                       description='This command sends you the current value of bitcoin in rubles and dollars.'
-                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
+                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
                                   '\n args: <7d,1d,1h,None>',
                       brief='Bitcoin price')
-    async def btcprice(self, ctx, *args: str):
+    async def btc_price(self, ctx, *args: str):
         btc_price_usd, btc_price_rub, percent1, percent24, percent7 = self.get_btc_price()
         btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
         btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
@@ -70,7 +72,7 @@ class Utils(commands.Cog):
     @commands.command(
         description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
         brief='Random quote with bash.im')
-    async def bash(self,ctx):
+    async def bash(self, ctx):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
         rs = requests.get(url)
@@ -79,7 +81,7 @@ class Utils(commands.Cog):
         quote = mydivs.getText('\n', strip=True)
         await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
 
-# -----------------------------------------Start of IteratorW Code -----------------------------------------------------
+    # -----------------------------------------Start of IteratorW Code -----------------------------------------------------
     class MyGlobals(dict):
         def __init__(self, globs, locs):
             super().__init__()
@@ -130,6 +132,7 @@ class Utils(commands.Cog):
 
         else:
             await result_embed('Код успешно выполнен!', out, ctx)
+
 
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
 def setup(bot):

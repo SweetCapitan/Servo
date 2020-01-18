@@ -1,10 +1,12 @@
 import asyncio
+import os
 import random
 import time
+
 import discord
 from discord.ext import commands
-import os
-from .main import pluralize
+
+from main import pluralize
 
 # def pluralize(source, first, second, third):
 #     if int(str(source)[-1]) == 0:
@@ -19,7 +21,7 @@ from .main import pluralize
 #         return third
 
 
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
+rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')
 RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
@@ -42,9 +44,10 @@ colours = [discord.Color.dark_orange(),
            discord.Color.purple(),
            discord.Color.dark_purple()]
 
+
 class Tasks(commands.Cog):
 
-    def __init__(self,bot):
+    def __init__(self, bot):
         self.bot = bot
         bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
@@ -52,7 +55,7 @@ class Tasks(commands.Cog):
     async def rainbow(self):
         if bool(RAINBOW_STATUS):
             for role in self.bot.get_guild(int(server_id)).roles:
-                if str(role) == str(rainbowrolename):
+                if str(role) == str(rainbow_role_name):
                     print("Rainbow: Role detected")
                     while not self.bot.is_closed():
                         try:
@@ -60,6 +63,7 @@ class Tasks(commands.Cog):
                         except Exception as e:
                             print('Error: ' + str(e))
                         await asyncio.sleep(5)
+
     @staticmethod
     def get_uptime():
         t = round(time.time() - start_time)
@@ -77,14 +81,15 @@ class Tasks(commands.Cog):
                     pluralize(uptime_day, 'день', 'дня', 'дней'),
                     pluralize(uptime_hour, 'час', 'часа', 'часов'),
                     pluralize(uptime_min, 'минуту', 'минуты', 'минут'),
-                    pluralize(uptime_sec, 'секунду', 'секунды', 'секунд')) % \
-                              (uptime_day, uptime_hour, uptime_min, uptime_sec)
+                    pluralize(uptime_sec, 'секунду', 'секунды', 'секунд')
+                ) % (uptime_day, uptime_hour, uptime_min, uptime_sec)
 
                 await self.bot.change_presence(
                     activity=discord.Streaming(name=uptime_name, url='https://www.twitch.tv/dancho67'))
             except Exception as e:
                 print(e)
             await asyncio.sleep(5)
+
 
 def setup(bot):
     bot.add_cog(Tasks(bot))

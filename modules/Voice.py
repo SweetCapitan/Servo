@@ -1,8 +1,11 @@
 import os
+
 import discord
 import youtube_dl
 from discord.ext import commands
 from discord.utils import get
+
+name_song = None
 
 
 class Voice(commands.Cog):
@@ -44,10 +47,10 @@ class Voice(commands.Cog):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.disconnect()
-            print('Diconnected from %s' % channel + ' at %s' % ctx.guild)
-            await ctx.send('Left %s ' % channel)
+            print('Disconnected from %s' % channel + ' at %s' % ctx.guild)
+            await ctx.send('Left from %s ' % channel)
         else:
-            await ctx.send('Невозможно выполнить комманду "leave" т.к. бот не находится не в каком голосовом канале')
+            await ctx.send('Невозможно выполнить комманду "leave", т.к. бот не находится ни в каком голосовом канале')
             print('Error: Bot not in voice channel')
 
     @commands.command(aliases=['pl', 'start'],
@@ -83,7 +86,7 @@ class Voice(commands.Cog):
                     ydl.download([url])
                     await ctx.send('Downloading audio from YouTube')
                     print('Скачивается аудио с YouTube')
-            except:
+            except Exception:
                 os.system(
                     'youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % url + '"' + ' --extract-audio --audio-format mp3')
 
@@ -135,14 +138,14 @@ class Voice(commands.Cog):
         if voice and voice.is_connected():
             self.check()
             song_there = os.path.isfile('song.mp3')
-            try:
-                if song_there:
+            if song_there:
+                try:
                     os.remove('song.mp3')
-                    print('Удален сарый файл музыки')
-            except PermissionError:
-                print('Попытка удаления файла, но похоже он сейчас играет')
-                await ctx.send('Error: Music playing')
-                return
+                    print('Удален трек с прошлого запуска')
+                except PermissionError:
+                    print('Не удалось удалить файл: нет прав или он занят')
+                    await ctx.send('Error: Music playing')
+                    return
 
             if voice and voice.is_connected():
                 print("Скачиваю аудио из Spotify")
@@ -159,6 +162,7 @@ class Voice(commands.Cog):
         else:
             await ctx.send('Go into the voice channel and enter the command "join"')
             print('Error:Бот не в голосовом канале')
+
 
 def setup(bot):
     bot.add_cog(Voice(bot))
