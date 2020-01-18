@@ -9,6 +9,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
+        print('Ready! Authorized with the names:'+bot.user.name)
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
