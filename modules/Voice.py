@@ -136,14 +136,14 @@ class Voice(commands.Cog):
         if voice and voice.is_connected():
             self.check()
             song_there = os.path.isfile('song.mp3')
-            try:
-                if song_there:
+            if song_there:
+                try:
                     os.remove('song.mp3')
                     print('Удален трек с прошлого запуска')
-            except PermissionError:
-                print('Не удалось удалить файл: нет прав или он занят')
-                await ctx.send('Error: Music playing')
-                return
+                except PermissionError:
+                    print('Не удалось удалить файл: нет прав или он занят')
+                    await ctx.send('Error: Music playing')
+                    return
 
             if voice and voice.is_connected():
                 print("Скачиваю аудио из Spotify")
