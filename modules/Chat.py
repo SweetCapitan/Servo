@@ -2,7 +2,7 @@ import datetime
 
 from discord.ext import commands
 
-from .main import result_embed, pluralize
+from main import result_embed, pluralize
 
 
 # async def result_embed(result_state, description, message):
@@ -67,9 +67,9 @@ class Chat(commands.Cog):
         # await chan.send('Удалено %s {}'.format(pluralize(len(deleted),
         #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
         await result_embed('Успешно!', 'Удалено %s {}'
-                           .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(
-            deleted), ctx)
+                           .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
 
+    # noinspection SpellCheckingInspection
     emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                    '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
 

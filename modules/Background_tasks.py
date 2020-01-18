@@ -6,7 +6,7 @@ import time
 import discord
 from discord.ext import commands
 
-from .main import pluralize
+from main import pluralize
 
 # def pluralize(source, first, second, third):
 #     if int(str(source)[-1]) == 0:
@@ -21,7 +21,7 @@ from .main import pluralize
 #         return third
 
 
-rainbowrolename = os.environ.get('ROLE_RAINBOW')
+rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')
 RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
@@ -55,7 +55,7 @@ class Tasks(commands.Cog):
     async def rainbow(self):
         if bool(RAINBOW_STATUS):
             for role in self.bot.get_guild(int(server_id)).roles:
-                if str(role) == str(rainbowrolename):
+                if str(role) == str(rainbow_role_name):
                     print("Rainbow: Role detected")
                     while not self.bot.is_closed():
                         try:

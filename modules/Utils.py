@@ -7,7 +7,7 @@ import discord
 import requests
 from discord.ext import commands
 
-from .main import result_embed
+from main import result_embed
 
 # async def result_embed(result_state, description, message):
 #     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -26,18 +26,18 @@ class Utils(commands.Cog):
         r = requests.get(BTC_PRICE_URL_coinmarketcap)
         response_json = r.json()
         usd_price = response_json[0]['price_usd']
-        rub_rpice = response_json[0]['price_rub']
+        rub_price = response_json[0]['price_rub']
         percent_change_1h = response_json[0]['percent_change_1h']
         percent_change_24h = response_json[0]['percent_change_24h']
         percent_change_7d = response_json[0]['percent_change_7d']
-        return usd_price, rub_rpice, percent_change_1h, percent_change_24h, percent_change_7d
+        return usd_price, rub_price, percent_change_1h, percent_change_24h, percent_change_7d
 
     @commands.command(aliases=['btc'],
                       description='This command sends you the current value of bitcoin in rubles and dollars.'
                                   '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
                                   '\n args: <7d,1d,1h,None>',
                       brief='Bitcoin price')
-    async def btcprice(self, ctx, *args: str):
+    async def btc_price(self, ctx, *args: str):
         btc_price_usd, btc_price_rub, percent1, percent24, percent7 = self.get_btc_price()
         btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
         btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))

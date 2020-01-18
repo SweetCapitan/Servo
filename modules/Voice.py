@@ -45,7 +45,7 @@ class Voice(commands.Cog):
         voice = get(self.bot.voice_clients, guild=ctx.guild)
         if voice and voice.is_connected():
             await voice.disconnect()
-            print('Diconnected from %s' % channel + ' at %s' % ctx.guild)
+            print('Disconnected from %s' % channel + ' at %s' % ctx.guild)
             await ctx.send('Left %s ' % channel)
         else:
             await ctx.send('Невозможно выполнить комманду "leave" т.к. бот не находится не в каком голосовом канале')
@@ -139,9 +139,9 @@ class Voice(commands.Cog):
             try:
                 if song_there:
                     os.remove('song.mp3')
-                    print('Удален сарый файл музыки')
+                    print('Удален трек с прошлого запуска')
             except PermissionError:
-                print('Попытка удаления файла, но похоже он сейчас играет')
+                print('Не удалось удалить файл: нет прав или он занят')
                 await ctx.send('Error: Music playing')
                 return
 
