@@ -1,15 +1,6 @@
-import discord
 from discord.ext import commands
-from discord.utils import get
-import asyncio
 import os
-import youtube_dl
-import random
-import requests
-import time
-from contextlib import redirect_stdout
-import io
-import datetime
+from .config import BOT_TOKEN
 
 
 class Bot(commands.Bot):
@@ -39,4 +30,4 @@ async def reload_all(ctx):
     await ctx.send(f'Всего модулей перезагруженно: {count}')
 
 
-bot.run('')
+bot.run(BOT_TOKEN)
