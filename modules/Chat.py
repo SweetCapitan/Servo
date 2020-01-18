@@ -1,30 +1,12 @@
 from discord.ext import commands
-import discord
 import datetime
+from SERVO_BOT.main import result_embed, pluralize
 
 
 class Chat(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
-    @staticmethod
-    def pluralize(source, first, second, third):
-        if int(str(source)[-1]) == 0:
-            return third
-        elif int(str(source)[-2:]) in range(11, 21):
-            return third
-        elif int(str(source)[-1]) == 1:
-            return first
-        elif int(str(source)[-1]) in range(2, 5):
-            return second
-        elif int(str(source)[-1]) in range(5, 10):
-            return third
-
-    @staticmethod
-    async def result_embed(result_state, description, message):
-        embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-        await message.send(embed=embed)
 
     @commands.command(aliases=['cl'],
                       description='This command allows you to delete messages '
@@ -65,8 +47,8 @@ class Chat(commands.Cog):
 
         # await chan.send('Удалено %s {}'.format(pluralize(len(deleted),
         #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
-        await self.result_embed('Успешно!', 'Удалено %s {}'
-                                .format(self.pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(
+        await result_embed('Успешно!', 'Удалено %s {}'
+                                .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(
             deleted), ctx)
 
     emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
