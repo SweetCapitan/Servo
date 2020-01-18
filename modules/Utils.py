@@ -63,6 +63,18 @@ class Utils(commands.Cog):
 
         await ctx.send(embed=embed)
 
+    @commands.command(
+        description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
+        brief='Random quote with bash.im')
+    async def bash(self,ctx):
+        from bs4 import BeautifulSoup
+        url = 'https://bash.im/random'
+        rs = requests.get(url)
+        root = BeautifulSoup(rs.text, 'html.parser')
+        mydivs = root.find("div", {"class": "quote__body"})
+        quote = mydivs.getText('\n', strip=True)
+        await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
+
 # -----------------------------------------Start of IteratorW Code -----------------------------------------------------
     class MyGlobals(dict):
         def __init__(self, globs, locs):

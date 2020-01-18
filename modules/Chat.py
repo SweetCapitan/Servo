@@ -24,7 +24,6 @@ class Chat(commands.Cog):
                                   '<(Optional)@User whose posts you want to delete>.',
                       brief='Delete N- number of messages from the channel.')
     async def clear(self, ctx, *args):
-        print(args)
         chan = ctx.message.channel
         if len(args) == 7:
             def check(msg):
