@@ -9,13 +9,13 @@ class Util(commands.Cog):
     # TODO:ПОФИКСИ МЕНЯ БЛЯТЬ
     @commands.command()
     async def reload(self, ctx, extension):
-        self.bot.unload_extension(f'extensions.{extension}')
-        self.bot.load_extension(f'extensions.{extension}')
+        self.bot.unload_extension(f'modules.{extension}')
+        self.bot.load_extension(f'modules.{extension}')
         await ctx.send(f'Reloaded {extension}')
 
     @commands.command()
     async def load(self, ctx, extension):
-        self.bot.load_extension(f'extensions.{extension}')
+        self.bot.load_extension(f'modules.{extension}')
         await ctx.send(f'Loaded {extension}')
 
 

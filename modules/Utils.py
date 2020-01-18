@@ -81,7 +81,7 @@ class Utils(commands.Cog):
         quote = mydivs.getText('\n', strip=True)
         await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
 
-    # -----------------------------------------Start of IteratorW Code -----------------------------------------------------
+    # -----------------------------------------Start of IteratorW Code -------------------------------------------------
     class MyGlobals(dict):
         def __init__(self, globs, locs):
             super().__init__()
