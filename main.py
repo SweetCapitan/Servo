@@ -1,23 +1,7 @@
 import discord
 from discord.ext import commands
 import os
-from .config import BOT_TOKEN
-
-
-class Bot(commands.Bot):
-    def __init__(self, command_prefix, **options):
-        super().__init__(command_prefix, **options)
-
-    async def on_ready(self):
-        print('Ready! Authorized with the names:'+bot.user.name)
-        for file in os.listdir('modules'):
-            if file.endswith('.py'):
-                self.load_extension(f'modules.{file[:-3]}')
-                print(f'loaded extension {file[:-3]}.')
-
-
-bot = Bot(command_prefix='?')
-
+from config import BOT_TOKEN
 
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -36,6 +20,21 @@ def pluralize(source, first, second, third):
     elif int(str(source)[-1]) in range(5, 10):
         return third
 
+class Bot(commands.Bot):
+    def __init__(self, command_prefix, **options):
+        super().__init__(command_prefix, **options)
+
+    async def on_ready(self):
+        print('Ready! Authorized with the names: '+bot.user.name)
+        for file in os.listdir('modules'):
+            if file.endswith('.py'):
+                self.load_extension(f'modules.{file[:-3]}')
+                print(f'loaded extension {file[:-3]}.')
+
+
+bot = Bot(command_prefix='?')
+
+
 @bot.command()
 async def reload_all(ctx):
     count = 0
@@ -50,3 +49,4 @@ async def reload_all(ctx):
 
 
 bot.run(BOT_TOKEN)
+# bot.run(os.environ.get('BOT_TOKEN'))

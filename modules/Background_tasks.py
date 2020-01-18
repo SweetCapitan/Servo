@@ -4,7 +4,8 @@ import time
 import discord
 from discord.ext import commands
 import os
-from SERVO_BOT.main import pluralize
+from .main import pluralize
+
 
 rainbowrolename = os.environ.get('ROLE_RAINBOW')
 server_id = os.environ.get('SERVER_ID')

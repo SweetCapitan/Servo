@@ -1,6 +1,7 @@
 from discord.ext import commands
 import datetime
-from SERVO_BOT.main import result_embed, pluralize
+from .main import result_embed, pluralize
+
 
 
 class Chat(commands.Cog):
@@ -59,7 +60,6 @@ class Chat(commands.Cog):
             if emo.lower() in message.content.lower():
                 emoji = emo
                 await message.add_reaction(emoji)
-        await self.bot.process_commands(message)
 
     @commands.Cog.listener()
     async def on_reaction_add(self,reaction, _):
