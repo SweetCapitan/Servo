@@ -1,9 +1,11 @@
 import asyncio
+import os
 import random
 import time
+
 import discord
 from discord.ext import commands
-import os
+
 from .main import pluralize
 
 # def pluralize(source, first, second, third):
@@ -42,9 +44,10 @@ colours = [discord.Color.dark_orange(),
            discord.Color.purple(),
            discord.Color.dark_purple()]
 
+
 class Tasks(commands.Cog):
 
-    def __init__(self,bot):
+    def __init__(self, bot):
         self.bot = bot
         bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
@@ -60,6 +63,7 @@ class Tasks(commands.Cog):
                         except Exception as e:
                             print('Error: ' + str(e))
                         await asyncio.sleep(5)
+
     @staticmethod
     def get_uptime():
         t = round(time.time() - start_time)
@@ -85,6 +89,7 @@ class Tasks(commands.Cog):
             except Exception as e:
                 print(e)
             await asyncio.sleep(5)
+
 
 def setup(bot):
     bot.add_cog(Tasks(bot))

@@ -2,9 +2,11 @@ import asyncio
 import io
 import os
 from contextlib import redirect_stdout
+
 import discord
 import requests
 from discord.ext import commands
+
 from .main import result_embed
 
 # async def result_embed(result_state, description, message):
@@ -70,7 +72,7 @@ class Utils(commands.Cog):
     @commands.command(
         description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
         brief='Random quote with bash.im')
-    async def bash(self,ctx):
+    async def bash(self, ctx):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
         rs = requests.get(url)
@@ -79,7 +81,7 @@ class Utils(commands.Cog):
         quote = mydivs.getText('\n', strip=True)
         await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
 
-# -----------------------------------------Start of IteratorW Code -----------------------------------------------------
+    # -----------------------------------------Start of IteratorW Code -----------------------------------------------------
     class MyGlobals(dict):
         def __init__(self, globs, locs):
             super().__init__()
@@ -130,6 +132,7 @@ class Utils(commands.Cog):
 
         else:
             await result_embed('Код успешно выполнен!', out, ctx)
+
 
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
 def setup(bot):

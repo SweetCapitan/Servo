@@ -1,7 +1,10 @@
-import discord
-from discord.ext import commands
 import os
+
+import discord
 from config import BOT_TOKEN
+from discord.ext import commands
+
+
 # TODO:ФИКС ИМПОРТА
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -20,12 +23,13 @@ def pluralize(source, first, second, third):
     elif int(str(source)[-1]) in range(5, 10):
         return third
 
+
 class Bot(commands.Bot):
     def __init__(self, command_prefix, **options):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
-        print('Ready! Authorized with the names: '+bot.user.name)
+        print('Ready! Authorized with the names: ' + bot.user.name)
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
