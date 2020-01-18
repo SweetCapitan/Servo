@@ -2,7 +2,7 @@ import os
 
 import discord
 # noinspection PyUnresolvedReferences,PyPackageRequirements
-from config import BOT_TOKEN
+# from config import BOT_TOKEN
 from discord.ext import commands
 
 
@@ -53,5 +53,5 @@ async def reload_all(ctx):
     await ctx.send(f'Всего модулей перезагружено: {count}')
 
 
-bot.run(BOT_TOKEN)
-# bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(BOT_TOKEN)
+bot.run(os.environ.get('BOT_TOKEN'))
