@@ -49,12 +49,12 @@ class Chat(commands.Cog):
                 return msg.author == ctx.message.mentions[0]
 
             deleted = await chan.purge(check=check,
-                                       after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]), int(args[0]),
-                                                               int(args[1]), int(args[2])))
+                                       after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
+                                                               int(args[0]),int(args[1]), int(args[2])))
         elif len(args) == 6:
             deleted = await chan.purge(
-                after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]), int(args[0]), int(args[1]),
-                                        int(args[2])))
+                after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
+                                        int(args[0]), int(args[1]),int(args[2])))
         elif len(args) == 2:
             def check(msg):
                 return msg.author == ctx.message.mentions[0]
