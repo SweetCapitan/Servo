@@ -34,7 +34,7 @@ class Utils(commands.Cog):
 
     @commands.command(aliases=['btc'],
                       description='This command sends you the current value of bitcoin in rubles and dollars.'
-                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\_(ツ)_/¯'
+                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
                                   '\n args: <7d,1d,1h,None>',
                       brief='Bitcoin price')
     async def btc_price(self, ctx, *args: str):

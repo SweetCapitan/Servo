@@ -5,6 +5,8 @@ import youtube_dl
 from discord.ext import commands
 from discord.utils import get
 
+name_song = None
+
 
 class Voice(commands.Cog):
 
@@ -46,9 +48,9 @@ class Voice(commands.Cog):
         if voice and voice.is_connected():
             await voice.disconnect()
             print('Disconnected from %s' % channel + ' at %s' % ctx.guild)
-            await ctx.send('Left %s ' % channel)
+            await ctx.send('Left from %s ' % channel)
         else:
-            await ctx.send('Невозможно выполнить комманду "leave" т.к. бот не находится не в каком голосовом канале')
+            await ctx.send('Невозможно выполнить комманду "leave", т.к. бот не находится ни в каком голосовом канале')
             print('Error: Bot not in voice channel')
 
     @commands.command(aliases=['pl', 'start'],
@@ -84,7 +86,7 @@ class Voice(commands.Cog):
                     ydl.download([url])
                     await ctx.send('Downloading audio from YouTube')
                     print('Скачивается аудио с YouTube')
-            except:
+            except Exception:
                 os.system(
                     'youtube-dl ' + '"ytsearch:' + "'ytsearch:'%s" % url + '"' + ' --extract-audio --audio-format mp3')
 

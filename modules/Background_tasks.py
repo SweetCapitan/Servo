@@ -81,8 +81,8 @@ class Tasks(commands.Cog):
                     pluralize(uptime_day, 'день', 'дня', 'дней'),
                     pluralize(uptime_hour, 'час', 'часа', 'часов'),
                     pluralize(uptime_min, 'минуту', 'минуты', 'минут'),
-                    pluralize(uptime_sec, 'секунду', 'секунды', 'секунд')) % \
-                              (uptime_day, uptime_hour, uptime_min, uptime_sec)
+                    pluralize(uptime_sec, 'секунду', 'секунды', 'секунд')
+                ) % (uptime_day, uptime_hour, uptime_min, uptime_sec)
 
                 await self.bot.change_presence(
                     activity=discord.Streaming(name=uptime_name, url='https://www.twitch.tv/dancho67'))
