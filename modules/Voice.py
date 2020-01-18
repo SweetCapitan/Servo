@@ -160,3 +160,6 @@ class Voice(commands.Cog):
         else:
             await ctx.send('Go into the voice channel and enter the command "join"')
             print('Error:Бот не в голосовом канале')
+
+def setup(bot):
+    bot.add_cog(Voice(bot))

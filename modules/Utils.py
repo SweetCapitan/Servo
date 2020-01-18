@@ -128,3 +128,5 @@ class Utils(commands.Cog):
             await result_embed('Код успешно выполнен!', out, ctx)
 
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
+def setup(bot):
+    bot.add_cog(Utils(bot))
