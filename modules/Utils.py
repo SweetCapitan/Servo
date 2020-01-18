@@ -5,11 +5,11 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from discord.ext import commands
+from .main import result_embed
 
-
-async def result_embed(result_state, description, message):
-    embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-    await message.send(embed=embed)
+# async def result_embed(result_state, description, message):
+#     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
+#     await message.send(embed=embed)
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 

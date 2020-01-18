@@ -4,19 +4,19 @@ import time
 import discord
 from discord.ext import commands
 import os
+from .main import pluralize
 
-
-def pluralize(source, first, second, third):
-    if int(str(source)[-1]) == 0:
-        return third
-    elif int(str(source)[-2:]) in range(11, 21):
-        return third
-    elif int(str(source)[-1]) == 1:
-        return first
-    elif int(str(source)[-1]) in range(2, 5):
-        return second
-    elif int(str(source)[-1]) in range(5, 10):
-        return third
+# def pluralize(source, first, second, third):
+#     if int(str(source)[-1]) == 0:
+#         return third
+#     elif int(str(source)[-2:]) in range(11, 21):
+#         return third
+#     elif int(str(source)[-1]) == 1:
+#         return first
+#     elif int(str(source)[-1]) in range(2, 5):
+#         return second
+#     elif int(str(source)[-1]) in range(5, 10):
+#         return third
 
 
 rainbowrolename = os.environ.get('ROLE_RAINBOW')
