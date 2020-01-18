@@ -69,6 +69,23 @@ class Chat(commands.Cog):
                                 .format(self.pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(
             deleted), ctx)
 
+    emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
+                   '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
+
+    @commands.Cog.listener()
+    async def on_message(self,message):
+        for emo in self.emoji_react:
+            if emo.lower() in message.content.lower():
+                emoji = emo
+                await message.add_reaction(emoji)
+        await self.bot.process_commands(message)
+
+    @commands.Cog.listener()
+    async def on_reaction_add(self,reaction, _):
+        for emo in self.emoji_react:
+            if emo.lower() in str(reaction).lower():
+                emoji = emo
+                await reaction.message.add_reaction(emoji)
 
 def setup(bot):
     bot.add_cog(Chat(bot))
