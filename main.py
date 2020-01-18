@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 import os
-from config import BOT_TOKEN
+# from config import BOT_TOKEN
 
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -48,5 +48,5 @@ async def reload_all(ctx):
     await ctx.send(f'Всего модулей перезагруженно: {count}')
 
 
-bot.run(BOT_TOKEN)
-# bot.run(os.environ.get('BOT_TOKEN'))
+# bot.run(BOT_TOKEN)
+bot.run(os.environ.get('BOT_TOKEN'))
