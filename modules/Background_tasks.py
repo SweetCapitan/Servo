@@ -4,7 +4,7 @@ import time
 import discord
 from discord.ext import commands
 import os
-from .main import pluralize
+from ..main import pluralize
 
 
 rainbowrolename = os.environ.get('ROLE_RAINBOW')

@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from discord.ext import commands
-from .main import result_embed
+from ..main import result_embed
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 

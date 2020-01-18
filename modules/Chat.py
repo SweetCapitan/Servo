@@ -1,6 +1,6 @@
 from discord.ext import commands
 import datetime
-from .main import result_embed, pluralize
+from ..main import result_embed, pluralize
 
 
 
