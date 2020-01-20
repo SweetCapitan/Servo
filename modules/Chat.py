@@ -107,7 +107,7 @@ class Chat(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if 'пошел нахуй' or 'нахуй пошел' in message.content.lower():
+        if message.content.lower() == 'пошел нахуй' or message.content.lower() == 'нахуй пошел':
             await message.channel.send('```' + text + '```')
 
     @commands.Cog.listener()
