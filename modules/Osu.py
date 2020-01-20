@@ -38,10 +38,11 @@ class OSU(commands.Cog):
             url = 'https://osu.ppy.sh/api/get_user?&k=' + API_KEY + '&u=' + str(username[0])
             r = requests.get(url, verify=True)
             user_data = r.json()
-            embed = discord.Embed(title='Информация о пользователе ЩЫГ!', color=0xe95be9)
-            embed.add_field(name='Username', value=user_data[0]['username'], inline=True)
+            embed = discord.Embed(color=0xe95be9)
+            embed.set_author(name=f'ЩЫГ! User: {username[0]}',
+                             url='https://osu.ppy.sh/users/' + user_data[0]['user_id'], icon_url=ctx.author.avatar_url)
             embed.add_field(name='UserID', value=user_data[0]['user_id'], inline=True)
-            embed.add_field(name='Играет в кружки уже с: ', value=user_data[0]['join_date'], inline=True)
+            embed.set_footer(text=f'Играет в кружки уже с: {user_data[0]["join_date"]}')
             embed.add_field(name='Всего игр:', value=user_data[0]['playcount'], inline=True)
             embed.add_field(name='Уровень: ', value=user_data[0]['level'], inline=True)
             embed.add_field(name='ПЭПЭ: ', value=user_data[0]['pp_raw'], inline=True)
@@ -62,6 +63,7 @@ class OSU(commands.Cog):
                 pluralize(t_sec, 'секунду', 'секунды', 'секунд')
             ) % (t_day, t_hour, t_min, t_sec)
             embed.add_field(name='Наигранно уже: ', value=t_osu, inline=True)
+            embed.set_image(url=f'https://a.ppy.sh/{user_data[0]["user_id"]}')
 
             await ctx.send(embed=embed)
         else:
