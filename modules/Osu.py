@@ -31,9 +31,9 @@ class OSU(commands.Cog):
         if ctx.invoked_subcommand is None:
             await ctx.send('Еблан, ты не указал действие')
 
-    @osu.command(aliases=['getuser', 'gU'], brief='ЩЫГ! Инфо о пользователе',
+    @osu.command(aliases=['user', 'gU'], brief='ЩЫГ! Инфо о пользователе',
                  description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
-    async def get_user_osu(self, ctx, *username):
+    async def get_user(self, ctx, *username):
         if username:
             url = 'https://osu.ppy.sh/api/get_user?&k=' + API_KEY + '&u=' + str(username[0])
             r = requests.get(url, verify=True)
