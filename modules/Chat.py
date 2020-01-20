@@ -24,6 +24,30 @@ def pluralize(source, first, second, third):
         return third
 
 
+text = '        \                           /\n' \
+       '         \                         /\n' \
+       '          \ Видимо кого-то послали/\n' \
+       '           ]   на 3 буквы ...    [    ,"|\n' \
+       '           ]                     [   /  |\n' \
+       '           ]___               ___[ ,"   |\n' \
+       '           ]  ]\    нахуй    /[  [ |:   |\n' \
+       '           ]  ] \     ||    / [  [ |:   |\n' \
+       '           ]  ]  ]    ||   [  [  [ |:   |\n' \
+       '           ]  ]  ]__  \/   __[  [  [ |:   |\n' \
+       '           ]  ]  ] ]\ _ /[ [  [  [ |:   |\n' \
+       '           ]  ]  ] ] (Ты)[ [  [  [ :===="\n' \
+       '           ]  ]  ]_].nHn.[_[  [  [\n' \
+       '           ]  ]  ]  HHHHH. [  [  [\n' \
+       '           ]  ] /   `HH("N  \ [  [\n' \
+       '           ]__]/     HHH  "  \[__[\n' \
+       '           ]         NNN         [\n' \
+       '           ]         N/"         [\n' \
+       '           ]         N H         [\n' \
+       '          /          N            \ \n' \
+       '         /           q,            \ \n' \
+       '        /                           \ \n'
+
+
 class Chat(commands.Cog):
 
     def __init__(self, bot):
@@ -80,6 +104,11 @@ class Chat(commands.Cog):
             if emo.lower() in message.content.lower():
                 emoji = emo
                 await message.add_reaction(emoji)
+
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if 'пошел нахуй' or 'нахуй пошел' in message.content.lower():
+            await message.channel.send('```' + text + '```')
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, _):
