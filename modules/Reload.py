@@ -6,7 +6,6 @@ class Util(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    # TODO:ПОФИКСИ МЕНЯ БЛЯТЬ
     @commands.command()
     async def reload(self, ctx, extension):
         self.bot.unload_extension(f'modules.{extension}')
