@@ -70,26 +70,30 @@ class OSU(commands.Cog):
     @osu.command(aliases=['resent', 'get_resent', 'gur'], brief='ЩЫГ! Последняя сыгранная карта пользователя',
                  description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
     async def get_user_resent(self, ctx, *username):
-        url = 'https://osu.ppy.sh/api/get_user_recent?k=' + API_KEY + '&u=' + str(username[0])
-        r = requests.get(url, verify=True)
-        user_data = r.json()
-        url_map = 'https://osu.ppy.sh/api/get_beatmaps?k=' + API_KEY + '&b=' + user_data[0]['beatmap_id']
-        rr = requests.get(url_map, verify=True)
-        map_data = rr.json()
-        # "artist":"SakiZ","title":"osu!memories","creator":"DeRandom Otaku"
-        embed = discord.Embed(title=map_data[0]['creator'] + ' ' + map_data[0]['artist'] + ' ' + map_data[0]['title'],
-                              url='https://osu.ppy.sh/beatmapsets/' + map_data[0]['beatmapset_id'] + '#osu/' +
-                                  map_data[0]['beatmap_id'],
-                              color=0xe95be9)
-        embed.set_author(name='Информация о последней сыгранной карте пользователя: ' + str(username[0]),
-                         url='https://osu.ppy.sh/users/' + user_data[0]['user_id'], icon_url=ctx.author.avatar_url)
-        embed.add_field(name='Score', value=user_data[0]['score'], inline=True)
-        embed.add_field(name='C-c-combo', value=user_data[0]['maxcombo'], inline=True)
-        embed.add_field(name='FC', value='False' if user_data[0]['perfect'] == '0' else 'True')
-        embed.add_field(name='Rank', value=user_data[0]['rank'], inline=True)
-        embed.set_image(url=f'https://assets.ppy.sh/beatmaps/{map_data[0]["beatmapset_id"]}/covers/cover.jpg')
-        embed.set_footer(text=user_data[0]['date'])
-        await ctx.send(embed=embed)
+        if username:
+            url = 'https://osu.ppy.sh/api/get_user_recent?k=' + API_KEY + '&u=' + str(username[0])
+            r = requests.get(url, verify=True)
+            user_data = r.json()
+            url_map = 'https://osu.ppy.sh/api/get_beatmaps?k=' + API_KEY + '&b=' + user_data[0]['beatmap_id']
+            rr = requests.get(url_map, verify=True)
+            map_data = rr.json()
+            # "artist":"SakiZ","title":"osu!memories","creator":"DeRandom Otaku"
+            embed = discord.Embed(
+                title=map_data[0]['creator'] + ' ' + map_data[0]['artist'] + ' ' + map_data[0]['title'],
+                url='https://osu.ppy.sh/beatmapsets/' + map_data[0]['beatmapset_id'] + '#osu/' +
+                    map_data[0]['beatmap_id'],
+                color=0xe95be9)
+            embed.set_author(name='Информация о последней сыгранной карте пользователя: ' + str(username[0]),
+                             url='https://osu.ppy.sh/users/' + user_data[0]['user_id'], icon_url=ctx.author.avatar_url)
+            embed.add_field(name='Score', value=user_data[0]['score'], inline=True)
+            embed.add_field(name='C-c-combo', value=user_data[0]['maxcombo'], inline=True)
+            embed.add_field(name='FC', value='False' if user_data[0]['perfect'] == '0' else 'True')
+            embed.add_field(name='Rank', value=user_data[0]['rank'], inline=True)
+            embed.set_image(url=f'https://assets.ppy.sh/beatmaps/{map_data[0]["beatmapset_id"]}/covers/cover.jpg')
+            embed.set_footer(text=user_data[0]['date'])
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send('Еблан, ты никнейм не ввел !')
 
 
 def setup(bot):
