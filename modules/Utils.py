@@ -6,11 +6,13 @@ import discord
 import requests
 from discord.ext import commands
 
+
 # from main import result_embed
 
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
     await message.send(embed=embed)
+
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 
@@ -132,10 +134,12 @@ class Utils(commands.Cog):
         else:
             await result_embed('Код успешно выполнен!', out, ctx)
 
-
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
-    @commands.command()
-    async def coub(self,ctx, url):
+    @commands.command(brief='Opening a coub in chat',
+                      description='Are you too bored and lonely? Do you want to share a good coub with someone?'
+                                  'But doesn’t it open right in the chat? Not a problem, just enter the command and'
+                                  ' link to the coub and it will immediately appear in the chat!')
+    async def coub(self, ctx, url):
         url = "http://coub.com//api/v2/coubs" + url[21:]
         r = requests.get(url)
         coub_data = r.json()
