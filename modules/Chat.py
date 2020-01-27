@@ -1,10 +1,9 @@
 import datetime
 import discord
 from discord.ext import commands
-
-
 # from main import result_embed, pluralize
 
+notification_channel = 531622332859547668
 
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
@@ -116,6 +115,17 @@ class Chat(commands.Cog):
             if emo.lower() in str(reaction).lower():
                 emoji = emo
                 await reaction.message.add_reaction(emoji)
+
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        channel = self.bot.get_channel(notification_channel)
+        await channel.send(f'{member} присоеденился к нам. Земля ему говном.')
+
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        channel = self.bot.get_channel(notification_channel)
+        await channel.send(f'{member} покинул нас. Земля ему говном.')
+
 
 
 def setup(bot):
