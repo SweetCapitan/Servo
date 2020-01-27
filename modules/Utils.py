@@ -2,7 +2,6 @@ import asyncio
 import io
 import os
 from contextlib import redirect_stdout
-
 import discord
 import requests
 from discord.ext import commands
@@ -135,5 +134,22 @@ class Utils(commands.Cog):
 
 
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
+    @commands.command()
+    async def coub(self,ctx, url):
+        url = "http://coub.com//api/v2/coubs" + url[21:]
+        r = requests.get(url)
+        coub_data = r.json()
+        views = coub_data["views_count"]
+        title = coub_data["title"]
+        await ctx.channel.purge(limit=1)
+        try:
+            link = coub_data["file_versions"]["share"]["default"]
+        except Exception as e:
+            await result_embed('Упс...', 'Что-то пошло не так, проверьте ссылку', ctx)
+            print('Module COUB: Error ' + e)
+            return
+        await ctx.send(f'Название: {title} Просмотров: {views} Ссылка: {link}')
+
+
 def setup(bot):
     bot.add_cog(Utils(bot))
