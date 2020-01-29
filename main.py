@@ -26,9 +26,9 @@ from discord.ext import commands
 #         return third
 # TODO Добавить логгирование всех событий на сервере в лог
 # TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
-import ctypes  # Це костыль для отображения цветов в консоли Windows
-kernel32 = ctypes.windll.kernel32
-kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
+# import ctypes  # Це костыль для отображения цветов в консоли Windows
+# kernel32 = ctypes.windll.kernel32
+# kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 
 class Logger:
