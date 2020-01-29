@@ -94,10 +94,8 @@ class Tasks(commands.Cog):
     async def virus(self):
         from bs4 import BeautifulSoup
         import requests
-        from user_agent import generate_user_agent
-        headers = {'User-Agent': generate_user_agent(device_type="desktop", os=('mac', 'linux'))}
         url = 'https://bnonews.com/index.php/2020/01/the-latest-coronavirus-cases/'
-        r = requests.get(url, headers=headers)
+        r = requests.get(url)
         soup = BeautifulSoup(r.text, 'html.parser')
         text = soup.find('strong')
         chan = self.bot.get_channel(672091108666376193)
