@@ -96,7 +96,7 @@ class Chat(commands.Cog):
     # noinspection SpellCheckingInspection
     emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                    '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
-
+    # TODO Починить эту парашу
     @commands.Cog.listener()
     async def on_message(self, message):
         for emo in self.emoji_react:
