@@ -1,6 +1,7 @@
 import datetime
 import discord
 from discord.ext import commands
+from ..main import Logger
 # from main import result_embed, pluralize
 
 
@@ -51,6 +52,8 @@ class Chat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
+    logger = Logger()
+
     @commands.command(aliases=['cl'],
                       description='This command allows you to delete messages '
                                   'from the channel in which the command was called.\n'
@@ -91,11 +94,12 @@ class Chat(commands.Cog):
         #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
         await result_embed('Успешно!', 'Удалено %s {}'
                            .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
+        self.logger.comm(f'CLEAR. Author: {ctx.message.author}')
 
     # noinspection SpellCheckingInspection
     emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
                    '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
-    # TODO Починить эту парашу
+
     @commands.Cog.listener()
     async def on_message(self, message):
         for emo in self.emoji_react:

@@ -5,6 +5,7 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from discord.ext import commands
+from ..main import Logger
 
 
 # from main import result_embed
@@ -21,6 +22,8 @@ class Utils(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    logger = Logger()
 
     @staticmethod
     def get_btc_price():
@@ -69,6 +72,7 @@ class Utils(commands.Cog):
             embed.add_field(name='Changes in 1 hour', value=btc_price_changes, inline=True)
 
         await ctx.send(embed=embed)
+        self.logger.comm('btc_price')
 
     @commands.command(
         description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
@@ -81,6 +85,7 @@ class Utils(commands.Cog):
         mydivs = root.find("div", {"class": "quote__body"})
         quote = mydivs.getText('\n', strip=True)
         await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
+        self.logger.comm(f'BASH. Author: {ctx.message.author}')
 
     # -----------------------------------------Start of IteratorW Code -------------------------------------------------
     class MyGlobals(dict):
@@ -130,10 +135,10 @@ class Utils(commands.Cog):
 
         if is_error:
             await result_embed('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', out, ctx)
-
+            self.logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.message.author}\n{out}')
         else:
             await result_embed('Код успешно выполнен!', out, ctx)
-
+            self.logger.comm(f'EXECUTE. Author: {ctx.message.author}')
 #  --------------------------------------End of ITERATORW Code---------------------------------------------------------
     @commands.command(brief='Opening a coub in chat',
                       description='Are you too bored and lonely? Do you want to share a good coub with someone?'
@@ -150,9 +155,9 @@ class Utils(commands.Cog):
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
             await result_embed('Упс...', 'Что-то пошло не так, проверьте ссылку', ctx)
-            print('Module COUB: Error ' + e)
             return
         await ctx.send(f'Название: {title} Просмотров: {views} Ссылка: {link}')
+        self.logger.comm(f'COUB. Author: {ctx.message.author}')
 
 
 def setup(bot):

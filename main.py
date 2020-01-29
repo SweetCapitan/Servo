@@ -32,7 +32,7 @@ kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 
 
 class Logger:
-
+    #TODO Попробовать реализовать универсальный логгер комманд, без ручного добавления в логгирование
     @staticmethod
     def get_time():
         iso = datetime.now().isoformat()
@@ -41,23 +41,28 @@ class Logger:
     def log(self, text):
         print(f"\033[32m {self.get_time()} [Logs] \033[37m{str(text)}")
 
-    def warn(self,text):
+    def warn(self, text):
         print(f"\033[33m\033[3m {self.get_time() + ' [Warning] ' + str(text)}")
 
-    def error(self,text):
+    def error(self, text):
         print(f"\033[31m\033[1m {self.get_time() + ' [Error] ' + str(text)}")
 
+    def comm(self, text):
+        print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
 
 class Bot(commands.Bot):
     def __init__(self, command_prefix, **options):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
-        print('Ready! Authorized with the names: ' + bot.user.name)
+        Logger.log(f'Ready! Authorized with the names: {bot.user.name}')
+        count = 0
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
-                print(f'loaded extension {file[:-3]}.')
+                Logger.log(f'Loaded extension {file[:-3]}.')
+                count += 1
+        Logger.log(f'Total Modules: {count}')
 
 
 bot = Bot(command_prefix='?')
@@ -68,12 +73,17 @@ async def reload_all(ctx):
     count = 0
     for file in os.listdir('modules'):
         if file.endswith('.py'):
+            module_list = []
+            module_list.append(file[:-3] + '\n')
             bot.unload_extension(f'modules.{file[:-3]}')
             bot.load_extension(f'modules.{file[:-3]}')
-            await ctx.send(f'Перезагружен модуль: {file}')
+            Logger.log(f'Перезагружен модуль: {file}')
             count += 1
-
-    await ctx.send(f'Всего модулей перезагружено: {count}')
+    module_list_text = ''
+    for mod in module_list:
+        module_list_text = module_list_text + mod + '\n'
+    await ctx.send(f'Всего модулей перезагружено: {count}'
+                   f'{module_list_text}')
 
 
 # bot.run(BOT_TOKEN)

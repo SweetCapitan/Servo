@@ -2,6 +2,7 @@ import os
 import discord
 from discord.ext import commands
 import requests
+from ..main import Logger
 
 API_KEY = os.environ.get('API_KEY')
 
@@ -23,6 +24,8 @@ class OSU(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+
+    logger = Logger()
 
     # TODO:Привести эту хуйню в божеский вид
     @commands.group(brief='ЩЫГ!',
@@ -66,6 +69,7 @@ class OSU(commands.Cog):
             embed.set_image(url=f'https://a.ppy.sh/{user_data[0]["user_id"]}')
 
             await ctx.send(embed=embed)
+            self.logger.comm(f'OSU.GET_USER. Author: {ctx.message.author}')
         else:
             await ctx.send('Еблан, ты никнейм не ввел !')
 
@@ -94,6 +98,7 @@ class OSU(commands.Cog):
             embed.set_image(url=f'https://assets.ppy.sh/beatmaps/{map_data[0]["beatmapset_id"]}/covers/cover.jpg')
             embed.set_footer(text=user_data[0]['date'])
             await ctx.send(embed=embed)
+            self.logger.comm(f'OSU.GET_USER_RESENT. Author: {ctx.message.author}')
         else:
             await ctx.send('Еблан, ты никнейм не ввел !')
 
