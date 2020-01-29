@@ -51,6 +51,7 @@ class Tasks(commands.Cog):
         self.bot = bot
         bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
+        bot.loop.create_task(self.virus())
 
     async def rainbow(self):
         if bool(RAINBOW_STATUS):
@@ -89,6 +90,20 @@ class Tasks(commands.Cog):
             except Exception as e:
                 print(e)
             await asyncio.sleep(5)
+
+    async def virus(self):
+        from bs4 import BeautifulSoup
+        import requests
+        from user_agent import generate_user_agent
+        headers = {'User-Agent': generate_user_agent(device_type="desktop", os=('mac', 'linux'))}
+        url = 'https://bnonews.com/index.php/2020/01/the-latest-coronavirus-cases/'
+        r = requests.get(url, headers=headers)
+        soup = BeautifulSoup(r.text, 'html.parser')
+        text = soup.find('strong')
+        chan = self.bot.get_channel(672091108666376193)
+        await chan.send(text)
+        await asyncio.sleep(21600)
+        # print(text.getText())
 
 
 def setup(bot):
