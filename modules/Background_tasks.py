@@ -99,7 +99,7 @@ class Tasks(commands.Cog):
         soup = BeautifulSoup(r.text, 'html.parser')
         text = soup.find('strong')
         chan = self.bot.get_channel(672091108666376193)
-        await chan.send(text)
+        await chan.send(text.getText())
         await asyncio.sleep(21600)
         # print(text.getText())
 
