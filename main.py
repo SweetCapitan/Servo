@@ -77,13 +77,14 @@ async def reload_all(ctx):
             module_list.append(file[:-3] + '\n')
             bot.unload_extension(f'modules.{file[:-3]}')
             bot.load_extension(f'modules.{file[:-3]}')
-            Logger.log(f'Перезагружен модуль: {file}')
+            Logger.log(f'Reload Module: {file}')
             count += 1
     module_list_text = ''
     for mod in module_list:
         module_list_text = module_list_text + mod + '\n'
     await ctx.send(f'Всего модулей перезагружено: {count}'
                    f'{module_list_text}')
+    Logger.comm(f'RELOAD_ALL. Author: {ctx.message.author}')
 
 
 # bot.run(BOT_TOKEN)
