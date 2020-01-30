@@ -1,7 +1,7 @@
 import datetime
 import discord
 from discord.ext import commands
-from SERVO_BOT.Lib import Logger
+from .Lib import Logger
 # from main import result_embed, pluralize
 
 

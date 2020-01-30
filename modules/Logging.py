@@ -1,5 +1,5 @@
 from discord.ext import commands
-from SERVO_BOT.Lib import Logger
+from .Lib import Logger
 
 notification_channel = 531622332859547668
 
