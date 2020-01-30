@@ -1,5 +1,7 @@
 from discord.ext import commands
-from ..Lib import Logger
+import sys
+sys.path.append()
+from Lib import Logger
 
 class Util(commands.Cog):
 

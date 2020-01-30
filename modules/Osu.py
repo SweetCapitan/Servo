@@ -2,7 +2,9 @@ import os
 import discord
 from discord.ext import commands
 import requests
-from ..Lib import Logger
+import sys
+sys.path.append()
+from Lib import Logger
 
 API_KEY = os.environ.get('API_KEY')
 

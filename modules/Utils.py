@@ -5,7 +5,9 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from discord.ext import commands
-from ..Lib import Logger
+import sys
+sys.path.append()
+from Lib import Logger
 
 
 # from main import result_embed
