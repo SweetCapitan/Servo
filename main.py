@@ -50,19 +50,21 @@ class Logger:
     def comm(self, text):
         print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
 
+logger = Logger()
+
 class Bot(commands.Bot):
     def __init__(self, command_prefix, **options):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
-        Logger.log(f'Ready! Authorized with the names: {bot.user.name}')
+        logger.log(f'Ready! Authorized with the names: {bot.user.name}')
         count = 0
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
-                Logger.log(f'Loaded extension {file[:-3]}.')
+                logger.log(f'Loaded extension {file[:-3]}.')
                 count += 1
-        Logger.log(f'Total Modules: {count}')
+        logger.log(f'Total Modules: {count}')
 
 
 bot = Bot(command_prefix='?')
@@ -77,14 +79,14 @@ async def reload_all(ctx):
             module_list.append(file[:-3] + '\n')
             bot.unload_extension(f'modules.{file[:-3]}')
             bot.load_extension(f'modules.{file[:-3]}')
-            Logger.log(f'Reload Module: {file}')
+            logger.log(f'Reload Module: {file}')
             count += 1
     module_list_text = ''
     for mod in module_list:
         module_list_text = module_list_text + mod + '\n'
     await ctx.send(f'Всего модулей перезагружено: {count}'
                    f'{module_list_text}')
-    Logger.comm(f'RELOAD_ALL. Author: {ctx.message.author}')
+    logger.comm(f'RELOAD_ALL. Author: {ctx.message.author}')
 
 
 # bot.run(BOT_TOKEN)
