@@ -1,6 +1,6 @@
 from discord.ext import commands
 import sys
-sys.path.append()
+sys.path.append('..')
 from Lib import Logger
 
 notification_channel = 531622332859547668

@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 import requests
 import sys
-sys.path.append()
+sys.path.append('..')
 from Lib import Logger
 
 API_KEY = os.environ.get('API_KEY')

@@ -6,7 +6,7 @@ import discord
 import requests
 from discord.ext import commands
 import sys
-sys.path.append()
+sys.path.append('..')
 from Lib import Logger
 
 
