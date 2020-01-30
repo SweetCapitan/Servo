@@ -16,7 +16,6 @@ class OSU(commands.Cog):
 
     logger = Logger()
 
-    # TODO:Привести эту хуйню в божеский вид
     @commands.group(brief='ЩЫГ!',
                     description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
     async def osu(self, ctx):
