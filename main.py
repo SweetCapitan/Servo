@@ -1,5 +1,4 @@
 import os
-from datetime import datetime
 
 # import discord
 # noinspection PyUnresolvedReferences,PyPackageRequirements
@@ -26,29 +25,7 @@ from discord.ext import commands
 #         return third
 # TODO Добавить логгирование всех событий на сервере в лог
 # TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
-# import ctypes  # Це костыль для отображения цветов в консоли Windows
-# kernel32 = ctypes.windll.kernel32
-# kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
-
-
-class Logger:
-    #TODO Попробовать реализовать универсальный логгер комманд, без ручного добавления в логгирование
-    @staticmethod
-    def get_time():
-        iso = datetime.now().isoformat()
-        return iso[11:19]
-
-    def log(self, text):
-        print(f"\033[32m {self.get_time()} [Logs] \033[37m{str(text)}")
-
-    def warn(self, text):
-        print(f"\033[33m\033[3m {self.get_time() + ' [Warning] ' + str(text)}")
-
-    def error(self, text):
-        print(f"\033[31m\033[1m {self.get_time() + ' [Error] ' + str(text)}")
-
-    def comm(self, text):
-        print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
+from Lib import Logger
 
 logger = Logger()
 
@@ -73,9 +50,9 @@ bot = Bot(command_prefix='?')
 @bot.command()
 async def reload_all(ctx):
     count = 0
+    module_list = []
     for file in os.listdir('modules'):
         if file.endswith('.py'):
-            module_list = []
             module_list.append(file[:-3] + '\n')
             bot.unload_extension(f'modules.{file[:-3]}')
             bot.load_extension(f'modules.{file[:-3]}')
@@ -83,9 +60,10 @@ async def reload_all(ctx):
             count += 1
     module_list_text = ''
     for mod in module_list:
-        module_list_text = module_list_text + mod + '\n'
-    await ctx.send(f'Всего модулей перезагружено: {count}'
+        module_list_text = module_list_text + mod
+    await ctx.send(f'Всего модулей перезагружено: {count}\n'
                    f'{module_list_text}')
+    # TODO Засунуть это эмбед(Не делаю я этого щас, потому-что хочу пиздец спать)
     logger.comm(f'RELOAD_ALL. Author: {ctx.message.author}')
 
 

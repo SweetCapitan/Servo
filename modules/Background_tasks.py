@@ -51,7 +51,7 @@ class Tasks(commands.Cog):
         self.bot = bot
         bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
-        bot.loop.create_task(self.virus())
+        # bot.loop.create_task(self.virus())
 
     async def rainbow(self):
         if bool(RAINBOW_STATUS):
@@ -91,17 +91,17 @@ class Tasks(commands.Cog):
                 print(e)
             await asyncio.sleep(5)
 
-    async def virus(self):
-        from bs4 import BeautifulSoup
-        import requests
-        url = 'https://bnonews.com/index.php/2020/01/the-latest-coronavirus-cases/'
-        r = requests.get(url)
-        soup = BeautifulSoup(r.text, 'html.parser')
-        text = soup.find('strong')
-        chan = self.bot.get_channel(672091108666376193)
-        await chan.send(text.getText())
-        await asyncio.sleep(21600)
-        # print(text.getText())
+    # async def virus(self):
+    #     from bs4 import BeautifulSoup
+    #     import requests
+    #     url = 'https://bnonews.com/index.php/2020/01/the-latest-coronavirus-cases/'
+    #     r = requests.get(url)
+    #     soup = BeautifulSoup(r.text, 'html.parser')
+    #     text = soup.find('strong')
+    #     chan = self.bot.get_channel(672091108666376193)
+    #     await chan.send(text.getText())
+    #     await asyncio.sleep(21600)
+    #     # print(text.getText())
 
 
 def setup(bot):

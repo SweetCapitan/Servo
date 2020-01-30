@@ -1,5 +1,5 @@
 from discord.ext import commands
-from ..main import Logger
+from SERVO_BOT.Lib import Logger
 
 class Util(commands.Cog):
 

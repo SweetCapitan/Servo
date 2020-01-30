@@ -5,7 +5,7 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from discord.ext import commands
-from ..main import Logger
+from SERVO_BOT.Lib import Logger
 
 
 # from main import result_embed
