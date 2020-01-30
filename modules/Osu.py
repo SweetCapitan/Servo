@@ -4,22 +4,9 @@ from discord.ext import commands
 import requests
 import sys
 sys.path.append('..')
-from Lib import Logger
+from Lib import Logger, pluralize
 
 API_KEY = os.environ.get('API_KEY')
-
-
-def pluralize(source, first, second, third):
-    if int(str(source)[-1]) == 0:
-        return third
-    elif int(str(source)[-2:]) in range(11, 21):
-        return third
-    elif int(str(source)[-1]) == 1:
-        return first
-    elif int(str(source)[-1]) in range(2, 5):
-        return second
-    elif int(str(source)[-1]) in range(5, 10):
-        return third
 
 
 class OSU(commands.Cog):
