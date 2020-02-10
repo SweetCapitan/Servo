@@ -23,6 +23,7 @@ class Voice(commands.Cog):
                 os.rename(file, 'song.mp3')
 
     @commands.command(aliases=['j'], description='Join voice channel', brief='Join in voice')
+    @commands.has_permissions(connect=True)
     async def join(self, ctx):
         channel = ctx.message.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)

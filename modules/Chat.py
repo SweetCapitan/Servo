@@ -51,6 +51,7 @@ class Chat(commands.Cog):
                                   'Example: clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
                                   '<(Optional)@User whose posts you want to delete>.',
                       brief='Delete N- number of messages from the channel.')
+    @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, *args):
         chan = ctx.message.channel
         if len(args) == 7:

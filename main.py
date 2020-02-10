@@ -26,6 +26,7 @@ bot = Bot(command_prefix='?')
 
 
 @bot.command()
+@commands.has_permissions(administrator=True)
 async def reload_all(ctx):
     count = 0
     module_list = []

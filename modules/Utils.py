@@ -121,6 +121,7 @@ class Utils(commands.Cog):
                                   'P.s. Temporarily runs on Iteratorw code\n'
                                   'Usage:execute ` ` `code` ` ` (without spaces)',
                       brief='Execute Python code "')
+    @commands.has_permissions(administrator=True)
     async def execute(self, ctx):
         code = ctx.message.content.split("```")
         if len(code) < 3:

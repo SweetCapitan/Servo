@@ -11,6 +11,7 @@ class Util(commands.Cog):
     logger = Logger()
 
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def reload(self, ctx, extension):
         self.bot.unload_extension(f'modules.{extension}')
         self.bot.load_extension(f'modules.{extension}')
@@ -18,6 +19,7 @@ class Util(commands.Cog):
         self.logger.comm(f'RELOAD module: {extension}. Author: {ctx.message.author}')
 
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def load(self, ctx, extension):
         self.bot.load_extension(f'modules.{extension}')
         await ctx.send(f'Loaded {extension}')
