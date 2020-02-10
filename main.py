@@ -12,6 +12,7 @@ class Bot(commands.Bot):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
+        logger.log('=====================================================')
         logger.log(f'Ready! Authorized with the names: {bot.user.name}')
         count = 0
         for file in os.listdir('modules'):
@@ -20,6 +21,8 @@ class Bot(commands.Bot):
                 logger.log(f'Loaded extension {file[:-3]}.')
                 count += 1
         logger.log(f'Total Modules: {count}')
+        logger.log('=====================================================')
+        logger.log('Init Complite !')
 
 
 bot = Bot(command_prefix='?')
