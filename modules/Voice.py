@@ -8,14 +8,14 @@ from discord.utils import get
 name_song = None
 
 
-class Voice(commands.Cog):
+class Voice(commands.Cog, name='ЭТА ПОЕБЕНЬ НЕ РАБОТАЕТ НИХУЯ, ДАЖЕ НЕ ПЫТАЙСЯ ЕЕ ТРОГАТЬ'):
 
     def __init__(self, bot):
         self.bot = bot
 
     @staticmethod
     def check():
-        for file in os.listdir('../'):
+        for file in os.listdir('../SERVO_BOT/'):
             if file.endswith('.mp3'):
                 global name_song
                 name_song = file
@@ -23,7 +23,7 @@ class Voice(commands.Cog):
                 os.rename(file, 'song.mp3')
 
     @commands.command(aliases=['j'], description='Join voice channel', brief='Join in voice')
-    @commands.has_permissions(connect=True)
+    # @commands.has_permissions(speak=True)
     async def join(self, ctx):
         channel = ctx.message.author.voice.channel
         voice = get(self.bot.voice_clients, guild=ctx.guild)
@@ -93,7 +93,7 @@ class Voice(commands.Cog):
 
             self.check()
 
-            voice.play(discord.FFmpegPCMAudio('song.mp3'),
+            voice.play(discord.FFmpegPCMAudio('../SERVO_BOT/song.mp3'),
                        after=lambda e: print('%s закончил воиспроизведение' % name_song))
             voice.source = discord.PCMVolumeTransformer(voice.source)
             voice.source.volume = 0.07
@@ -156,7 +156,7 @@ class Voice(commands.Cog):
 
                 self.check()
 
-                voice.play(discord.FFmpegPCMAudio('song.mp3'),
+                voice.play(discord.FFmpegPCMAudio('../SERVO_BOT/song.mp3'),
                            after=lambda e: print('%s закончил воиспроизведение' % name_song))
                 voice.source = discord.PCMVolumeTransformer(voice.source)
                 voice.source.volume = 0.07
@@ -167,3 +167,4 @@ class Voice(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Voice(bot))
+# TODO ПЕРЕПИСАТЬ НАХУЙ ЭТОТ БЕСПРОСВЕТНЫЙ ПИЗДЕЦ
