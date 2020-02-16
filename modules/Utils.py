@@ -10,6 +10,7 @@ sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
+PREFIX = os.environ.get('PREFIX')
 
 
 class Utils(commands.Cog):
@@ -33,7 +34,7 @@ class Utils(commands.Cog):
     @commands.command(aliases=['btc'],
                       description='This command sends you the current value of bitcoin in rubles and dollars.'
                                   '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
-                                  '\n args: <7d,1d,1h,None>',
+                                  '\n args: <7d or 1d or 1h or None>',
                       brief='Bitcoin price')
     async def btc_price(self, ctx, *args: str):
         btc_price_usd, btc_price_rub, percent1, percent24, percent7 = self.get_btc_price()
@@ -119,7 +120,7 @@ class Utils(commands.Cog):
     @commands.command(aliases=['ex', 'exec'],
                       description='This command allows you to execute python code directly from the chat itself.\n'
                                   'P.s. Temporarily runs on Iteratorw code\n'
-                                  'Usage:execute ` ` `code` ` ` (without spaces)',
+                                  f'Usage: {PREFIX}execute ` ` `code` ` ` (without spaces)',
                       brief='Execute Python code "')
     @commands.has_permissions(administrator=True)
     async def execute(self, ctx):
@@ -138,7 +139,8 @@ class Utils(commands.Cog):
     @commands.command(brief='Opening a coub in chat',
                       description='Are you too bored and lonely? Do you want to share a good coub with someone?'
                                   'But doesn’t it open right in the chat? Not a problem, just enter the command and'
-                                  ' link to the coub and it will immediately appear in the chat!')
+                                  ' link to the coub and it will immediately appear in the chat!'
+                                  f'{PREFIX}coub <link>')
     async def coub(self, ctx, url):
         url = "http://coub.com//api/v2/coubs" + url[21:]
         r = requests.get(url)

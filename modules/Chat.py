@@ -1,6 +1,7 @@
 import datetime
 import discord
 from discord.ext import commands
+import os
 import sys
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
@@ -28,6 +29,7 @@ text = '        \                           /\n' \
        '         /           q,            \ \n' \
        '        /                           \ \n'
 
+PREFIX = os.environ.get('PREFIX')
 
 class Chat(commands.Cog):
 
@@ -42,13 +44,13 @@ class Chat(commands.Cog):
                                   '- Usual variant -\n'
                                   'This option allows to delete n messages. If a user is mentioned at the end,'
                                   'then ONLY messages of the specified user will be deleted.'
-                                  ' Example: clear <Messages to search. This is not the number of messages !>'
+                                  f' Example: {PREFIX}clear <Messages to search. This is not the number of messages !>'
                                   '<(optional)@ User whose messages you want to delete>.\n'
                                   '- Delete by date and time - \n'
                                   'This option allows you to delete all messages from the channel starting '
                                   'from the specified date and time. If you specify a user at the end,'
                                   ' they will delete ONLY past posts of the user '
-                                  'Example: clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
+                                  f'Example: {PREFIX}clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
                                   '<(Optional)@User whose posts you want to delete>.',
                       brief='Delete N- number of messages from the channel.')
     @commands.has_permissions(manage_messages=True)

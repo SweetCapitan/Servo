@@ -39,7 +39,7 @@ class Logging(commands.Cog):
         self.logger.log(f'[Unban] Guild: {guild} User: {member}')
 
     @commands.command()
-    async def kgb(self,ctx,state):
+    async def kgb(self, ctx, state):
         if state.lower() == 'true' or state.lower() == 'on':
             os.environ['KGB_MODE'] = 'True'
             await ctx.send('Включен режим слежки')

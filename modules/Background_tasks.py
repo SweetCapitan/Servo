@@ -40,7 +40,7 @@ class Tasks(commands.Cog):
         self.bot = bot
         bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
-        bot.loop.create_task(self.virus())
+        # bot.loop.create_task(self.virus())
 
     async def rainbow(self):
         if bool(RAINBOW_STATUS):
