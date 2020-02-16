@@ -1,7 +1,6 @@
 import os
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from discord.ext import commands
-import discord
 
 # TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
 from Lib import Logger, result_embed
