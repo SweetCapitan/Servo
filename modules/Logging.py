@@ -7,9 +7,10 @@ from Lib import Logger, result_embed, pluralize
 notification_channel = 531622332859547668
 KGB_MODE = bool(os.environ.get('KGB_MODE'))
 
+
 class Logging(commands.Cog):
 
-    def __init__(self,bot):
+    def __init__(self, bot):
         self.bot = bot
 
     logger = Logger()
