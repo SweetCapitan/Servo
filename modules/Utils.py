@@ -167,9 +167,11 @@ class Utils(commands.Cog):
             if state.lower() == 'on' or state.lower() == 'true':
                 os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'True'
                 await result_embed('Модуль [RAINBOW]', 'Включен!', ctx)
+                self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             if state.lower() == 'off' or state.lower() == 'false':
                 os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'False'
                 await result_embed('Модуль [RAINBOW]', 'Выключен!', ctx)
+                self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
             try:
                 await discord.Guild.create_role(ctx.guild,
