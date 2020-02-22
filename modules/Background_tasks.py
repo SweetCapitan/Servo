@@ -57,9 +57,8 @@ class Tasks(commands.Cog):
                         clr = discord.Color(((rgb[0] << 16) + (rgb[1] << 8) + rgb[2]))
                         try:
                             await role.edit(color=clr)
-                            print('Change color in ' + str(server_id))
                         except Exception as e:
-                            print('Error: ' + str(e))
+                            logger.error('ERROR: ' + str(e))
                         await asyncio.sleep(5)
             await asyncio.sleep(5)
 
