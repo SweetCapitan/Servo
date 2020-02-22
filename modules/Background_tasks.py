@@ -1,57 +1,67 @@
 import asyncio
 import os
-import random
 import time
 import discord
 from discord.ext import commands
+from colorsys import hls_to_rgb
 import sys
+
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
+logger = Logger()
 
 rainbow_role_name = os.environ.get('ROLE_RAINBOW')
-server_id = os.environ.get('SERVER_ID')
-RAINBOW_STATUS = os.environ.get('RAINBOW_STATUS')
 
 # start_time = time.time()
 start_time = int(os.environ.get('TIME'))
-colours = [discord.Color.dark_orange(),
-           discord.Color.orange(),
-           discord.Color.dark_gold(),
-           discord.Color.gold(),
-           discord.Color.dark_magenta(),
-           discord.Color.magenta(),
-           discord.Color.red(),
-           discord.Color.dark_red(),
-           discord.Color.blue(),
-           discord.Color.dark_blue(),
-           discord.Color.teal(),
-           discord.Color.dark_teal(),
-           discord.Color.green(),
-           discord.Color.dark_green(),
-           discord.Color.purple(),
-           discord.Color.dark_purple()]
 
 
 class Tasks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        bot.loop.create_task(self.rainbow())
         bot.loop.create_task(self.status())
         bot.loop.create_task(self.virus())
+        # Some Shit
+        server_list = self.bot.guilds
+        servers = list()
+        for server in server_list:
+            servers.append(server.id)
+        i = 0
+        while i < len(servers):
+            self.bot.loop.create_task(self.rainbow(servers[i]))
+            # asyncio.run_coroutine_threadsafe(self.rainbow_change, self.bot.loop)
+            i += 1
 
-    async def rainbow(self):
-        if bool(RAINBOW_STATUS):
-            for role in self.bot.get_guild(int(server_id)).roles:
-                if str(role) == str(rainbow_role_name):
-                    print("Rainbow: Role detected")
-                    while not self.bot.is_closed():
+    @staticmethod
+    def check_status(guild):
+        env_val = os.environ
+        for _RNB_STAT in env_val:
+            if _RNB_STAT == str(guild) + '_RAINBOW_STATUS':
+                RAINBOW_STATUS = os.environ.get(_RNB_STAT)
+                if RAINBOW_STATUS == 'True':
+                    return True
+                if RAINBOW_STATUS == 'False':
+                    return False
+        return False
+
+    async def rainbow(self, server_id):
+        hue = 0
+        while True:
+            while self.check_status(server_id):
+                for role in self.bot.get_guild(int(server_id)).roles:
+                    if str(role) == str('Rainbow'):
+                        hue = (hue + 7) % 360
+                        rgb = [int(x * 255) for x in hls_to_rgb(hue / 360, 0.5, 1)]
+                        clr = discord.Color(((rgb[0] << 16) + (rgb[1] << 8) + rgb[2]))
                         try:
-                            await role.edit(color=random.choice(colours))
+                            await role.edit(color=clr)
+                            print('Change color in ' + str(server_id))
                         except Exception as e:
                             print('Error: ' + str(e))
                         await asyncio.sleep(5)
+            await asyncio.sleep(5)
 
     @staticmethod
     def get_uptime():
