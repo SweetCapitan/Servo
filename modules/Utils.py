@@ -135,7 +135,8 @@ class Utils(commands.Cog):
         else:
             await result_embed('Код успешно выполнен!', out, ctx)
             self.logger.comm(f'EXECUTE. Author: {ctx.message.author}')
-#  --------------------------------------End of ITERATORW Code---------------------------------------------------------
+
+    #  --------------------------------------End of ITERATORW Code------------------------------------------------------
     @commands.command(brief='Opening a coub in chat',
                       description='Are you too bored and lonely? Do you want to share a good coub with someone?'
                                   'But doesn’t it open right in the chat? Not a problem, just enter the command and'
@@ -155,6 +156,33 @@ class Utils(commands.Cog):
             return
         await ctx.send(f'Название: {title} Просмотров: {views} Ссылка: {link}')
         self.logger.comm(f'COUB. Author: {ctx.message.author}')
+
+    @commands.command(aliases=['rainbow', 'rb'], brief='YOBA',
+                      description='Реклама YOBA в говнокоде Python')
+    @commands.has_permissions(administrator=True)
+    async def change_rainbow(self, ctx, state):
+        rainbow_role_name = os.environ.get('ROLE_RAINBOW')
+        role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
+        if role is not None:
+            if state.lower() == 'on' or state.lower() == 'true':
+                os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'True'
+                await result_embed('Модуль [RAINBOW]', 'Включен!', ctx)
+            if state.lower() == 'off' or state.lower() == 'false':
+                os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'False'
+                await result_embed('Модуль [RAINBOW]', 'Выключен!', ctx)
+        else:
+            try:
+                await discord.Guild.create_role(ctx.guild,
+                                                name='Rainbow',
+                                                hoist=True,
+                                                reason='SERVO-BOT Автоматическое добавление роли!')
+                await result_embed('[RAINBOW]',
+                                   'Т.к. роль не была найдена, она была добавлена автоматически!\n'
+                                   'Пожалуйста добавте эту роль, тем кому вы хотите сделать радужный никнейм :3', ctx)
+            except discord.Forbidden:
+                await result_embed('Прав не завезли!',
+                                   f'Добавте боту права "manage_roles" или сами создайте роль ``{rainbow_role_name}``',
+                                   ctx)
 
 
 def setup(bot):
