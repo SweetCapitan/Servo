@@ -5,3 +5,4 @@ discord.py[voice]
 requests
 bs4
 spotdl
+cyrtranslit
