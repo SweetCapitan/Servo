@@ -21,8 +21,8 @@ class Bridge(commands.Cog):
     async def m(self, ctx):
         member_name = ctx.message.guild.get_member(ctx.message.author.id).nick
         data = {'message': (f'{member_name}: {cyrtranslit.to_latin(ctx.message.content[3:])}', 'ru')}
-        print(data)
-        # requests.put(BRIDGE_URL, data=data)
+        # print(data)
+        requests.put(BRIDGE_URL, data=data)
 
 
 def setup(bot):
