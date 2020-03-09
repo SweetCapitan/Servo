@@ -99,7 +99,7 @@ class Tasks(commands.Cog):
         val = soup.findAll('td', {'class': 's5'})
         val1 = soup.find('td', {'class': 's6'})
         val2 = soup.find('td', {'class': 's7'})
-        text = f'Total: [{val[1].getText()}], Ded Inside: [{val[1].getText()}], Lucky: [{val1.getText()}],' \
+        text = f'Total: [{val[0].getText()}], Ded Inside: [{val[1].getText()}], Lucky: [{val1.getText()}],' \
                f' In progress: [{val2.getText()}]'
         chan = self.bot.get_channel(672091108666376193)
         await chan.send(text)
