@@ -21,7 +21,7 @@ class Utils(commands.Cog):
 
     logger = Logger()
 
-    @commands.command(aliases=['btc', 'crypto', 'cry'],
+    @commands.command(aliases=['btc', 'cry'],
                       description='Реклама YOBA в описании SERVO-BOT'
                                   '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
                                   '\n args: <money_code:str>',
