@@ -1,11 +1,12 @@
 import os
 from discord.ext import commands
 import sys
+
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 notification_channel = 531622332859547668
-KGB_MODE = bool(os.environ.get('KGB_MODE'))
+KGB_MODE = os.environ.get('KGB_MODE')
 
 
 class Logging(commands.Cog):
@@ -34,7 +35,7 @@ class Logging(commands.Cog):
         self.logger.log(f'[Ban] Guild: {guild} User: {member}')
 
     @commands.Cog.listener()
-    async def on_member_unban(self,guild,member):
+    async def on_member_unban(self, guild, member):
         channel = self.bot.get_channel(notification_channel)
         await channel.send(f'{member} получил помилование. Земля ему говном.')
         self.logger.log(f'[Unban] Guild: {guild} User: {member}')
@@ -48,18 +49,19 @@ class Logging(commands.Cog):
             os.environ['KGB_MODE'] = 'False'
             await ctx.send('Выключен режим слежки')
 
-    if KGB_MODE:
+    if KGB_MODE == 'True':
         @commands.Cog.listener()
         async def on_message_delete(self, message):
             self.logger.log(f'[Deleted Message] Text: {message.content} Author: {message.author}')
 
         @commands.Cog.listener()
-        async def on_message_edit(self,before,after):
+        async def on_message_edit(self, before, after):
             self.logger.log(f'[Edited Message] Before: {before.content} After: {after.content} Author: {before.author}')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, ex):
         await ctx.send(f'{ctx.message.author.mention} {ex}')
+
 
 def setup(bot):
     bot.add_cog(Logging(bot))
