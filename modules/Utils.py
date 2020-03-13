@@ -6,6 +6,7 @@ import discord
 import requests
 from discord.ext import commands
 import sys
+
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
@@ -20,54 +21,45 @@ class Utils(commands.Cog):
 
     logger = Logger()
 
-    @staticmethod
-    def get_btc_price():
-        r = requests.get(BTC_PRICE_URL_coinmarketcap)
-        response_json = r.json()
-        usd_price = response_json[0]['price_usd']
-        rub_price = response_json[0]['price_rub']
-        percent_change_1h = response_json[0]['percent_change_1h']
-        percent_change_24h = response_json[0]['percent_change_24h']
-        percent_change_7d = response_json[0]['percent_change_7d']
-        return usd_price, rub_price, percent_change_1h, percent_change_24h, percent_change_7d
-
-    @commands.command(aliases=['btc'],
-                      description='This command sends you the current value of bitcoin in rubles and dollars.'
+    @commands.command(aliases=['btc', 'crypto', 'cry'],
+                      description='Реклама YOBA в описании SERVO-BOT'
                                   '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
-                                  '\n args: <7d or 1d or 1h or None>',
+                                  '\n args: <money_code:str>',
                       brief='Bitcoin price')
-    async def btc_price(self, ctx, *args: str):
-        btc_price_usd, btc_price_rub, percent1, percent24, percent7 = self.get_btc_price()
-        btc_price_old = os.environ.get('BTC_PR_OLD').split(',')
-        btc_price_changes_rub = int(float(btc_price_rub)) - int(float(btc_price_old[0]))
-        btc_price_changes_usd = int(float(btc_price_usd)) - int(float(btc_price_old[1]))
-        btc_price_changes = 'RUB: ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
-        embed = discord.Embed(title="BITCOIN price",
-                              description="The cost of btc at the moment according to the coinmarketcap exchange.",
-                              color=0xd5de21)
-        embed.add_field(name="RUB", value=str(btc_price_rub).split('.')[0], inline=True)
-        embed.add_field(name="USD", value=str(btc_price_usd).split('.')[0], inline=True)
+    async def crypto(self, ctx, *args):
+        valute = ''
+        limit = 8
         if not args:
-            embed.add_field(name='Changes', value=btc_price_changes, inline=True)
-            os.environ['BTC_PR_OLD'] = '%s,%s' % (btc_price_rub, btc_price_usd)
-        elif args[0] == '7d':
-            btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent7)))
-            btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent7)))
-            btc_price_changes = 'RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
-            embed.add_field(name='Changes in 7 days', value=btc_price_changes, inline=True)
-        elif args[0] == '1d':
-            btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent24)))
-            btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent24)))
-            btc_price_changes = 'RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
-            embed.add_field(name='Changes in 1 days', value=btc_price_changes, inline=True)
-        elif args[0] == '1h':
-            btc_price_changes_rub = ((int(float(btc_price_rub)) / 100) * int(float(percent1)))
-            btc_price_changes_usd = ((int(float(btc_price_usd)) / 100) * int(float(percent1)))
-            btc_price_changes = 'RUB : ' + str(btc_price_changes_rub) + ' | USD: ' + str(btc_price_changes_usd)
-            embed.add_field(name='Changes in 1 hour', value=btc_price_changes, inline=True)
+            valute = 'usd'
+        elif args[0]:
+            valute = args[0]
+        valute = valute.upper()
+
+        os.environ['API_KEY_COINMARKET'] = '3f4061e6-fb5e-40a0-8f7c-d3f70842fca7'
+        API_KEY_COINMARKET = os.environ.get('API_KEY_COINMARKET')
+
+        url_usd = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/' \
+                  f'listings/latest?start=1&limit={limit}&convert={valute}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
+        req = requests.get(url_usd)
+        json = req.json()
+        embed = discord.Embed(title="Сryptocurrencies price",
+                              description="The cost of cryptocurrencies at the "
+                                          "moment according to the coinmarketcap exchange.",
+                              color=0xd5de21)
+        for i in json['data']:
+            price = str(i['quote'][valute]['price'])
+            embed.add_field(name=i['name'], value=price, inline=True)
+            # embed.add_field(name='Изменения за Час', Коммментированно до востребованности
+            #                 value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_1h']))), 1)}]",inline=True)
+            embed.add_field(name='Изменения за Сутки',
+                            value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_24h']))), 1)}]",
+                            inline=True)
+            embed.add_field(name='Неделю',
+                            value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_7d']))), 1)}]",
+                            inline=True)
 
         await ctx.send(embed=embed)
-        self.logger.comm('btc_price')
+        self.logger.comm('crypto_price')
 
     @commands.command(
         description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
