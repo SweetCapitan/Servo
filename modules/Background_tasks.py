@@ -91,14 +91,12 @@ class Tasks(commands.Cog):
     async def virus(self):
         from bs4 import BeautifulSoup
         import requests
-        url = 'https://docs.google.com/' \
-              'spreadsheets/d/e/' \
-              '2PACX-1vR30F8lYP3jG7YOq8es0PBpJIE5yvRVZffOyaqC0GgMBN6yt0Q-NI8pxS7hd1F9dYXnowSC6zpZmW9D/pubhtml#'
+        url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR30F8lYP3jG7YOq8es0PBpJIE5yvRVZffOyaqC0GgMBN6yt0Q-NI8pxS7hd1F9dYXnowSC6zpZmW9D/pubhtml#'
         req = requests.get(url)
         soup = BeautifulSoup(req.text, 'html.parser')
-        val = soup.findAll('td', {'class': 's4'})
-        val1 = soup.find('td', {'class': 's5'})
-        val2 = soup.find('td', {'class': 's6'})
+        val = soup.findAll('td', {'class': 's8'})
+        val1 = soup.find('td', {'class': 's9'})
+        val2 = soup.find('td', {'class': 's10'})
         text = f'Total: [{val[0].getText()}], Ded Inside: [{val[1].getText()}], Lucky: [{val1.getText()}],' \
                f' In progress: [{val2.getText()}]'
         chan = self.bot.get_channel(672091108666376193)
