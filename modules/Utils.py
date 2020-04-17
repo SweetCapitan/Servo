@@ -180,7 +180,7 @@ class Utils(commands.Cog):
                                    ctx)
 
     @commands.command(brief='Рандомная выбиралка', description='Выбирает одно из нескольких значений, указанных через'
-                                                               'пробел')
+                                                               'запятую')
     async def choice(self, ctx):
         await result_embed('Успешно!', f'Я выбираю: {random.choice(str(ctx.message.content)[7:].split(","))}', ctx)
 
