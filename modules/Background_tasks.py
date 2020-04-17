@@ -114,7 +114,7 @@ class Tasks(commands.Cog):
         embed.add_field(name='В мире', value=world, inline=True)
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
-        await chan.send(text)
+        await chan.send(embed=embed)
         await asyncio.sleep(21600)
         # print(text.getText())
 
