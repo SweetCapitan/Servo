@@ -181,8 +181,8 @@ class Utils(commands.Cog):
 
     @commands.command(brief='Рандомная выбиралка', description='Выбирает одно из нескольких значений, указанных через'
                                                                'пробел')
-    async def choice(self, ctx, *args):
-        await result_embed('Успешно!', f'Я выбираю: {random.choice(args)}', ctx)
+    async def choice(self, ctx):
+        await result_embed('Успешно!', f'Я выбираю: {random.choice(str(ctx.message.content)[7:].split(","))}', ctx)
 
 
 def setup(bot):
