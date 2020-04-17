@@ -115,7 +115,7 @@ class Tasks(commands.Cog):
         embed.add_field(name='В мире', value=world, inline=True)
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
-        schedule.every().day.at("20:46").do(await chan.send(embed=embed))
+        schedule.every().day.at("05:00").do(await chan.send(embed=embed))
 
         while True:
             schedule.run_pending()
