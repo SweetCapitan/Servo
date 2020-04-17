@@ -1,6 +1,7 @@
 import asyncio
 import os
 import time
+import schedule
 import discord
 from discord.ext import commands
 from colorsys import hls_to_rgb
@@ -114,9 +115,11 @@ class Tasks(commands.Cog):
         embed.add_field(name='В мире', value=world, inline=True)
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
-        await chan.send(embed=embed)
-        await asyncio.sleep(21600)
-        # print(text.getText())
+        schedule.every().day.at("20:46").do(await chan.send(embed=embed))
+
+        while True:
+            schedule.run_pending()
+            time.sleep(1)
 
 
 def setup(bot):
