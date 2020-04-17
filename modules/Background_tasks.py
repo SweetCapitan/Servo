@@ -91,7 +91,8 @@ class Tasks(commands.Cog):
     async def virus(self):
         from bs4 import BeautifulSoup
         import requests
-        url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR30F8lYP3jG7YOq8es0PBpJIE5yvRVZffOyaqC0GgMBN6yt0Q-NI8pxS7hd1F9dYXnowSC6zpZmW9D/pubhtml#'
+        url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR30F8lYP3jG7YOq8es0PBpJIE5yvRVZffOyaqC0GgMBN6yt0Q' \
+              '-NI8pxS7hd1F9dYXnowSC6zpZmW9D/pubhtml# '
         req = requests.get(url)
         soup = BeautifulSoup(req.text, 'html.parser')
         val = soup.findAll('td', {'class': 's8'})

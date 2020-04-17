@@ -6,6 +6,7 @@ import discord
 import requests
 from discord.ext import commands
 import sys
+import random
 
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
@@ -177,6 +178,11 @@ class Utils(commands.Cog):
                 await result_embed('Прав не завезли!',
                                    f'Добавте боту права "manage_roles" или сами создайте роль ``{rainbow_role_name}``',
                                    ctx)
+
+    @commands.command(brief='Рандомная выбиралка', description='Выбирает одно из нескольких значений, указанных через'
+                                                               'пробел')
+    async def choice(self, ctx, *args):
+        await result_embed('Успешно!', f'Я выбираю: {random.choice(args)}', ctx)
 
 
 def setup(bot):
