@@ -98,8 +98,14 @@ class Tasks(commands.Cog):
         val = soup.findAll('td', {'class': 's8'})
         val1 = soup.find('td', {'class': 's9'})
         val2 = soup.find('td', {'class': 's10'})
+        resp = requests.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
+        result = BeautifulSoup(resp.text, 'html.parser')
+        info = result.findAll('span', {'class': 'c19_statistic_num'})
         text = f'Total: [{val[0].getText()}], Ded Inside: [{val[1].getText()}], Lucky: [{val1.getText()}],' \
-               f' In progress: [{val2.getText()}]'
+               f' In progress: [{val2.getText()}]\n' \
+               f'Случаев SARS2-COV в России: {info[0].getText().split("+")[0]} +{info[0].getText().split("+")[1]} ' \
+               f'новых за сутки. \n' \
+               f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}'
         chan = self.bot.get_channel(672091108666376193)
         await chan.send(text)
         await asyncio.sleep(21600)
