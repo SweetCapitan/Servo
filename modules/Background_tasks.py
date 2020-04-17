@@ -105,7 +105,9 @@ class Tasks(commands.Cog):
                f' In progress: [{val2.getText()}]\n' \
                f'Случаев SARS2-COV в России: {info[0].getText().split("+")[0]} +{info[0].getText().split("+")[1]} ' \
                f'новых за сутки. \n' \
-               f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}'
+               f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}\n' \
+               f'Статистику по каждому городу можно посмотреть тут -> ' \
+               f'https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html#map'
         chan = self.bot.get_channel(672091108666376193)
         await chan.send(text)
         await asyncio.sleep(21600)
