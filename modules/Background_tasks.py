@@ -93,6 +93,9 @@ class Tasks(commands.Cog):
     async def virus(self):
         from bs4 import BeautifulSoup
         import requests
+
+        response_time = 1587956400
+
         url = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR30F8lYP3jG7YOq8es0PBpJIE5yvRVZffOyaqC0GgMBN6yt0Q' \
               '-NI8pxS7hd1F9dYXnowSC6zpZmW9D/pubhtml# '
         req = requests.get(url)
@@ -116,14 +119,13 @@ class Tasks(commands.Cog):
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
 
-        async def send_info():
-            await chan.send(embed=embed)
-
-        schedule.every().day.at("05:00").do(send_info)
-
         while True:
-            schedule.run_pending()
-            time.sleep(1)
+            time_embed = time.time()
+            if time_embed >= response_time:
+                await chan.send(embed=embed)
+                response_time += 86400
+            else:
+                await asyncio.sleep(30)
 
 
 def setup(bot):
