@@ -17,6 +17,7 @@ rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 
 # start_time = time.time()
 start_time = int(os.environ.get('TIME'))
+response_time = int(os.environ.get('RESPONSE_TIME'))
 
 
 class Tasks(commands.Cog):
@@ -90,12 +91,9 @@ class Tasks(commands.Cog):
                 print(e)
             await asyncio.sleep(5)
 
-    async def virus(self):
+    async def virus(self, response_time=response_time):
         from bs4 import BeautifulSoup
         import requests
-
-        response_time = 1588474800
-
         resp = requests.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
         result = BeautifulSoup(resp.text, 'html.parser')
         info = result.findAll('span', {'class': 'c19_statistic_num'})
@@ -119,6 +117,7 @@ class Tasks(commands.Cog):
             if time_embed >= response_time:
                 await chan.send(embed=embed)
                 response_time += 86400
+                os.environ['RESPONSE_TIME'] = str(response_time)
             else:
                 await asyncio.sleep(30)
 
