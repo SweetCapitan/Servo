@@ -99,9 +99,9 @@ class Tasks(commands.Cog):
         resp = requests.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
         result = BeautifulSoup(resp.text, 'html.parser')
         info = result.findAll('span', {'class': 'c19_statistic_num'})
-        world = f'Total: {info[3].getText().split("+")[0]} +{info[3].getText().split("+")[1]} new gay,' \
-                f'Ded Inside: {info[4].getText()}, ' \
-                f'Lucky: {info[5].getText()}'
+        world = f'Случаев SARS2-COV в Мире: {info[3].getText().split("+")[0]} \n' \
+                f'+{info[3].getText().split("+")[1]} за текущие сутки,' \
+                f'Из них везучие бастарды: {info[4].getText()}, ded inside-ов: {info[5].getText()}'
         russia = f'Случаев SARS2-COV в России: {info[0].getText().split("+")[0]} +{info[0].getText().split("+")[1]} ' \
                  f'новых за сутки. \n' \
                  f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}\n' \
