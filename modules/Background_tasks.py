@@ -15,8 +15,8 @@ logger = Logger()
 
 rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 
-# start_time = time.time()
-start_time = int(os.environ.get('TIME'))
+start_time = time.time()
+# start_time = int(os.environ.get('TIME'))
 response_time = int(os.environ.get('RESPONSE_TIME'))
 
 
