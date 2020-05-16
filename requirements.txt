@@ -6,4 +6,4 @@ requests
 bs4
 spotdl
 cyrtranslit
-schedule
+psycopg2

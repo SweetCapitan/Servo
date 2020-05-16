@@ -7,18 +7,28 @@ from discord.ext import commands
 from colorsys import hls_to_rgb
 from discord import Embed
 import sys
+import psycopg2
 
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 logger = Logger()
 
+DATABASE_URL = os.environ['DATABASE_URL']
 rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 
 start_time = time.time()
 # start_time = int(os.environ.get('TIME'))
-response_time = int(os.environ.get('RESPONSE_TIME'))
+# response_time = int(os.environ.get('RESPONSE_TIME'))
 
+conn = psycopg2.connect(DATABASE_URL, sslmode='require')
+cur = conn.cursor()
+cur.execute("CREATE TABLE covidtime (time INT")
+conn.commit()
+cur.execute("INSERT INTO covidtime (time) VALUES (%s)", '1589684400')
+cur.execute("SELECT time FROM covidtime")
+response_time = cur.fetchone()
+cur.close()
 
 class Tasks(commands.Cog):
 
