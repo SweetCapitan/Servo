@@ -22,13 +22,16 @@ start_time = time.time()
 # response_time = int(os.environ.get('RESPONSE_TIME'))
 
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-cur = conn.cursor()
-cur.execute("CREATE TABLE covidtime (time INT")
-conn.commit()
-cur.execute("INSERT INTO covidtime (time) VALUES (%s)", '1589684400')
-cur.execute("SELECT time FROM covidtime")
-response_time = cur.fetchone()
-cur.close()
+
+with conn:
+    with conn.cursor() as cur:
+        cur.execute("CREATE TABLE covidtime (time INT")
+
+with conn:
+    with conn.cursor() as cur:
+        cur.execute("INSERT INTO covidtime (time) VALUES (%s)", '1589684400')
+        cur.execute("SELECT time FROM covidtime")
+        response_time = cur.fetchone()
 
 class Tasks(commands.Cog):
 
@@ -127,7 +130,10 @@ class Tasks(commands.Cog):
             if time_embed >= response_time:
                 await chan.send(embed=embed)
                 response_time += 86400
-                os.environ['RESPONSE_TIME'] = str(response_time)
+                with conn:
+                    with conn:
+                        with conn.cursor() as cur:
+                            cur.execute("INSERT INTO covidtime (time) VALUES (%s)", response_time)
             else:
                 await asyncio.sleep(30)
 
