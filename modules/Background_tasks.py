@@ -24,11 +24,11 @@ conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
 # with conn:
 #     with conn.cursor() as cur:
-#         cur.execute("CREATE TABLE covidtime (time INT)")
+#         cur.execute("CREATE TABLE covidtime (time INT)") Ну мало ли, вдруг и таблица тоже слетит
 
 with conn:
     with conn.cursor() as cur:
-        cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % '1589684400')
+        # cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % '1589684400') На случай того, если значение слетит
         cur.execute("SELECT time FROM covidtime")
         response_time = cur.fetchone()
 
