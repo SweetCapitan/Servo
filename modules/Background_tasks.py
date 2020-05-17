@@ -30,7 +30,7 @@ with conn:
     with conn.cursor() as cur:
         cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % '1589684400')
         cur.execute("SELECT time FROM covidtime")
-        response_time = int(cur.fetchone())
+        response_time = cur.fetchone()
 
 class Tasks(commands.Cog):
 
@@ -126,7 +126,7 @@ class Tasks(commands.Cog):
 
         while True:
             time_embed = time.time()
-            if time_embed >= response_time:
+            if time_embed >= int(response_time[0]):
                 await chan.send(embed=embed)
                 response_time += 86400
                 with conn:
