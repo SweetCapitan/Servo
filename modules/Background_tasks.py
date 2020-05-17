@@ -1,7 +1,6 @@
 import asyncio
 import os
 import time
-import schedule
 import discord
 from discord.ext import commands
 from colorsys import hls_to_rgb
