@@ -132,7 +132,7 @@ class Tasks(commands.Cog):
                 with conn:
                     with conn:
                         with conn.cursor() as cur:
-                            cur.execute("INSERT INTO covidtime (time) VALUES (%s)", response_time)
+                            cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % response_time)
             else:
                 await asyncio.sleep(30)
 
