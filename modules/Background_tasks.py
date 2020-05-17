@@ -30,7 +30,7 @@ with conn:
     with conn.cursor() as cur:
         cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % '1589684400')
         cur.execute("SELECT time FROM covidtime")
-        response_time = cur.fetchone()
+        response_time = int(cur.fetchone())
 
 class Tasks(commands.Cog):
 
