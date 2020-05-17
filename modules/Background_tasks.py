@@ -22,9 +22,9 @@ start_time = time.time()
 
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
-with conn:
-    with conn.cursor() as cur:
-        cur.execute("CREATE TABLE covidtime (time INT)")
+# with conn:
+#     with conn.cursor() as cur:
+#         cur.execute("CREATE TABLE covidtime (time INT)")
 
 with conn:
     with conn.cursor() as cur:
