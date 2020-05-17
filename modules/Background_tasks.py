@@ -128,7 +128,7 @@ class Tasks(commands.Cog):
             time_embed = time.time()
             if time_embed >= int(response_time[0]):
                 await chan.send(embed=embed)
-                response_time += 86400
+                response_time[0] += 86400
                 with conn:
                     with conn:
                         with conn.cursor() as cur:
