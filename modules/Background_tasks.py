@@ -124,14 +124,16 @@ class Tasks(commands.Cog):
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
 
+        _response_time = response_time[0]
         while True:
             time_embed = time.time()
-            if time_embed >= int(response_time[0]):
+            if time_embed >= int(_response_time):
                 await chan.send(embed=embed)
+                _response_time += 86400
                 with conn:
                     with conn:
                         with conn.cursor() as cur:
-                            cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % (int(response_time[0]) + 86400))
+                            cur.execute("UPDATE covidtime SET time = %s" % (int(_response_time)))
             else:
                 await asyncio.sleep(30)
 
