@@ -32,6 +32,7 @@ with conn:
         cur.execute("SELECT time FROM covidtime")
         response_time = cur.fetchone()
 
+
 class Tasks(commands.Cog):
 
     def __init__(self, bot):
@@ -128,12 +129,11 @@ class Tasks(commands.Cog):
         while True:
             time_embed = time.time()
             if time_embed >= int(_response_time):
-                await chan.send(embed=embed)
                 _response_time += 86400
                 with conn:
-                    with conn:
-                        with conn.cursor() as cur:
-                            cur.execute("UPDATE covidtime SET time = %s" % (int(_response_time)))
+                    with conn.cursor() as cur:
+                        cur.execute("UPDATE covidtime SET time = %s" % (int(_response_time)))
+                        await chan.send(embed=embed)
             else:
                 await asyncio.sleep(30)
 
