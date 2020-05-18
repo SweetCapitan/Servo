@@ -7,6 +7,9 @@ from Lib import Logger, result_embed
 
 logger = Logger()
 
+if not os.environ.get('DYNO'):
+    import config
+
 
 class Bot(commands.Bot):
     def __init__(self, command_prefix, **options):

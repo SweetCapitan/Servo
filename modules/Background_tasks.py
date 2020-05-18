@@ -17,8 +17,6 @@ DATABASE_URL = os.environ['DATABASE_URL']
 rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 
 start_time = time.time()
-# start_time = int(os.environ.get('TIME'))
-# response_time = int(os.environ.get('RESPONSE_TIME'))
 
 conn = psycopg2.connect(DATABASE_URL, sslmode='require')
 
