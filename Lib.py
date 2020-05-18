@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 # import ctypes  # Це костыль для отображения цветов в консоли Windows
 # kernel32 = ctypes.windll.kernel32
@@ -40,20 +41,7 @@ def pluralize(source, first, second, third):
         return second
     elif int(str(source)[-1]) in range(5, 10):
         return third
-
-# class Bot_utils:
-#     async def result_embed(self,result_state, description, message):
-#         embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-#         await message.send(embed=embed)
-#
-#     def pluralize(self,source, first, second, third):
-#         if int(str(source)[-1]) == 0:
-#             return third
-#         elif int(str(source)[-2:]) in range(11, 21):
-#             return third
-#         elif int(str(source)[-1]) == 1:
-#             return first
-#         elif int(str(source)[-1]) in range(2, 5):
-#             return second
-#         elif int(str(source)[-1]) in range(5, 10):
-#             return third
+# TODO Дописать парсер ключей и добавить его использвание в некоторые функции
+# def key_parser(string):   Це альфа альфа альфа бета гамма тест парсера ключей, он тут чтобы не забыть про него
+#     parser = re.search(r'--([^\s=]+)(?:=(\S+))?', string)
+#     return parser.group(2)
