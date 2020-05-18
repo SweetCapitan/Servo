@@ -6,9 +6,9 @@ from discord.ext import commands
 from Lib import Logger, result_embed
 
 logger = Logger()
-
 if not os.environ.get('DYNO'):
     import config
+    logger.log('Обнаружен локальный запуск. Подгружены конфиги!')
 
 
 class Bot(commands.Bot):
