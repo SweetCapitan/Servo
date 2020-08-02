@@ -5,7 +5,7 @@ import sys
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
-notification_channel = 531622332859547668
+notification_channel = 738855014377848943
 KGB_MODE = os.environ.get('KGB_MODE')
 
 
@@ -61,7 +61,6 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, ex):
         await ctx.send(f'{ctx.message.author.mention} {ex}')
-
 
 def setup(bot):
     bot.add_cog(Logging(bot))
