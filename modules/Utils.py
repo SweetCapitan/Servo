@@ -196,8 +196,7 @@ class Utils(commands.Cog):
 
         await ctx.message.channel.send(f'Видео по запросу {video_title}: (запросил: {ctx.message.author})'
                                        f'\n {("https://youtube.com/" + results[0]["url_suffix"])}')
-        #TODO Сделать флаг с выводом информации о видео в отдельном эмбеде
-
+        # TODO Сделать флаг с выводом информации о видео в отдельном эмбеде
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
     @commands.command(brief='Opening a coub in chat',
