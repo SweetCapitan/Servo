@@ -91,6 +91,7 @@ class Chat(commands.Cog):
     async def on_message(self, message):
         if message.content.lower() == 'пошел нахуй' or message.content.lower() == 'нахуй пошел':
             await message.channel.send(f'```{text}```')
+        self.bot.process_commands(message)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, _):
