@@ -2,6 +2,7 @@ import datetime
 from discord.ext import commands
 import os
 import sys
+
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
@@ -29,6 +30,7 @@ text = '        \                           /\n' \
        '        /                           \ \n'
 
 PREFIX = os.environ.get('PREFIX')
+
 
 class Chat(commands.Cog):
 
@@ -81,16 +83,9 @@ class Chat(commands.Cog):
         self.logger.comm(f'CLEAR. Author: {ctx.message.author}')
 
     # noinspection SpellCheckingInspection
-    emoji_react = ['<:jnJ6kEPEBQU:619899647669960714>', '<:image0:641676982651715584>',
-                   '<:emoji_6:615000140423626754>', '<:OREHUS_YES:666640633502498865>']
-
-    @commands.Cog.listener()
-    async def on_message(self, message):
-        for emo in self.emoji_react:
-            if emo.lower() in message.content.lower():
-                emoji = emo
-                await message.add_reaction(emoji)
-        self.bot.process_commands(message)
+    emoji_react = ['<:atlishna:619899647669960714>', '<:DurkaStoryBob:740016376529289278>',
+                   '<:roflanpominki:739991656325054546>', '<:OREHUS_YES:666640633502498865>',
+                   '<:ping_rage:615000140423626754>', '<:thinkk:664844439591714818>]']
 
     @commands.Cog.listener()
     async def on_message(self, message):
