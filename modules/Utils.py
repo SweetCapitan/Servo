@@ -193,7 +193,6 @@ class Utils(commands.Cog):
 
         if len(results) < 1:
             await result_embed('Ошибка!', 'Видео по данному запросу не найдено!', ctx)
-            return
 
         await ctx.message.channel.send(f'Видео по запросу {video_title}: (запросил: {ctx.message.author})'
                                        f'\n {("https://youtube.com/" + results[0]["url_suffix"])}')
