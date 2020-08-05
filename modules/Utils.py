@@ -124,7 +124,7 @@ class Utils(commands.Cog):
                       description='Эта команда позволяет выполнять код Python прямо из самого чата.\n'
                                   'P.s. Работает на коде IteratorW\n'
                                   f'Использование: {PREFIX}execute ` ` `code` ` ` (без пробелов)',
-                      brief='Execute Python code "')
+                      brief='Выполнить Python код')
     @commands.has_permissions(administrator=True)
     async def execute(self, ctx):
         code = ctx.message.content.split("```")
