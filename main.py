@@ -33,8 +33,8 @@ bot = Bot(command_prefix='?')
 os.environ['PREFIX'] = bot.command_prefix
 
 
-@bot.command(brief='reload', description=f'Reload Module {bot.command_prefix}'
-                                         f'reload <module name> or <all>')
+@bot.command(brief='Перезагрузка модуля', description=f'Совершается полная перезагрузка модуля из памяти бота'
+                                                      f'{bot.command_prefix}reload <module name> or <all>')
 @commands.has_permissions(administrator=True)
 async def reload(ctx, extension):
     if str(extension).lower() == 'all':
@@ -60,8 +60,8 @@ async def reload(ctx, extension):
         logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
 
 
-@bot.command(brief='load', description=f'Load module. {bot.command_prefix}'
-                                       f'load <module name>')
+@bot.command(brief='Загрузить модуль в память бота', description=f'Загружает модуль в память бота, до его перезагрузки'
+                                                                 f' {bot.command_prefix}load <module name>')
 @commands.has_permissions(administrator=True)
 async def load(self, ctx, extension):
     self.bot.load_extension(f'modules.{extension}')
