@@ -26,8 +26,7 @@ class Utils(commands.Cog):
 
     @commands.command(aliases=['btc', 'cry'],
                       description='Реклама YOBA в описании SERVO-BOT'
-                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
-                                  '\n args: <money_code:str>',
+                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯',
                       brief='Стоимости топовых криптовалют')
     async def crypto(self, ctx, *args):
         valute = ''
@@ -122,9 +121,9 @@ class Utils(commands.Cog):
 
     @commands.command(aliases=['ex', 'exec'],
                       description='Эта команда позволяет выполнять код Python прямо из самого чата.\n'
-                                  'P.s. Работает на коде IteratorW\n'
-                                  f'Использование: {PREFIX}execute ` ` `code` ` ` (без пробелов)',
-                      brief='Выполнить Python код')
+                                  'P.s. Работает на коде IteratorW\n',
+                      brief='Выполнить Python код',
+                      usage='execute ` ` `code` ` ` (без пробелов)')
     @commands.has_permissions(administrator=True)
     async def execute(self, ctx):
         code = ctx.message.content.split("```")
@@ -141,7 +140,8 @@ class Utils(commands.Cog):
 
     @commands.command(aliases=['yt'],
                       description='Ну ты типо дохуя умный ? Сказанно же "ПОИСК ВИДЕО В ЮТУБЕ", хули тебе еще надо ?',
-                      brief='Поиск видео в Ютубе')
+                      brief='Поиск видео в Ютубе',
+                      usage='<video url>')
     async def youtube(self, ctx, *, video_title: str):
 
         class YoutubeSearch:
@@ -211,8 +211,8 @@ class Utils(commands.Cog):
     @commands.command(brief='Открыть коуб в чате',
                       description='Вам слишком скучно и одиноко? Вы хотите с кем-нибудь поделиться годным коубом?'
                                   'Но дискорд не позволяет его просмотреть прямо в чате?'
-                                  'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!'
-                                  f'{PREFIX} coub <link>')
+                                  'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!',
+                      usage='<coub url>')
     async def coub(self, ctx, url):
         url = "http://coub.com//api/v2/coubs" + url[21:]
         r = requests.get(url)
@@ -257,8 +257,9 @@ class Utils(commands.Cog):
                                    f'Добавте боту права "manage_roles" или сами создайте роль ``{rainbow_role_name}``',
                                    ctx)
 
-    @commands.command(brief='Рандомная выбиралка', description='Выбирает одно из нескольких значений, указанных через'
-                                                               'запятую')
+    @commands.command(brief='Рандомная выбиралка',
+                      description='Выбирает одно из нескольких значений, указанных через запятую',
+                      usage='<значение 1>, <значение 2>, и т.д.')
     async def choice(self, ctx):
         await result_embed('Успешно!', f'Я выбираю: {random.choice(str(ctx.message.content)[7:].split(","))}', ctx)
 

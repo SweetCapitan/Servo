@@ -41,8 +41,6 @@ class Voice(commands.Cog, name='Полностью переписанная ве
             context.send('Произошла непредвиденная ошибка: ```' + str(Exception) + '```')
             self.voice_state = False
 
-
-
     @commands.command(aliases=['j'],
                       description='По этой команде бот зайдет в голосовой канал, в котором вы находитесь',
                       brief='Зайти в голосовой чат')
@@ -60,7 +58,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
                 list_voice_channels += str(e) + ', '
             await result_embed('Ашыбка!',
                                ctx.message.author.mention + ' вы не находитесь в голосовом канале, '
-                                                         'пожалуйста зайдите на один из каналов ``' +
+                                                            'пожалуйста зайдите на один из каналов ``' +
                                list_voice_channels + '``',
                                ctx)
 
@@ -84,7 +82,8 @@ class Voice(commands.Cog, name='Полностью переписанная ве
     @commands.command(aliases=['pl'],
                       description='По этой команде бот начнет воипроизводить аудио файл, который он скачает по вашему '
                                   'запросу, из ютуба',
-                      brief='Начать воиспроизведение аудио')
+                      brief='Начать воиспроизведение аудио',
+                      usage='<video url>')
     @commands.has_guild_permissions(speak=True)
     async def play(self, ctx, url):
 
@@ -126,6 +125,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
             else:
                 self.queues.clear()
                 print("No songs were queued before the ending of the last song\n")
+
         await self.check_voice(ctx)
         if self.voice.is_playing():
             await result_embed('Ошибка', 'Бот уже воиспроизводит музыку')
@@ -185,7 +185,9 @@ class Voice(commands.Cog, name='Полностью переписанная ве
 
     @commands.command(aliases=['q', 'que'],
                       description='ОЧЕРЕДЬ',
-                      brief='ОЧЕРЕДЬ')
+                      brief='ОЧЕРЕДЬ',
+                      usage='ОЧЕРЕДЬ',
+                      help='ОЧЕРЕДЬ')
     @commands.has_guild_permissions(speak=True)
     async def queue(self, ctx, url):
 
@@ -229,6 +231,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
         await ctx.send("Adding song " + str(q_num) + " to the queue")
 
         print("Song added to queue\n")
+
 
 def setup(bot):
     bot.add_cog(Voice(bot))

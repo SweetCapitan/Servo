@@ -17,7 +17,7 @@ class Bridge(commands.Cog, name='Бесполезная хуитень'):
 
     logger = Logger()
 
-    @commands.command()
+    @commands.command(usage='Использование', description='Описание', brief='Название', help='Помощь')
     @commands.has_permissions(administrator=True)
     async def m(self, ctx):
         member_name = ctx.message.guild.get_member(ctx.message.author.id).nick

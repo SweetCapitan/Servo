@@ -4,7 +4,7 @@ from discord.ext import commands
 import requests
 import sys
 sys.path.append('..')
-from Lib import Logger, pluralize
+from Lib import Logger, pluralize, result_embed
 
 API_KEY = os.environ.get('API_KEY')
 
@@ -20,10 +20,11 @@ class OSU(commands.Cog):
                     description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
     async def osu(self, ctx):
         if ctx.invoked_subcommand is None:
-            await ctx.send('Еблан, ты не указал действие')
+            await result_embed('Ошибка!', 'Еблан, ты не указал действие!', ctx)
 
     @osu.command(aliases=['user', 'gU'], brief='ЩЫГ! Инфо о пользователе',
-                 description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
+                 description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК',
+                 usage='<username>')
     async def get_user(self, ctx, *username):
         if username:
             url = 'https://osu.ppy.sh/api/get_user?&k=' + API_KEY + '&u=' + str(username[0])
@@ -59,10 +60,11 @@ class OSU(commands.Cog):
             await ctx.send(embed=embed)
             self.logger.comm(f'OSU.GET_USER. Author: {ctx.message.author}')
         else:
-            await ctx.send('Еблан, ты никнейм не ввел !')
+            await result_embed('Ошибка!', 'Еблан, ты никнейм не ввел!', ctx)
 
-    @osu.command(aliases=['resent', 'get_resent', 'gur'], brief='ЩЫГ! Последняя сыгранная карта пользователя',
-                 description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК')
+    @osu.command(aliases=['resent', 'get_resent'], brief='ЩЫГ! Последняя сыгранная карта пользователя',
+                 description='ТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫКТЫК',
+                 usage='<username>')
     async def get_user_resent(self, ctx, *username):
         if username:
             url = 'https://osu.ppy.sh/api/get_user_recent?k=' + API_KEY + '&u=' + str(username[0])
@@ -88,7 +90,7 @@ class OSU(commands.Cog):
             await ctx.send(embed=embed)
             self.logger.comm(f'OSU.GET_USER_RESENT. Author: {ctx.message.author}')
         else:
-            await ctx.send('Еблан, ты никнейм не ввел !')
+            await result_embed('Ошибка!', 'Еблан, ты никнейм не ввел!', ctx)
 
 
 def setup(bot):
