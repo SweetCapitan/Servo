@@ -40,23 +40,24 @@ class Chat(commands.Cog):
     logger = Logger()
 
     @commands.command(aliases=['cl'],
-                      description='This command allows you to delete messages '
-                                  'from the channel in which the command was called.\n'
-                                  '- Usual variant -\n'
-                                  'This option allows to delete n messages. If a user is mentioned at the end,'
-                                  'then ONLY messages of the specified user will be deleted.'
-                                  f' Example: {PREFIX}clear <Messages to search. This is not the number of messages !>'
-                                  '<(optional)@ User whose messages you want to delete>.\n'
-                                  '- Delete by date and time - \n'
-                                  'This option allows you to delete all messages from the channel starting '
-                                  'from the specified date and time. If you specify a user at the end,'
-                                  ' they will delete ONLY past posts of the user '
-                                  f'Example: {PREFIX}clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
-                                  '<(Optional)@User whose posts you want to delete>.',
-                      brief='Delete N- number of messages from the channel.')
+                      description='Эта команда позволяет удалять сообщения'
+                                  'из канала, в котором была вызвана команда.\n'
+                                  '- Удаление сообщений указанного пользователя -\n'
+                                  'Эта опция позволяет удалить n сообщений. Если пользователь упоминается в конце,'
+                                  'тогда будут удалены ТОЛЬКО сообщения указанного пользователя.'
+                                  f' Использование: {PREFIX}clear <Кол-во сообщений, которые необходимо проверить>'
+                                  '<(опционально)@Пользователь, сообщения которого вы хотите удалить>.\n'
+                                  '- Удаление по дате и времени - \n'
+                                  'Эта опция позволяет удалить все сообщения из начального канала'
+                                  'с указанной даты и времени. Если вы укажете пользователя в конце, '
+                                  'они удалят ТОЛЬКО сообщения указанного пользователя'
+                                  f'Использование: {PREFIX}clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
+                                  '<(Опционально)@Пользователь, сообщения которого вы хотите удалить>.',
+                      brief='Удалить N- количество сообщений из канала.')
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, *args):
         chan = ctx.message.channel
+        await ctx.message.delete()
         if len(args) == 7:
             def check(msg):
                 return msg.author == ctx.message.mentions[0]
@@ -91,7 +92,7 @@ class Chat(commands.Cog):
     async def on_message(self, message):
         if message.content.lower() == 'пошел нахуй' or message.content.lower() == 'нахуй пошел':
             await message.channel.send(f'```{text}```')
-        self.bot.process_commands(message)
+            await self.bot.process_commands(message)
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, _):
