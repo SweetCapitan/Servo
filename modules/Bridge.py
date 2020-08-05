@@ -10,7 +10,7 @@ from Lib import Logger, pluralize
 BRIDGE_URL = os.environ.get('BRIDGE_URL')
 
 
-class Bridge(commands.Cog):
+class Bridge(commands.Cog, name='Бесполезная хуитень'):
 
     def __init__(self, bot):
         self.bot = bot
@@ -18,6 +18,7 @@ class Bridge(commands.Cog):
     logger = Logger()
 
     @commands.command()
+    @commands.has_permissions(administrator=True)
     async def m(self, ctx):
         member_name = ctx.message.guild.get_member(ctx.message.author.id).nick
         data = {'message': (f'{member_name}: {cyrtranslit.to_latin(ctx.message.content[3:])}', 'ru')}
