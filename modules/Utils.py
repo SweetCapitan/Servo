@@ -28,7 +28,7 @@ class Utils(commands.Cog):
                       description='Реклама YOBA в описании SERVO-BOT'
                                   '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯'
                                   '\n args: <money_code:str>',
-                      brief='Bitcoin price')
+                      brief='Стоимости топовых криптовалют')
     async def crypto(self, ctx, *args):
         valute = ''
         limit = 8
@@ -45,28 +45,35 @@ class Utils(commands.Cog):
                   f'listings/latest?start=1&limit={limit}&convert={valute}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
         req = requests.get(url_usd)
         json = req.json()
-        embed = discord.Embed(title="Сryptocurrencies price",
-                              description="The cost of cryptocurrencies at the "
-                                          "moment according to the coinmarketcap exchange.",
+        embed = discord.Embed(title="Стоимости криптовалют",
+                              description="Стоимость криптовалют на данный момент по данным биржи coinmarketcap.",
                               color=0xd5de21)
         for i in json['data']:
             price = str(i['quote'][valute]['price'])
             embed.add_field(name=i['name'], value=price, inline=True)
-            # embed.add_field(name='Изменения за Час', Коммментированно до востребованности
-            #                 value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_1h']))), 1)}]",inline=True)
+            # embed.add_field(name='Изменения за Час', закоммментированно до востребованности
+            #                 value=f"[{round(((int(float(price)) /
+            #                 100) * int(float(i['quote'][valute]['percent_change_1h']))), 1)}]",inline=True)
             embed.add_field(name='Изменения за Сутки',
-                            value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_24h']))), 1)}]",
+                            value="[{}]".format(
+                                round(
+                                    ((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_24h']))),
+                                    1)
+                            ),
                             inline=True)
             embed.add_field(name='Неделю',
-                            value=f"[{round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_7d']))), 1)}]",
+                            value="[{}]".format(
+                                round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_7d']))),
+                                      1)
+                            ),
                             inline=True)
 
         await ctx.send(embed=embed)
         self.logger.comm('crypto_price')
 
     @commands.command(
-        description='By executing the command, the bot will send a random quote taken from bash.im to the chat',
-        brief='Random quote with bash.im')
+        description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
+        brief='Случайная цитата с bash.im')
     async def bash(self, ctx):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
@@ -109,13 +116,14 @@ class Utils(commands.Cog):
 
         return out.getvalue(), error
 
-    def _await(self, coro):  # це костыль для выполнения асинхронных функций в exec
+    @staticmethod
+    def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
     @commands.command(aliases=['ex', 'exec'],
-                      description='This command allows you to execute python code directly from the chat itself.\n'
-                                  'P.s. Temporarily runs on Iteratorw code\n'
-                                  f'Usage: {PREFIX}execute ` ` `code` ` ` (without spaces)',
+                      description='Эта команда позволяет выполнять код Python прямо из самого чата.\n'
+                                  'P.s. Работает на коде IteratorW\n'
+                                  f'Использование: {PREFIX}execute ` ` `code` ` ` (без пробелов)',
                       brief='Execute Python code "')
     @commands.has_permissions(administrator=True)
     async def execute(self, ctx):
@@ -200,18 +208,18 @@ class Utils(commands.Cog):
         # TODO Сделать флаг с выводом информации о видео в отдельном эмбеде
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
-    @commands.command(brief='Opening a coub in chat',
-                      description='Are you too bored and lonely? Do you want to share a good coub with someone?'
-                                  'But doesn’t it open right in the chat? Not a problem, just enter the command and'
-                                  ' link to the coub and it will immediately appear in the chat!'
-                                  f'{PREFIX}coub <link>')
+    @commands.command(brief='Открыть коуб в чате',
+                      description='Вам слишком скучно и одиноко? Вы хотите с кем-нибудь поделиться годным коубом?'
+                                  'Но дискорд не позволяет его просмотреть прямо в чате?'
+                                  'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!'
+                                  f'{PREFIX} coub <link>')
     async def coub(self, ctx, url):
         url = "http://coub.com//api/v2/coubs" + url[21:]
         r = requests.get(url)
         coub_data = r.json()
         views = coub_data["views_count"]
         title = coub_data["title"]
-        await ctx.channel.purge(limit=1)
+        await ctx.message.delete()
         try:
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
