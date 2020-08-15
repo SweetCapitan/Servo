@@ -59,6 +59,9 @@ class Chat(commands.Cog):
                             f'{PREFIX}clear 10 @Somebody')
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, *args):
+        if not args:
+            await result_embed('ОшибОЧКА!', 'Укажите аргументы и повторите попытку.', ctx)
+            return
         chan = ctx.message.channel
         await ctx.message.delete()
         if len(args) == 7:
