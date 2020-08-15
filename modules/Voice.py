@@ -13,7 +13,7 @@ from Lib import Logger, result_embed, pluralize
 name_song = None
 
 
-class Voice(commands.Cog, name='Полностью переписанная версия Voice'):
+class Voice(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -21,6 +21,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
     voice = None
     voice_state = None
     voice_channel = None
+    name = None
 
     logger = Logger()
 
@@ -92,7 +93,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
         def check_queue():
             Queue_infile = os.path.isdir("./Songs/" + Guild_Queue_folder)
             if Queue_infile is True:
-                DIR = os.path.abspath(os.path.realpath("Songs/" + Guild_Queue_folder))
+                DIR = os.path.abspath(os.path.realpath("./Songs/" + Guild_Queue_folder))
                 length = len(os.listdir(DIR))
                 still_q = length - 1
                 try:
@@ -102,7 +103,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
                     self.queues.clear()
                     return
                 main_location = os.path.dirname(os.path.realpath(__file__))
-                song_path = os.path.abspath(os.path.realpath("Songs/" + Guild_Queue_folder) + "\\" + first_file)
+                song_path = os.path.abspath(os.path.realpath("./Songs/" + Guild_Queue_folder) + "\\" + first_file)
                 if length != 0:
                     print("Song done, playing next queued\n")
                     print(f"Songs still in queue: {still_q}")
@@ -143,9 +144,9 @@ class Voice(commands.Cog, name='Полностью переписанная ве
         Queue_infile = os.path.isdir("./Songs/" + Guild_Queue_folder)
         try:
             Queue_folder = "./Songs/" + Guild_Queue_folder
-            if Queue_infile is True:
-                print("Removed old Queue Folder")
-                shutil.rmtree(Queue_folder)
+            # if Queue_infile is True:
+            #     print("Removed old Queue Folder")
+            #     shutil.rmtree(Queue_folder)
         except:
             print("No old Queue folder")
 
@@ -169,9 +170,9 @@ class Voice(commands.Cog, name='Полностью переписанная ве
             c_path = '.Songs/' + Guild_Queue_folder
             os.system("spotdl -f " + '"' + c_path + '"' + " -s " + url)
 
-        for file in os.listdir('.Songs/' + Guild_Queue_folder):
+        for file in os.listdir('./Songs/' + Guild_Queue_folder):
             if file.endswith(".mp3"):
-                name = file
+                self.name = file
                 print(f"Renamed File: {file}\n")
                 os.rename(file, "song.mp3")
 
@@ -179,7 +180,7 @@ class Voice(commands.Cog, name='Полностью переписанная ве
         self.voice.source = discord.PCMVolumeTransformer(self.voice.source)
         self.voice.source.volume = 0.07
 
-        nname = name.rsplit("-", 2)
+        nname = self.name.rsplit("-", 2)
         await ctx.send(f"Playing: {nname[0]}")
         print("playing\n")
 

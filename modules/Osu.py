@@ -9,7 +9,7 @@ from Lib import Logger, pluralize, result_embed
 API_KEY = os.environ.get('API_KEY')
 
 
-class OSU(commands.Cog):
+class Osu(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -94,4 +94,4 @@ class OSU(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(OSU(bot))
+    bot.add_cog(Osu(bot))

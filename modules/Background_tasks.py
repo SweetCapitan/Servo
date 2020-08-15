@@ -31,7 +31,7 @@ with conn:
         response_time = cur.fetchone()
 
 
-class Tasks(commands.Cog):
+class Background_tasks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -137,4 +137,4 @@ class Tasks(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Tasks(bot))
+    bot.add_cog(Background_tasks(bot))

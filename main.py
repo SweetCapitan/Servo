@@ -1,10 +1,11 @@
 import os
+import time
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from discord.ext import commands
 
 # TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
-from Lib import Logger, result_embed
-
+from Lib import Logger, result_embed, pluralize
+bot_start_time = time.time()
 logger = Logger()
 if not os.environ.get('DYNO'):
     import config
@@ -17,17 +18,23 @@ class Bot(commands.Bot):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
+        command_list = []
         logger.log('=====================================================')
-        logger.log(f'Ready! Authorized with the names: {bot.user.name}')
+        logger.log(f'Готово! Авторизовался под именем: {bot.user.name}')
         count = 0
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
-                logger.log(f'Loaded extension {file[:-3]}.')
+                cog = self.get_cog(f'{file[:-3]}')
+                command = cog.get_commands()
+                command_list.append([c.name for c in command])
+                logger.log(f'Загружен модуль {file[:-3]}')
                 count += 1
-        logger.log(f'Total Modules: {count}')
+        logger.log(f'Всего Модулей: {count}')
+        logger.log(f'Всего Команд: {len([c for m in command_list for c in m])}')
         logger.log('=====================================================')
-        logger.log('Init Complite !')
+        bot_time = round(time.time() - bot_start_time)
+        logger.log(f'Загрузка завершена за {str(bot_time) + pluralize(bot_time, " секунду", " секунды", " секунд")}!')
 
 
 help_com = commands.DefaultHelpCommand(commands_heading='Команды:', no_category='Комманды ядра')
@@ -63,7 +70,7 @@ async def reload(ctx, extension):
     else:
         bot.unload_extension(f'modules.{extension}')
         bot.load_extension(f'modules.{extension}')
-        await ctx.send(f'Reloaded [{extension}]')
+        await result_embed('Перезагружен!', f'Модуль [{extension}] перезагружен', ctx)
         logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
 
 
@@ -72,7 +79,7 @@ async def reload(ctx, extension):
 @commands.has_permissions(administrator=True)
 async def load(self, ctx, extension):
     self.bot.load_extension(f'modules.{extension}')
-    await ctx.send(f'Loaded {extension}')
+    await result_embed('Загружен!', f'Модуль [{extension}] Загружен', ctx)
     self.logger.comm(f'LOAD module: {extension}. Author: {ctx.message.author}')
 
 

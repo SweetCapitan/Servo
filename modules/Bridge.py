@@ -10,7 +10,7 @@ from Lib import Logger, pluralize
 BRIDGE_URL = os.environ.get('BRIDGE_URL')
 
 
-class Bridge(commands.Cog, name='Бесполезная хуитень'):
+class Bridge(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
