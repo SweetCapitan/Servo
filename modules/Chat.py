@@ -39,7 +39,7 @@ class Chat(commands.Cog):
 
     logger = Logger()
 
-    @commands.command(aliases=['cl'],
+    @commands.command(aliases=['cl', 'purge'],
                       description='Эта команда позволяет удалять сообщения из канала, в котором была вызвана команда.',
                       brief='Удалить сообщения из канала.',
                       help='- Удаление сообщений указанного пользователя -\n'
