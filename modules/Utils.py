@@ -115,7 +115,6 @@ class Utils(commands.Cog):
 
         return out.getvalue(), error
 
-    @staticmethod
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
