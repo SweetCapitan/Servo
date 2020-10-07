@@ -6,6 +6,7 @@ import urllib
 from contextlib import redirect_stdout
 import discord
 import requests
+from bs4 import BeautifulSoup
 from discord.ext import commands
 import sys
 import random
@@ -212,19 +213,26 @@ class Utils(commands.Cog):
                                   'Но дискорд не позволяет его просмотреть прямо в чате?'
                                   'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!',
                       usage='<coub url>')
-    async def coub(self, ctx, url):
-        url = "http://coub.com//api/v2/coubs" + url[21:]
+    async def coub(self, ctx, url_to_coub):
+        url = "http://coub.com//api/v2/coubs" + url_to_coub[21:]
         r = requests.get(url)
         coub_data = r.json()
         views = coub_data["views_count"]
         title = coub_data["title"]
+        url_to_ass = "http://web.coubassistant.cf/"
+        payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"urlpost\"\r\n\r\n{url_to_coub}\r\n-----011000010111000001101001--\r\n"
+        headers = {'content-type': 'multipart/form-data; boundary=---011000010111000001101001'}
+        response = requests.request("POST", url_to_ass, data=payload, headers=headers)
+        result = BeautifulSoup(response.text, 'html.parser')
+        song = result.findAll('h3')
+        sourse = result.findAll('a', href=True)
         await ctx.message.delete()
         try:
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
             await result_embed('Упс...', 'Что-то пошло не так, проверьте ссылку', ctx)
             return
-        await ctx.send(f'Название: {title} Просмотров: {views} Ссылка: {link}')
+        await ctx.send(f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song[0].getText()}``\nСсылка: {link}\nАудио: {sourse[-1]["href"]}')
         self.logger.comm(f'COUB. Author: {ctx.message.author}')
 
     @commands.command(aliases=['rainbow', 'rb'], brief='YOBA',
