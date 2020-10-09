@@ -219,7 +219,7 @@ class Utils(commands.Cog):
         coub_data = r.json()
         views = coub_data["views_count"]
         title = coub_data["title"]
-        url_to_ass = "http://web.coubassistant.cf/"
+        url_to_ass = "http://coubassistant.cf/pages/en-us/web"
         payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"urlpost\"\r\n\r\n{url_to_coub}\r\n-----011000010111000001101001--\r\n"
         headers = {'content-type': 'multipart/form-data; boundary=---011000010111000001101001'}
         response = requests.request("POST", url_to_ass, data=payload, headers=headers)
