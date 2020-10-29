@@ -6,31 +6,19 @@ from discord.ext import commands
 from colorsys import hls_to_rgb
 from discord import Embed
 import sys
-import psycopg2
-
+import configparser
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 logger = Logger()
 
-DATABASE_URL = os.environ['DATABASE_URL']
 rainbow_role_name = os.environ.get('ROLE_RAINBOW')
 
 start_time = time.time()
 
-conn = psycopg2.connect(DATABASE_URL, sslmode='require')
-
-# with conn:
-#     with conn.cursor() as cur:
-#         cur.execute("CREATE TABLE covidtime (time INT)") Ну мало ли, вдруг и таблица тоже слетит
-
-with conn:
-    with conn.cursor() as cur:
-        # cur.execute("INSERT INTO covidtime (time) VALUES (%s)" % '1589684400') На случай того, если значение слетит
-        cur.execute("SELECT time FROM covidtime")
-        response_time = cur.fetchone()
-
-
+config = configparser.ConfigParser()
+config.read('setting.ini')
+response_time = config.get('Setting', 'covid_time')
 class Background_tasks(commands.Cog):
 
     def __init__(self, bot):
@@ -123,15 +111,13 @@ class Background_tasks(commands.Cog):
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
 
-        _response_time = response_time[0]
+        _response_time = int(response_time[0])
         while True:
             time_embed = time.time()
-            if time_embed >= int(_response_time):
+            if time_embed >= _response_time:
                 _response_time += 86400
-                with conn:
-                    with conn.cursor() as cur:
-                        cur.execute("UPDATE covidtime SET time = %s" % (int(_response_time)))
-                        await chan.send(embed=embed)
+                config.set('Setting', 'covid_time', str(_response_time))
+                await chan.send(embed=embed)
             else:
                 await asyncio.sleep(30)
 
