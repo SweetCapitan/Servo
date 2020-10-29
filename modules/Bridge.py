@@ -1,5 +1,5 @@
 import sys
-import cyrtranslit
+# import cyrtranslit
 import os
 import discord
 import requests
