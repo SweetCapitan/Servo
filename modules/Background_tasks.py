@@ -19,6 +19,7 @@ start_time = time.time()
 config = configparser.ConfigParser()
 config.read('setting.ini')
 response_time = config.get('Setting', 'covid_time')
+
 class Background_tasks(commands.Cog):
 
     def __init__(self, bot):
@@ -111,15 +112,18 @@ class Background_tasks(commands.Cog):
         embed.add_field(name='В России', value=russia, inline=True)
         chan = self.bot.get_channel(672091108666376193)
 
-        _response_time = int(response_time[0])
-        while True:
-            time_embed = time.time()
-            if time_embed >= _response_time:
-                _response_time += 86400
-                config.set('Setting', 'covid_time', str(_response_time))
-                await chan.send(embed=embed)
-            else:
-                await asyncio.sleep(30)
+        if response_time:
+            _response_time = int(response_time)
+            while True:
+                time_embed = time.time()
+                if time_embed >= _response_time:
+                    _response_time += 86400
+                    config.set('Setting', 'covid_time', str(_response_time))
+                    with open('setting.ini', 'w') as configFile:
+                        config.write(configFile)
+                    await chan.send(embed=embed)
+                else:
+                    await asyncio.sleep(30)
 
 
 def setup(bot):
