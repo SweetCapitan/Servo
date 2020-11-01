@@ -10,13 +10,16 @@ from bs4 import BeautifulSoup
 from discord.ext import commands
 import sys
 import random
+import configparser
 
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 PREFIX = os.environ.get('PREFIX')
-
+config = configparser.ConfigParser()
+config.read('setting.ini')
+STREAMING_STATUS_TEXT = config.get('Setting', 'streaming_status_text')
 
 class Utils(commands.Cog):
 
@@ -269,6 +272,18 @@ class Utils(commands.Cog):
                       usage='<значение 1>, <значение 2>, и т.д.')
     async def choice(self, ctx):
         await result_embed('Успешно!', f'Я выбираю: {random.choice(str(ctx.message.content)[7:].split(","))}', ctx)
+
+    @commands.command(brief='Задать текст статуса',
+                      description='Задает текст, который будет отображаться в статусе бота',
+                      usage='<Текст, который вы хотите отображать в статусе>')
+    async def set_status(self, ctx, *, text: str):
+        try:
+            config.set('Setting', 'streaming_status_text', text)
+            with open('setting.ini', 'w') as configFile:
+                config.write(configFile)
+            await result_embed('Успешно!', f'Статус [{text}] был установлен!', ctx)
+        except Exception as e:
+            await result_embed('Ашибка!', e, ctx)
 
 
 def setup(bot):
