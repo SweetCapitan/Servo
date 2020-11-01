@@ -3,4 +3,3 @@ youtube_dl
 requests
 bs4
 spotdl
-cyrtranslit

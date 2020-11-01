@@ -7,21 +7,19 @@ from colorsys import hls_to_rgb
 from discord import Embed
 import sys
 import configparser
+
 sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 logger = Logger()
-
-rainbow_role_name = os.environ.get('ROLE_RAINBOW')
-
 start_time = time.time()
-
 config = configparser.ConfigParser()
 config.read('setting.ini')
 response_time = config.get('Setting', 'covid_time')
+rainbow_role_name = config.get('Setting', 'role_rainbow')
 
 
-class Background_tasks(commands.Cog):
+class BackgroundTasks(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
@@ -40,15 +38,8 @@ class Background_tasks(commands.Cog):
 
     @staticmethod
     def check_status(guild):
-        env_val = os.environ
-        for _RNB_STAT in env_val:
-            if _RNB_STAT == str(guild) + '_RAINBOW_STATUS':
-                RAINBOW_STATUS = os.environ.get(_RNB_STAT)
-                if RAINBOW_STATUS == 'True':
-                    return True
-                if RAINBOW_STATUS == 'False':
-                    return False
-        return False
+        pass
+        # TODO Передалать функцию проверки статуса радуги-хуядуги
 
     async def rainbow(self, server_id):
         hue = 0
@@ -62,7 +53,7 @@ class Background_tasks(commands.Cog):
                         try:
                             await role.edit(color=clr)
                         except Exception as e:
-                            logger.error('ERROR: ' + str(e))
+                            logger.error(str(e))
                         await asyncio.sleep(5)
             await asyncio.sleep(5)
 
@@ -134,4 +125,4 @@ class Background_tasks(commands.Cog):
 
 
 def setup(bot):
-    bot.add_cog(Background_tasks(bot))
+    bot.add_cog(BackgroundTasks(bot))
