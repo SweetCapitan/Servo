@@ -1,8 +1,6 @@
 discord.py
 youtube_dl
-discord.py[voice]
 requests
 bs4
 spotdl
 cyrtranslit
-psycopg2

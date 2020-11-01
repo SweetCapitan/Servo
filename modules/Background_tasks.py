@@ -20,6 +20,7 @@ config = configparser.ConfigParser()
 config.read('setting.ini')
 response_time = config.get('Setting', 'covid_time')
 
+
 class Background_tasks(commands.Cog):
 
     def __init__(self, bot):
@@ -76,6 +77,8 @@ class Background_tasks(commands.Cog):
 
     async def status(self):
         while not self.bot.is_closed():
+            config.read('setting.ini', encoding='utf-8')
+            streaming_status_text = config.get('Setting', 'streaming_status_text')
             try:
                 uptime_sec, uptime_min, uptime_hour, uptime_day = self.get_uptime()
                 uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
@@ -87,9 +90,13 @@ class Background_tasks(commands.Cog):
 
                 await self.bot.change_presence(
                     activity=discord.Streaming(name=uptime_name, url='https://www.twitch.tv/dancho67'))
+                await asyncio.sleep(5)
+                if streaming_status_text != '':
+                    await self.bot.change_presence(
+                        activity=discord.Streaming(name=streaming_status_text, url='https://www.twitch.tv/dancho67'))
+                await asyncio.sleep(5)
             except Exception as e:
-                print(e)
-            await asyncio.sleep(5)
+                logger.error(e)
 
     async def virus(self, response_time=response_time):
         from bs4 import BeautifulSoup
