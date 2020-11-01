@@ -276,10 +276,11 @@ class Utils(commands.Cog):
     @commands.command(brief='Задать текст статуса',
                       description='Задает текст, который будет отображаться в статусе бота',
                       usage='<Текст, который вы хотите отображать в статусе>')
+    @commands.has_permissions(manage_emojis=True)
     async def set_status(self, ctx, *, text: str):
         try:
             config.set('Setting', 'streaming_status_text', text)
-            with open('setting.ini', 'w') as configFile:
+            with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
             await result_embed('Успешно!', f'Статус [{text}] был установлен!', ctx)
         except Exception as e:
