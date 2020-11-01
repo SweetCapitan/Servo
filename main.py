@@ -2,15 +2,11 @@ import os
 import time
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from discord.ext import commands
-
+import config
 # TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
 from Lib import Logger, result_embed, pluralize
 bot_start_time = time.time()
 logger = Logger()
-if not os.environ.get('DYNO'):
-    import config
-
-    logger.log('Обнаружен локальный запуск. Подгружены конфиги!')
 
 
 class Bot(commands.Bot):
