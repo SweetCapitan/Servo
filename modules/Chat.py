@@ -29,8 +29,6 @@ text = '        \                           /\n' \
        '         /           q,            \ \n' \
        '        /                           \ \n'
 
-PREFIX = os.environ.get('PREFIX')
-
 
 class Chat(commands.Cog):
 
@@ -44,19 +42,11 @@ class Chat(commands.Cog):
                       brief='Удалить сообщения из канала.',
                       help='- Удаление сообщений указанного пользователя -\n'
                            'Эта опция позволяет удалить n сообщений. Если пользователь упоминается в конце,'
-                           'тогда будут удалены ТОЛЬКО сообщения указанного пользователя.'
-                           f' Использование: {PREFIX}clear <Кол-во сообщений, которые необходимо проверить>'
-                           '<(опционально)@Пользователь, сообщения которого вы хотите удалить>.\n'
-                           '- Удаление по дате и времени - \n'
-                           'Эта опция позволяет удалить все сообщения из начального канала'
-                           'с указанной даты и времени. Если вы укажете пользователя в конце, '
-                           'они удалят ТОЛЬКО сообщения указанного пользователя'
-                           f'Использование: {PREFIX}clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> '
-                           '<(Опционально)@Пользователь, сообщения которого вы хотите удалить>.',
+                           'тогда будут удалены ТОЛЬКО сообщения указанного пользователя.',
                       usage='<(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]>\n'
-                            f'{PREFIX}clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> @Somebody\n'
-                            f'{PREFIX}clear 10\n'
-                            f'{PREFIX}clear 10 @Somebody')
+                            f'clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> @Somebody\n'
+                            f'clear 10\n'
+                            f'clear 10 @Somebody')
     @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, *args):
         if not args:

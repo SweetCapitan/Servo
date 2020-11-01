@@ -16,10 +16,10 @@ sys.path.append('..')
 from Lib import Logger, result_embed, pluralize
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
-PREFIX = os.environ.get('PREFIX')
 config = configparser.ConfigParser()
 config.read('setting.ini')
 STREAMING_STATUS_TEXT = config.get('Setting', 'streaming_status_text')
+
 
 class Utils(commands.Cog):
 
@@ -40,10 +40,7 @@ class Utils(commands.Cog):
         elif args[0]:
             valute = args[0]
         valute = valute.upper()
-
-        os.environ['API_KEY_COINMARKET'] = '3f4061e6-fb5e-40a0-8f7c-d3f70842fca7'
         API_KEY_COINMARKET = os.environ.get('API_KEY_COINMARKET')
-
         url_usd = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/' \
                   f'listings/latest?start=1&limit={limit}&convert={valute}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
         req = requests.get(url_usd)
@@ -118,7 +115,7 @@ class Utils(commands.Cog):
             out.write(str(ex))
 
         return out.getvalue(), error
-
+    @staticmethod
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
