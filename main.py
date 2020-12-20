@@ -1,28 +1,12 @@
 import os
-
-import discord
+import time
 # noinspection PyUnresolvedReferences,PyPackageRequirements
-from config import BOT_TOKEN
 from discord.ext import commands
-
-
-# TODO:ФИКС ИМПОРТА
-async def result_embed(result_state, description, message):
-    embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-    await message.send(embed=embed)
-
-
-def pluralize(source, first, second, third):
-    if int(str(source)[-1]) == 0:
-        return third
-    elif int(str(source)[-2:]) in range(11, 21):
-        return third
-    elif int(str(source)[-1]) == 1:
-        return first
-    elif int(str(source)[-1]) in range(2, 5):
-        return second
-    elif int(str(source)[-1]) in range(5, 10):
-        return third
+import config
+# TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
+from Lib import Logger, result_embed, pluralize
+bot_start_time = time.time()
+logger = Logger()
 
 
 class Bot(commands.Bot):
@@ -30,28 +14,69 @@ class Bot(commands.Bot):
         super().__init__(command_prefix, **options)
 
     async def on_ready(self):
-        print('Ready! Authorized with the names: ' + bot.user.name)
+        command_list = []
+        logger.log('=====================================================')
+        logger.log(f'Готово! Авторизовался под именем: {bot.user.name}')
+        count = 0
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
-                print(f'loaded extension {file[:-3]}.')
+                cog = self.get_cog(f'{file[:-3]}')
+                command = cog.get_commands()
+                command_list.append([c.name for c in command])
+                logger.log(f'Загружен модуль {file[:-3]}')
+                count += 1
+        logger.log(f'Всего Модулей: {count}')
+        logger.log(f'Всего Команд: {len([c for m in command_list for c in m])}')
+        logger.log('=====================================================')
+        bot_time = round(time.time() - bot_start_time)
+        logger.log(f'Загрузка завершена за {str(bot_time) + pluralize(bot_time, " секунду", " секунды", " секунд")}!')
 
 
-bot = Bot(command_prefix='?')
+help_com = commands.DefaultHelpCommand(commands_heading='Команды:', no_category='Комманды ядра')
+
+bot = Bot(command_prefix='?', owner_id=252469010308792322,
+          description='Этот бот напсан чисто по фану, для использования на собственном сервере. Если возникли вопросы, '
+                      'то прошу ко мне на сервер https://discord.gg/4c7TbSd, ну или пишите в лс MeowCaptain#9480',
+          help_command=help_com)
+os.environ['PREFIX'] = bot.command_prefix
 
 
-@bot.command()
-async def reload_all(ctx):
-    count = 0
-    for file in os.listdir('modules'):
-        if file.endswith('.py'):
-            bot.unload_extension(f'modules.{file[:-3]}')
-            bot.load_extension(f'modules.{file[:-3]}')
-            await ctx.send(f'Перезагружен модуль: {file}')
-            count += 1
+@bot.command(brief='Перезагрузка модуля', description=f'Совершается полная перезагрузка модуля из памяти бота',
+             usage='<module name>'
+                                                      )
+@commands.has_permissions(administrator=True)
+async def reload(ctx, extension):
+    if str(extension).lower() == 'all':
+        count = 0
+        module_list = []
+        for file in os.listdir('modules'):
+            if file.endswith('.py'):
+                module_list.append(file[:-3] + '\n')
+                bot.unload_extension(f'modules.{file[:-3]}')
+                bot.load_extension(f'modules.{file[:-3]}')
+                logger.log(f'Reload Module: {file}')
+                count += 1
+        module_list_text = ''
+        for mod in module_list:
+            module_list_text = module_list_text + mod
+        await result_embed(f'Всего модулей перезагружено: {count}\n',
+                           f'{module_list_text}', ctx)
+        logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
+    else:
+        bot.unload_extension(f'modules.{extension}')
+        bot.load_extension(f'modules.{extension}')
+        await result_embed('Перезагружен!', f'Модуль [{extension}] перезагружен', ctx)
+        logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
 
-    await ctx.send(f'Всего модулей перезагружено: {count}')
+
+@bot.command(brief='Загрузить модуль в память бота', description=f'Загружает модуль в память бота, до его перезагрузки',
+             usage='<module name>')
+@commands.has_permissions(administrator=True)
+async def load(self, ctx, extension):
+    self.bot.load_extension(f'modules.{extension}')
+    await result_embed('Загружен!', f'Модуль [{extension}] Загружен', ctx)
+    self.logger.comm(f'LOAD module: {extension}. Author: {ctx.message.author}')
 
 
-bot.run(BOT_TOKEN)
-# bot.run(os.environ.get('BOT_TOKEN'))
+bot.run(os.environ.get('BOT_TOKEN'))
