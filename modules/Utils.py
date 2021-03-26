@@ -226,7 +226,6 @@ class Utils(commands.Cog):
         result = BeautifulSoup(response.text, 'html.parser')
         song = result.findAll('h3')
         sourse = result.findAll('a', href=True)
-        await ctx.message.delete()
         try:
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
@@ -234,6 +233,7 @@ class Utils(commands.Cog):
             return
         await ctx.send(f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song[0].getText()}``\nСсылка: {link}\nАудио: {sourse[-1]["href"]}')
         self.logger.comm(f'COUB. Author: {ctx.message.author}')
+        await ctx.message.delete()
 
     @commands.command(aliases=['rainbow', 'rb'], brief='YOBA',
                       description='Реклама YOBA в говнокоде Python')
