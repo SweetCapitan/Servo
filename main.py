@@ -3,8 +3,8 @@ import time
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 from discord.ext import commands
 import config
-# TODO Потыкать домен и сайт и намутить отправку текстовых логов на домен
 from Lib import Logger, result_embed, pluralize
+
 bot_start_time = time.time()
 logger = Logger()
 
@@ -44,7 +44,7 @@ os.environ['PREFIX'] = bot.command_prefix
 
 @bot.command(brief='Перезагрузка модуля', description=f'Совершается полная перезагрузка модуля из памяти бота',
              usage='<module name>'
-                                                      )
+             )
 @commands.has_permissions(administrator=True)
 async def reload(ctx, extension):
     if str(extension).lower() == 'all':

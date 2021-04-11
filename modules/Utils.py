@@ -13,7 +13,7 @@ import random
 import configparser
 
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, result_embed, pluralize, writeconfig
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 config = configparser.ConfigParser()
@@ -239,15 +239,20 @@ class Utils(commands.Cog):
                       description='Реклама YOBA в говнокоде Python')
     @commands.has_permissions(administrator=True)
     async def change_rainbow(self, ctx, state):
-        rainbow_role_name = os.environ.get('ROLE_RAINBOW')
+        rainbow_role_name = config.get('Setting', 'role_rainbow')
+        rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
         role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
         if role is not None:
-            if state.lower() == 'on' or state.lower() == 'true':
-                os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'True'
+            if state.lower() == 'on' or state.lower() == 'true' and not rainbow_role_status:
+                config.set('Setting', 'role_rainbow_status', 'True')
+                writeconfig()
+                rainbow_role_status = True
                 await result_embed('Модуль [RAINBOW]', 'Включен!', ctx)
                 self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
-            if state.lower() == 'off' or state.lower() == 'false':
-                os.environ[str(ctx.guild.id) + '_RAINBOW_STATUS'] = 'False'
+            elif state.lower() == 'off' or state.lower() == 'false' and rainbow_role_status:
+                config.set('Setting', 'role_rainbow_status', 'False')
+                writeconfig()
+                rainbow_role_status = False
                 await result_embed('Модуль [RAINBOW]', 'Выключен!', ctx)
                 self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
