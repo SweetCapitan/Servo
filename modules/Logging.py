@@ -10,8 +10,6 @@ from Lib import Logger, result_embed, pluralize, writeconfig
 
 notification_channel = 738855014377848943
 config = configparser.ConfigParser()
-config.read('setting.ini')
-KGB_MODE = bool(config.get('Setting', 'kgb_Mode'))
 
 logger = Logger()
 
@@ -51,6 +49,9 @@ class Logging(commands.Cog):
         self.channel = bot.get_channel(notification_channel)
         # bot.loop.create_task(self.check_kgb())
 
+        config.read('setting.ini')
+        self.KGB_MODE = bool(config.get('Setting', 'kgb_mode'))
+
     @commands.Cog.listener()
     async def on_member_join(self, member):
         await result_embed('Зашел на сервер!', choice_phrase(member, 'join'), self.channel)
@@ -76,22 +77,22 @@ class Logging(commands.Cog):
         if state.lower() == 'true' or state.lower() == 'on':
             config.set('Setting', 'kgb_mode', 'True')
             writeconfig()
-            KGB_MODE = True
+            self.KGB_MODE = True
             await result_embed('Успешно!', 'Режим доностчика активен!', ctx)
         elif state.lower() == 'false' or state.lower() == 'off':
             config.set('Setting', 'kgb_mode', 'False')
             writeconfig()
-            KGB_MODE = False
+            self.KGB_MODE = False
             await result_embed('Успешно!', 'Режим доностчика деактивирован!', ctx)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if KGB_MODE:
+        if self.KGB_MODE:
             await message.channel.send(f'[Deleted Message] Text: {message.content} Author: {message.author}')
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if KGB_MODE:
+        if self.KGB_MODE:
             await before.channel.send(
                 f'[Edited Message] Before: {before.content} After: {after.content} Author: {before.author}')
 

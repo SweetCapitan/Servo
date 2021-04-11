@@ -115,6 +115,7 @@ class Utils(commands.Cog):
             out.write(str(ex))
 
         return out.getvalue(), error
+
     @staticmethod
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
@@ -138,74 +139,74 @@ class Utils(commands.Cog):
             await result_embed('Код успешно выполнен!', out, ctx)
             self.logger.comm(f'EXECUTE. Author: {ctx.message.author}')
 
-    @commands.command(aliases=['yt'],
-                      description='Ну ты типо дохуя умный ? Сказанно же "ПОИСК ВИДЕО В ЮТУБЕ", хули тебе еще надо ?',
-                      brief='Поиск видео в Ютубе',
-                      usage='<video url>')
-    async def youtube(self, ctx, *, video_title: str):
-
-        class YoutubeSearch:
-            def __init__(self, search_terms):
-                self.search_terms = video_title
-                self.videos = self.search()
-
-            def search(self):
-                encoded_search = urllib.parse.quote(self.search_terms)
-                base_url = "https://youtube.com"
-                url = f"{base_url}/results?search_query={encoded_search}"
-                response = requests.get(url).text
-                while 'window["ytInitialData"]' not in response:
-                    response = requests.get(url).text
-                results = self.parse_html(response)
-                return results
-
-            def parse_html(self, response):
-                results = []
-                start = (
-                        response.index('window["ytInitialData"]')
-                        + len('window["ytInitialData"]')
-                        + 3
-                )
-                end = response.index("};", start) + 1
-                json_str = response[start:end]
-                data = json.loads(json_str)
-
-                videos = data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
-                    "sectionListRenderer"
-                ]["contents"][0]["itemSectionRenderer"]["contents"]
-
-                for video in videos:
-                    res = {}
-                    if "videoRenderer" in video.keys():
-                        video_data = video["videoRenderer"]
-                        res["id"] = video_data["videoId"]
-                        res["thumbnails"] = [
-                            thumb["url"] for thumb in video_data["thumbnail"]["thumbnails"]
-                        ]
-                        res["title"] = video_data["title"]["runs"][0]["text"]
-                        res["channel"] = video_data["longBylineText"]["runs"][0]["text"]
-                        res["duration"] = video_data.get("lengthText", {}).get("simpleText", 0)
-                        res["views"] = video_data.get("viewCountText", {}).get("simpleText", 0)
-                        res["url_suffix"] = video_data["navigationEndpoint"]["commandMetadata"][
-                            "webCommandMetadata"
-                        ]["url"]
-                        results.append(res)
-                return results
-
-            def to_dict(self):
-                return self.videos
-
-        # keyword = " ".join(video_title) так и не понял нахуя оно, пусть будет на случай, если все сломается
-
-        results = YoutubeSearch(video_title).to_dict()
-
-        if len(results) < 1:
-            await result_embed('Ошибка!', 'Видео по данному запросу не найдено!', ctx)
-            return
-
-        await ctx.message.channel.send(f'Видео по запросу {video_title}: (запросил: {ctx.message.author})'
-                                       f'\n {("https://youtube.com/" + results[0]["url_suffix"])}')
-        # TODO Сделать флаг с выводом информации о видео в отдельном эмбеде
+    # @commands.command(aliases=['yt'],
+    #                   description='Ну ты типо дохуя умный ? Сказанно же "ПОИСК ВИДЕО В ЮТУБЕ", хули тебе еще надо ?',
+    #                   brief='Поиск видео в Ютубе',
+    #                   usage='<video url>')
+    # async def youtube(self, ctx, *, video_title: str):
+    #
+    #     class YoutubeSearch:
+    #         def __init__(self, search_terms):
+    #             self.search_terms = video_title
+    #             self.videos = self.search()
+    #
+    #         def search(self):
+    #             encoded_search = urllib.parse.quote(self.search_terms)
+    #             base_url = "https://youtube.com"
+    #             url = f"{base_url}/results?search_query={encoded_search}"
+    #             response = requests.get(url).text
+    #             while 'window["ytInitialData"]' not in response:
+    #                 response = requests.get(url).text
+    #             results = self.parse_html(response)
+    #             return results
+    #
+    #         def parse_html(self, response):
+    #             results = []
+    #             start = (
+    #                     response.index('window["ytInitialData"]')
+    #                     + len('window["ytInitialData"]')
+    #                     + 3
+    #             )
+    #             end = response.index("};", start) + 1
+    #             json_str = response[start:end]
+    #             data = json.loads(json_str)
+    #
+    #             videos = data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
+    #                 "sectionListRenderer"
+    #             ]["contents"][0]["itemSectionRenderer"]["contents"]
+    #
+    #             for video in videos:
+    #                 res = {}
+    #                 if "videoRenderer" in video.keys():
+    #                     video_data = video["videoRenderer"]
+    #                     res["id"] = video_data["videoId"]
+    #                     res["thumbnails"] = [
+    #                         thumb["url"] for thumb in video_data["thumbnail"]["thumbnails"]
+    #                     ]
+    #                     res["title"] = video_data["title"]["runs"][0]["text"]
+    #                     res["channel"] = video_data["longBylineText"]["runs"][0]["text"]
+    #                     res["duration"] = video_data.get("lengthText", {}).get("simpleText", 0)
+    #                     res["views"] = video_data.get("viewCountText", {}).get("simpleText", 0)
+    #                     res["url_suffix"] = video_data["navigationEndpoint"]["commandMetadata"][
+    #                         "webCommandMetadata"
+    #                     ]["url"]
+    #                     results.append(res)
+    #             return results
+    #
+    #         def to_dict(self):
+    #             return self.videos
+    #
+    #     # keyword = " ".join(video_title) так и не понял нахуя оно, пусть будет на случай, если все сломается
+    #
+    #     results = YoutubeSearch(video_title).to_dict()
+    #
+    #     if len(results) < 1:
+    #         await result_embed('Ошибка!', 'Видео по данному запросу не найдено!', ctx)
+    #         return
+    #
+    #     await ctx.message.channel.send(f'Видео по запросу {video_title}: (запросил: {ctx.message.author})'
+    #                                    f'\n {("https://youtube.com/" + results[0]["url_suffix"])}')
+        # TODO Пофиксить yt
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
     @commands.command(brief='Открыть коуб в чате',
