@@ -1,12 +1,19 @@
 import os
 import random
 from discord.ext import commands
+import configparser
+import asyncio
 import sys
+
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, result_embed, pluralize, writeconfig
 
 notification_channel = 738855014377848943
-KGB_MODE = os.environ.get('KGB_MODE')
+config = configparser.ConfigParser()
+config.read('setting.ini')
+KGB_MODE = bool(config.get('Setting', 'kgb_Mode'))
+
+logger = Logger()
 
 
 def choice_phrase(member: str, event: str):
@@ -41,9 +48,8 @@ class Logging(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.channel = self.bot.get_channel(notification_channel)
-
-    logger = Logger()
+        self.channel = bot.get_channel(notification_channel)
+        # bot.loop.create_task(self.check_kgb())
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -65,27 +71,36 @@ class Logging(commands.Cog):
         await result_embed('Разбанен!', choice_phrase(member, 'unban'), self.channel)
         self.logger.log(f'[Unban] Guild: {guild} User: {member}')
 
-    # @commands.command()
-    # async def kgb(self, ctx, state):
-    #     if state.lower() == 'true' or state.lower() == 'on':
-    #         os.environ['KGB_MODE'] = 'True'
-    #         await ctx.send('Включен режим слежки')
-    #     elif state.lower() == 'false' or state.lower() == 'off':
-    #         os.environ['KGB_MODE'] = 'False'
-    #         await ctx.send('Выключен режим слежки')
-    #
-    # if KGB_MODE == 'True':
-    #     @commands.Cog.listener()
-    #     async def on_message_delete(self, message):
-    #         self.logger.log(f'[Deleted Message] Text: {message.content} Author: {message.author}')
-    #
-    #     @commands.Cog.listener()
-    #     async def on_message_edit(self, before, after):
-    #         self.logger.log(f'[Edited Message] Before: {before.content} After: {after.content} Author: {before.author}')
+    @commands.command()
+    async def kgb(self, ctx, state):
+        if state.lower() == 'true' or state.lower() == 'on':
+            config.set('Setting', 'kgb_mode', 'True')
+            writeconfig()
+            KGB_MODE = True
+            await result_embed('Успешно!', 'Режим доностчика активен!', ctx)
+        elif state.lower() == 'false' or state.lower() == 'off':
+            config.set('Setting', 'kgb_mode', 'False')
+            writeconfig()
+            KGB_MODE = False
+            await result_embed('Успешно!', 'Режим доностчика деактивирован!', ctx)
 
     @commands.Cog.listener()
-    async def on_command_error(self, ctx, ex):
-        await ctx.send(f'{ctx.message.author.mention} {ex}')
+    async def on_message_delete(self, message):
+        if KGB_MODE:
+            await message.channel.send(f'[Deleted Message] Text: {message.content} Author: {message.author}')
+
+    @commands.Cog.listener()
+    async def on_message_edit(self, before, after):
+        if KGB_MODE:
+            await before.channel.send(
+                f'[Edited Message] Before: {before.content} After: {after.content} Author: {before.author}')
+
+
+    # @commands.Cog.listener()
+    # async def on_command_error(self, ctx, ex):
+    #     await ctx.send(f'{ctx.message.author.mention} {ex}')
+
+
 
 
 def setup(bot):

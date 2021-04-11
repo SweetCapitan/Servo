@@ -4,10 +4,10 @@ from datetime import datetime
 # kernel32 = ctypes.windll.kernel32
 # kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 import discord
+import configparser
 
 
 class Logger:
-    #TODO Попробовать реализовать универсальный логгер комманд, без ручного добавления в логгирование
     @staticmethod
     def get_time():
         iso = datetime.now().isoformat()
@@ -25,6 +25,7 @@ class Logger:
     def comm(self, text):
         print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
 
+
 async def result_embed(result_state, description, message):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
     await message.send(embed=embed)
@@ -41,7 +42,15 @@ def pluralize(source, first, second, third):
         return second
     elif int(str(source)[-1]) in range(5, 10):
         return third
+
+
 # TODO Дописать парсер ключей и добавить его использвание в некоторые функции
 # def key_parser(string):   Це альфа альфа альфа бета гамма тест парсера ключей, он тут чтобы не забыть про него
 #     parser = re.search(r'--([^\s=]+)(?:=(\S+))?', string)
 #     return parser.group(2)
+
+def writeconfig():
+    config = configparser.ConfigParser()
+    config.read('setting.ini')
+    with open('setting.ini', 'w') as configFile:
+        config.write(configFile)

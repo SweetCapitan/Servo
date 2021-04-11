@@ -17,6 +17,7 @@ config = configparser.ConfigParser()
 config.read('setting.ini')
 response_time = config.get('Setting', 'covid_time')
 rainbow_role_name = config.get('Setting', 'role_rainbow')
+rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
 
 
 class BackgroundTasks(commands.Cog):
@@ -26,36 +27,23 @@ class BackgroundTasks(commands.Cog):
         bot.loop.create_task(self.status())
         bot.loop.create_task(self.virus())
         # Some Shit
-        server_list = self.bot.guilds
-        servers = list()
-        for server in server_list:
-            servers.append(server.id)
-        i = 0
-        while i < len(servers):
-            self.bot.loop.create_task(self.rainbow(servers[i]))
-            # asyncio.run_coroutine_threadsafe(self.rainbow_change, self.bot.loop)
-            i += 1
-
-    @staticmethod
-    def check_status(guild):
-        pass
-        # TODO Передалать функцию проверки статуса радуги-хуядуги
+        if rainbow_role_status:
+            bot.loop.create_task(self.rainbow(530374773612478475))
+        # asyncio.run_coroutine_threadsafe(self.rainbow_change, self.bot.loop)
 
     async def rainbow(self, server_id):
         hue = 0
-        while True:
-            while self.check_status(server_id):
-                for role in self.bot.get_guild(int(server_id)).roles:
-                    if str(role) == str('Rainbow'):
-                        hue = (hue + 7) % 360
-                        rgb = [int(x * 255) for x in hls_to_rgb(hue / 360, 0.5, 1)]
-                        clr = discord.Color(((rgb[0] << 16) + (rgb[1] << 8) + rgb[2]))
-                        try:
-                            await role.edit(color=clr)
-                        except Exception as e:
-                            logger.error(str(e))
-                        await asyncio.sleep(5)
-            await asyncio.sleep(5)
+        for role in self.bot.get_guild(server_id).roles:
+            if str(role) == rainbow_role_name:
+                while True:
+                    hue = (hue + 7) % 360
+                    rgb = [int(x * 255) for x in hls_to_rgb(hue / 360, 0.5, 1)]
+                    clr = discord.Color(((rgb[0] << 16) + (rgb[1] << 8) + rgb[2]))
+                    try:
+                        await role.edit(color=clr)
+                    except Exception as e:
+                        logger.error(str(e))
+                    await asyncio.sleep(5)
 
     @staticmethod
     def get_uptime():
