@@ -79,11 +79,6 @@ class Chat(commands.Cog):
                            .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
         self.logger.comm(f'CLEAR. Author: {ctx.message.author}')
 
-    # noinspection SpellCheckingInspection
-    emoji_react = ['<:atlishna:619899647669960714>', '<:DurkaStoryBob:740016376529289278>',
-                   '<:roflanpominki:739991656325054546>', '<:OREHUS_YES:666640633502498865>',
-                   '<:ping_rage:615000140423626754>', '<:thinkk:664844439591714818>]']
-
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.content.lower() == 'пошел нахуй' or message.content.lower() == 'нахуй пошел':
@@ -91,11 +86,10 @@ class Chat(commands.Cog):
             await self.bot.process_commands(message)
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, _):
-        for emo in self.emoji_react:
-            if emo.lower() in str(reaction).lower():
-                emoji = emo
-                await reaction.message.add_reaction(emoji)
+    async def on_reaction_add(self, reaction, user):
+        users = await reaction.users().flatten()
+        if len(users) > 1:
+            await reaction.message.add_reaction(reaction.emoji)
 
 
 def setup(bot):
