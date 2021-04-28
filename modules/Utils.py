@@ -289,6 +289,31 @@ class Utils(commands.Cog):
         except Exception as e:
             await result_embed('Ашибка!', e, ctx)
 
+    @commands.command(brief='Я не ебу как это назвать, пусть будет просто КИТАЙ',
+                      description='Рофляная команда перевода паст в тематику ТОВАРИЩ XI',
+                      usage='<Любой текст с ключевыми словами>',
+                      aliases=['tr','translit'])
+    async def translate_to_chinese(self, ctx, *, args):
+        key = ['анон', 'хуй', 'тян', 'абу', 'обоссал', 'двачую', 'куколд', 'модератор', 'еда', 'лол', 'хохлы', 'ркн',
+               'ролл',
+               'крым', 'рубль', 'донбасс', 'питер', 'ДС', 'битард', 'тянка']
+        value = ['простой Иван город Тверь', 'нефритовый стержень', 'кошачья жена', 'товарищ Xі', 'осуждение партией',
+                 'двойное чаепитие', 'китайский муж русская жена', 'секретарь компартии', 'кормление рис', 'много смех',
+                 'гунны', 'great chinese firewall', 'кручение', 'Тайвань', 'юань', 'Тибет', 'Ухань', 'Пекин', 'товарищ',
+                 'Китайская жена']
+
+        def convert(text):
+            new_string = text.lower()
+            args = new_string.replace(',', '').replace('.', '').split(' ')
+            for k in args:
+                count = 0
+                for word in key:
+                    if word == k:
+                        new_string = new_string.replace(k, value[count])
+                    count += 1
+            return new_string
+        await ctx.send(convert(args))
+
 
 def setup(bot):
     bot.add_cog(Utils(bot))
