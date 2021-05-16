@@ -86,7 +86,7 @@ class Chat(commands.Cog):
             await self.bot.process_commands(message)
 
     @commands.Cog.listener()
-    async def on_reaction_add(self, reaction, user):
+    async def on_reaction_add(self, reaction, _):
         users = await reaction.users().flatten()
         if len(users) > 1:
             await reaction.message.add_reaction(reaction.emoji)

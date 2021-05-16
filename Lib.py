@@ -48,9 +48,3 @@ def pluralize(source, first, second, third):
 # def key_parser(string):   Це альфа альфа альфа бета гамма тест парсера ключей, он тут чтобы не забыть про него
 #     parser = re.search(r'--([^\s=]+)(?:=(\S+))?', string)
 #     return parser.group(2)
-
-def writeconfig():
-    config = configparser.ConfigParser()
-    config.read('setting.ini')
-    with open('setting.ini', 'w') as configFile:
-        config.write(configFile)

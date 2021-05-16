@@ -13,7 +13,7 @@ import random
 import configparser
 
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize, writeconfig
+from Lib import Logger, result_embed, pluralize
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 config = configparser.ConfigParser()
@@ -246,14 +246,14 @@ class Utils(commands.Cog):
         if role is not None:
             if state.lower() == 'on' or state.lower() == 'true' and not rainbow_role_status:
                 config.set('Setting', 'role_rainbow_status', 'True')
-                writeconfig()
-                rainbow_role_status = True
+                with open('setting.ini', 'w', encoding='utf-8') as configFile:
+                    config.write(configFile)
                 await result_embed('Модуль [RAINBOW]', 'Включен!', ctx)
                 self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             elif state.lower() == 'off' or state.lower() == 'false' and rainbow_role_status:
                 config.set('Setting', 'role_rainbow_status', 'False')
-                writeconfig()
-                rainbow_role_status = False
+                with open('setting.ini', 'w', encoding='utf-8') as configFile:
+                    config.write(configFile)
                 await result_embed('Модуль [RAINBOW]', 'Выключен!', ctx)
                 self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
