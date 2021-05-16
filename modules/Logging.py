@@ -6,7 +6,7 @@ import asyncio
 import sys
 
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize, writeconfig
+from Lib import Logger, result_embed, pluralize
 
 notification_channel = 738855014377848943
 config = configparser.ConfigParser()
@@ -76,26 +76,29 @@ class Logging(commands.Cog):
     async def kgb(self, ctx, state):
         if state.lower() == 'true' or state.lower() == 'on':
             config.set('Setting', 'kgb_mode', 'True')
-            writeconfig()
-            self.KGB_MODE = True
+            with open('setting.ini', 'w', encoding='utf-8') as configFile:
+                config.write(configFile)
+            config.read('setting.ini')
+            self.KGB_MODE = config.get('Setting', 'kgb_mode')
             await result_embed('Успешно!', 'Режим доностчика активен!', ctx)
         elif state.lower() == 'false' or state.lower() == 'off':
             config.set('Setting', 'kgb_mode', 'False')
-            writeconfig()
-            self.KGB_MODE = False
+            with open('setting.ini', 'w', encoding='utf-8') as configFile:
+                config.write(configFile)
+            config.read('setting.ini')
+            self.KGB_MODE = config.get('Setting', 'kgb_mode')
             await result_embed('Успешно!', 'Режим доностчика деактивирован!', ctx)
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
-        if self.KGB_MODE:
+        if self.KGB_MODE == 'True':
             await message.channel.send(f'[Deleted Message] Text: {message.content} Author: {message.author}')
 
     @commands.Cog.listener()
     async def on_message_edit(self, before, after):
-        if self.KGB_MODE:
+        if self.KGB_MODE == 'True':
             await before.channel.send(
                 f'[Edited Message] Before: {before.content} After: {after.content} Author: {before.author}')
-
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, ex):
