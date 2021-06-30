@@ -1,9 +1,13 @@
 import os
 import time
 # noinspection PyUnresolvedReferences,PyPackageRequirements
+import discord_slash
 from discord.ext import commands
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
+from discord_slash.model import SlashCommandOptionType
 import config
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, embed_generator, pluralize, perms
 
 bot_start_time = time.time()
 logger = Logger()
@@ -28,26 +32,36 @@ class Bot(commands.Bot):
                 count += 1
         logger.log(f'Всего Модулей: {count}')
         logger.log(f'Всего Команд: {len([c for m in command_list for c in m])}')
+        try:
+            await slash.sync_all_commands()
+        except Exception as Ex:
+            logger.warn(f'Произошла ошибка, при синхронизации slash команд!\n {Ex}')
+        else:
+            logger.log('Slash команды синхронизированны!')
         logger.log('=====================================================')
         bot_time = round(time.time() - bot_start_time)
         logger.log(f'Загрузка завершена за {str(bot_time) + pluralize(bot_time, " секунду", " секунды", " секунд")}!')
 
 
-help_com = commands.DefaultHelpCommand(commands_heading='Команды:', no_category='Комманды ядра')
-
 bot = Bot(command_prefix='?', owner_id=252469010308792322,
           description='Этот бот напсан чисто по фану, для использования на собственном сервере. Если возникли вопросы, '
-                      'то прошу ко мне на сервер https://discord.gg/4c7TbSd, ну или пишите в лс MeowCaptain#9480',
-          help_command=help_com)
+                      'то прошу ко мне на сервер https://discord.gg/4c7TbSd')
+slash = SlashCommand(bot, sync_commands=True)
+
 os.environ['PREFIX'] = bot.command_prefix
 
+module_List_Choices = [{"name": str(file[:-3]),
+                        "value": str(file[:-3])} for file in os.listdir('modules') if file.endswith('.py')]
+module_List_Choices.append({"name": "Все_нахуй!!!",
+                            "value": "all"})
 
-@bot.command(brief='Перезагрузка модуля', description=f'Совершается полная перезагрузка модуля из памяти бота',
-             usage='<module name>'
-             )
-@commands.has_permissions(administrator=True)
-async def reload(ctx, extension):
-    if str(extension).lower() == 'all':
+
+@slash.slash(name='reload', description='Перезагрузка модуля из памяти бота', permissions=perms,
+             options=[create_option(name='модуль', description='Имя модуля, который вы хотите перезапустить',
+                                    option_type=SlashCommandOptionType.STRING, required=True,
+                                    choices=module_List_Choices)])
+async def reload(ctx: SlashContext, module):
+    if str(module) == 'all':
         count = 0
         module_list = []
         for file in os.listdir('modules'):
@@ -60,19 +74,20 @@ async def reload(ctx, extension):
         module_list_text = ''
         for mod in module_list:
             module_list_text = module_list_text + mod
-        await result_embed(f'Всего модулей перезагружено: {count}\n',
-                           f'{module_list_text}', ctx)
-        logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
+        await ctx.send(embed=embed_generator(f'Всего модулей перезагружено: {count}\n',
+                                             f'{module_list_text}'))
+        logger.comm(f'RELOAD module: [{module}]. Author: {ctx.author}')
     else:
-        bot.unload_extension(f'modules.{extension}')
-        bot.load_extension(f'modules.{extension}')
-        await result_embed('Перезагружен!', f'Модуль [{extension}] перезагружен', ctx)
-        logger.comm(f'RELOAD module: [{extension}]. Author: {ctx.message.author}')
+        bot.unload_extension(f'modules.{module}')
+        bot.load_extension(f'modules.{module}')
+        await ctx.send(embed=embed_generator('Перезагружен!', f'Модуль [{module}] перезагружен'))
+        logger.comm(f'RELOAD module: [{module}]. Author: {ctx.author}')
 
 
-@bot.command(brief='Загрузить модуль в память бота', description=f'Загружает модуль в память бота, до его перезагрузки',
-             usage='<module name>')
-@commands.has_permissions(administrator=True)
+@slash.slash(name='load',
+             description='Загружает модуль в память бота, до его перезагрузки', permissions=perms,
+             options=[create_option(name='модуль', description='Имя модуля, который вы хотите загрузить example.py',
+                                    option_type=SlashCommandOptionType.STRING, required=True)])
 async def load(self, ctx, extension):
     self.bot.load_extension(f'modules.{extension}')
     await result_embed('Загружен!', f'Модуль [{extension}] Загружен', ctx)

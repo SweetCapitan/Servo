@@ -8,12 +8,15 @@ import discord
 import requests
 from bs4 import BeautifulSoup
 from discord.ext import commands
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
+from discord_slash.model import SlashCommandOptionType
 import sys
 import random
 import configparser
 
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, embed_generator, pluralize, perms
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 config = configparser.ConfigParser()
@@ -28,61 +31,53 @@ class Utils(commands.Cog):
 
     logger = Logger()
 
-    @commands.command(aliases=['btc', 'cry'],
-                      description='Реклама YOBA в описании SERVO-BOT'
-                                  '\nЗачем боту эта функция ? А хуй ее знает ¯\\_(ツ)_/¯',
-                      brief='Стоимости топовых криптовалют')
-    async def crypto(self, ctx, *args):
-        valute = ''
+    @cog_ext.cog_slash(name='btc',
+                       description='Реклама YOBA в описании SERVO-BOT'
+                                   '\nЗачем боту эта функция ? А хуй ее знает ',
+                       options=[
+                           create_option(name='валюта', description='Укажите желаюмую валюту',
+                                         option_type=SlashCommandOptionType.STRING, required=True,
+                                         choices=[
+                                             create_choice('USD', 'Доллар'),
+                                             create_choice('RUB', 'Рубли')
+                                         ])
+                       ])
+    async def crypto(self, ctx: SlashContext, money_code: str = 'USD'):
         limit = 8
-        if not args:
-            valute = 'usd'
-        elif args[0]:
-            valute = args[0]
-        valute = valute.upper()
         API_KEY_COINMARKET = os.environ.get('API_KEY_COINMARKET')
         url_usd = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/' \
-                  f'listings/latest?start=1&limit={limit}&convert={valute}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
+                  f'listings/latest?start=1&limit={limit}&convert={money_code}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
         req = requests.get(url_usd)
-        json = req.json()
+        req_json = req.json()
         embed = discord.Embed(title="Стоимости криптовалют",
                               description="Стоимость криптовалют на данный момент по данным биржи coinmarketcap.",
                               color=0xd5de21)
-        for i in json['data']:
-            price = str(i['quote'][valute]['price'])
+        for i in req_json['data']:
+            price = str(i['quote'][money_code]['price'])
             embed.add_field(name=i['name'], value=price, inline=True)
-            # embed.add_field(name='Изменения за Час', закоммментированно до востребованности
-            #                 value=f"[{round(((int(float(price)) /
-            #                 100) * int(float(i['quote'][valute]['percent_change_1h']))), 1)}]",inline=True)
             embed.add_field(name='Изменения за Сутки',
                             value="[{}]".format(
-                                round(
-                                    ((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_24h']))),
-                                    1)
-                            ),
+                                round(((int(float(price)) / 100) * int(float(i['quote'][money_code]
+                                                                             ['percent_change_24h']))), 1)),
                             inline=True)
             embed.add_field(name='Неделю',
                             value="[{}]".format(
-                                round(((int(float(price)) / 100) * int(float(i['quote'][valute]['percent_change_7d']))),
-                                      1)
-                            ),
-                            inline=True)
-
+                                round(((int(float(price)) / 100) * int(float(i['quote'][money_code]
+                                                                             ['percent_change_7d']))), 1)), inline=True)
         await ctx.send(embed=embed)
         self.logger.comm('crypto_price')
 
-    @commands.command(
-        description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
-        brief='Случайная цитата с bash.im')
-    async def bash(self, ctx):
+    @cog_ext.cog_slash(name='bash',
+                       description='Выполнив команду, бот отправит в чат случайную цитату из bash.im')
+    async def bash(self, ctx: SlashContext):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
         rs = requests.get(url)
         root = BeautifulSoup(rs.text, 'html.parser')
         mydivs = root.find("div", {"class": "quote__body"})
         quote = mydivs.getText('\n', strip=True)
-        await result_embed('Рандомная цитата с Bash.im', str(quote), ctx)
-        self.logger.comm(f'BASH. Author: {ctx.message.author}')
+        await ctx.send(embed=embed_generator('Рандомная цитата с Bash.im', str(quote)))
+        self.logger.comm(f'BASH. Author: {ctx.author}')
 
     # -----------------------------------------Start of IteratorW Code -------------------------------------------------
     class MyGlobals(dict):
@@ -120,141 +115,73 @@ class Utils(commands.Cog):
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
-    @commands.command(aliases=['ex', 'exec'],
-                      description='Эта команда позволяет выполнять код Python прямо из самого чата.\n'
-                                  'P.s. Работает на коде IteratorW\n',
-                      brief='Выполнить Python код',
-                      usage='execute ` ` `code` ` ` (без пробелов)')
-    @commands.has_permissions(administrator=True)
-    async def execute(self, ctx):
-        code = ctx.message.content.split("```")
-        if len(code) < 3:
-            await result_embed('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', 'Код где блять ?', ctx)
-        out, is_error = self._exec(code[1].strip().rstrip(), globals(), locals())
+    @cog_ext.cog_slash(name='execute',
+                       description='Эта команда позволяет выполнять код Python.',
+                       options=[create_option(name='code', description='Код на Питухоне', required=True,
+                                              option_type=SlashCommandOptionType.STRING)], permissions=perms)
+    async def execute(self, ctx: SlashContext, code: str = 'print("Загадка от Жака. Где?")'):
+        code = code.replace("```", "")
+        out, is_error = self._exec(code.strip().rstrip(), globals(), locals())
 
         if is_error:
-            await result_embed('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', out, ctx)
-            self.logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.message.author}\n{out}')
+            await ctx.send(embed=embed_generator('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', out))
+            self.logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.author}\n{out}')
         else:
-            await result_embed('Код успешно выполнен!', out, ctx)
-            self.logger.comm(f'EXECUTE. Author: {ctx.message.author}')
-
-    # @commands.command(aliases=['yt'],
-    #                   description='Ну ты типо дохуя умный ? Сказанно же "ПОИСК ВИДЕО В ЮТУБЕ", хули тебе еще надо ?',
-    #                   brief='Поиск видео в Ютубе',
-    #                   usage='<video url>')
-    # async def youtube(self, ctx, *, video_title: str):
-    #
-    #     class YoutubeSearch:
-    #         def __init__(self, search_terms):
-    #             self.search_terms = video_title
-    #             self.videos = self.search()
-    #
-    #         def search(self):
-    #             encoded_search = urllib.parse.quote(self.search_terms)
-    #             base_url = "https://youtube.com"
-    #             url = f"{base_url}/results?search_query={encoded_search}"
-    #             response = requests.get(url).text
-    #             while 'window["ytInitialData"]' not in response:
-    #                 response = requests.get(url).text
-    #             results = self.parse_html(response)
-    #             return results
-    #
-    #         def parse_html(self, response):
-    #             results = []
-    #             start = (
-    #                     response.index('window["ytInitialData"]')
-    #                     + len('window["ytInitialData"]')
-    #                     + 3
-    #             )
-    #             end = response.index("};", start) + 1
-    #             json_str = response[start:end]
-    #             data = json.loads(json_str)
-    #
-    #             videos = data["contents"]["twoColumnSearchResultsRenderer"]["primaryContents"][
-    #                 "sectionListRenderer"
-    #             ]["contents"][0]["itemSectionRenderer"]["contents"]
-    #
-    #             for video in videos:
-    #                 res = {}
-    #                 if "videoRenderer" in video.keys():
-    #                     video_data = video["videoRenderer"]
-    #                     res["id"] = video_data["videoId"]
-    #                     res["thumbnails"] = [
-    #                         thumb["url"] for thumb in video_data["thumbnail"]["thumbnails"]
-    #                     ]
-    #                     res["title"] = video_data["title"]["runs"][0]["text"]
-    #                     res["channel"] = video_data["longBylineText"]["runs"][0]["text"]
-    #                     res["duration"] = video_data.get("lengthText", {}).get("simpleText", 0)
-    #                     res["views"] = video_data.get("viewCountText", {}).get("simpleText", 0)
-    #                     res["url_suffix"] = video_data["navigationEndpoint"]["commandMetadata"][
-    #                         "webCommandMetadata"
-    #                     ]["url"]
-    #                     results.append(res)
-    #             return results
-    #
-    #         def to_dict(self):
-    #             return self.videos
-    #
-    #     # keyword = " ".join(video_title) так и не понял нахуя оно, пусть будет на случай, если все сломается
-    #
-    #     results = YoutubeSearch(video_title).to_dict()
-    #
-    #     if len(results) < 1:
-    #         await result_embed('Ошибка!', 'Видео по данному запросу не найдено!', ctx)
-    #         return
-    #
-    #     await ctx.message.channel.send(f'Видео по запросу {video_title}: (запросил: {ctx.message.author})'
-    #                                    f'\n {("https://youtube.com/" + results[0]["url_suffix"])}')
-        # TODO Пофиксить yt
+            await ctx.send(embed=embed_generator('Код успешно выполнен!', out))
+            self.logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
-    @commands.command(brief='Открыть коуб в чате',
-                      description='Вам слишком скучно и одиноко? Вы хотите с кем-нибудь поделиться годным коубом?'
-                                  'Но дискорд не позволяет его просмотреть прямо в чате?'
-                                  'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!',
-                      usage='<coub url>')
-    async def coub(self, ctx, url_to_coub):
+    @cog_ext.cog_slash(name='coub',
+                       description='Вам слишком скучно и одиноко? Вы хотите с кем-нибудь поделиться годным коубом?'
+                                   'Но дискорд не позволяет его просмотреть прямо в чате?'
+                                   'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!')
+    async def coub(self, ctx: SlashContext, url_to_coub: str):
         url = "http://coub.com//api/v2/coubs" + url_to_coub[21:]
         r = requests.get(url)
         coub_data = r.json()
         views = coub_data["views_count"]
         title = coub_data["title"]
-        url_to_ass = "http://coubassistant.cf/pages/en-us/web"
+        url_to_ass = "https://coubassistant.com/en/web"
         payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"urlpost\"\r\n\r\n{url_to_coub}\r\n-----011000010111000001101001--\r\n"
         headers = {'content-type': 'multipart/form-data; boundary=---011000010111000001101001'}
         response = requests.request("POST", url_to_ass, data=payload, headers=headers)
         result = BeautifulSoup(response.text, 'html.parser')
-        song = result.findAll('h3')
-        sourse = result.findAll('a', href=True)
+        song = coub_data["file_versions"]["html5"]['audio']['high']
+        song_name = result.findAll('h3')[0].getText()
+        if song_name == 'Easy way to search for music':
+            song_name = 'Музыка не найдена!'
         try:
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
             await result_embed('Упс...', 'Что-то пошло не так, проверьте ссылку', ctx)
             return
-        await ctx.send(f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song[0].getText()}``\nСсылка: {link}\nАудио: {sourse[-1]["href"]}')
+        await ctx.send(
+            f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song_name}``\nСсылка: {link} '
+            f'\nАудио: {song["url"]}   {round(song["size"] / 1048576, 2)}mB')
         self.logger.comm(f'COUB. Author: {ctx.message.author}')
         await ctx.message.delete()
 
-    @commands.command(aliases=['rainbow', 'rb'], brief='YOBA',
-                      description='Реклама YOBA в говнокоде Python')
-    @commands.has_permissions(administrator=True)
-    async def change_rainbow(self, ctx, state):
+    @cog_ext.cog_slash(name='rainbow',
+                       description='Реклама YOBA в говнокоде Python', permissions=perms,
+                       options=[create_option(name='статус', description='Статус радуги',
+                                              option_type=SlashCommandOptionType.BOOLEAN,
+                                              required=True)])
+    async def change_rainbow(self, ctx: SlashContext, state: bool):
         rainbow_role_name = config.get('Setting', 'role_rainbow')
         rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
         role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
         if role is not None:
-            if state.lower() == 'on' or state.lower() == 'true' and not rainbow_role_status:
+            if state and not rainbow_role_status:
                 config.set('Setting', 'role_rainbow_status', 'True')
                 with open('setting.ini', 'w', encoding='utf-8') as configFile:
                     config.write(configFile)
-                await result_embed('Модуль [RAINBOW]', 'Включен!', ctx)
+                await ctx.send(embed=embed_generator('Модуль [RAINBOW]', 'Включен!'))
                 self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
-            elif state.lower() == 'off' or state.lower() == 'false' and rainbow_role_status:
+            elif not state and rainbow_role_status:
                 config.set('Setting', 'role_rainbow_status', 'False')
                 with open('setting.ini', 'w', encoding='utf-8') as configFile:
                     config.write(configFile)
-                await result_embed('Модуль [RAINBOW]', 'Выключен!', ctx)
+                await ctx.send(embed=embed_generator('Модуль [RAINBOW]', 'Выключен!'))
                 self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
             try:
@@ -262,57 +189,30 @@ class Utils(commands.Cog):
                                                 name='Rainbow',
                                                 hoist=True,
                                                 reason='SERVO-BOT Автоматическое добавление роли!')
-                await result_embed('[RAINBOW]',
-                                   'Т.к. роль не была найдена, она была добавлена автоматически!\n'
-                                   'Пожалуйста добавте эту роль, тем кому вы хотите сделать радужный никнейм :3', ctx)
+                await ctx.send(embed=embed_generator('[RAINBOW]',
+                                                     'Т.к. роль не была найдена, она была добавлена автоматически!\n'
+                                                     'Пожалуйста добавте эту роль, тем кому вы хотите сделать '
+                                                     'радужный никнейм :3'))
             except discord.Forbidden:
-                await result_embed('Прав не завезли!',
-                                   f'Добавте боту права "manage_roles" или сами создайте роль ``{rainbow_role_name}``',
-                                   ctx)
+                await ctx.send(embed=embed_generator('Прав не завезли!',
+                                                     f'Добавте боту права "manage_roles" или сами создайте роль '
+                                                     f'``{rainbow_role_name}``'))
 
-    @commands.command(brief='Рандомная выбиралка',
-                      description='Выбирает одно из нескольких значений, указанных через запятую',
-                      usage='<значение 1>, <значение 2>, и т.д.')
-    async def choice(self, ctx):
-        await result_embed('Успешно!', f'Я выбираю: {random.choice(str(ctx.message.content)[7:].split(","))}', ctx)
+    @cog_ext.cog_slash(name='choice',
+                       description='Выбирает одно из нескольких значений, указанных через запятую')
+    async def choice(self, ctx: SlashContext, option: str):
+        await ctx.send(f'Я выбираю: {random.choice(option.split(", "))}')
 
-    @commands.command(brief='Задать текст статуса',
-                      description='Задает текст, который будет отображаться в статусе бота',
-                      usage='<Текст, который вы хотите отображать в статусе>')
-    @commands.has_permissions(manage_emojis=True)
-    async def set_status(self, ctx, *, text: str):
+    @cog_ext.cog_slash(name='status',
+                       description='Задает текст, который будет отображаться в статусе бота', permissions=perms)
+    async def set_status(self, ctx: SlashContext, text: str):
         try:
             config.set('Setting', 'streaming_status_text', text)
             with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
-            await result_embed('Успешно!', f'Статус [{text}] был установлен!', ctx)
+            await ctx.send(embed=embed_generator('Успешно!', f'Статус [{text}] был установлен!'))
         except Exception as e:
-            await result_embed('Ашибка!', e, ctx)
-
-    @commands.command(brief='Я не ебу как это назвать, пусть будет просто КИТАЙ',
-                      description='Рофляная команда перевода паст в тематику ТОВАРИЩ XI',
-                      usage='<Любой текст с ключевыми словами>',
-                      aliases=['tr','translit'])
-    async def translate_to_chinese(self, ctx, *, args):
-        key = ['анон', 'хуй', 'тян', 'абу', 'обоссал', 'двачую', 'куколд', 'модератор', 'еда', 'лол', 'хохлы', 'ркн',
-               'ролл',
-               'крым', 'рубль', 'донбасс', 'питер', 'ДС', 'битард', 'тянка']
-        value = ['простой Иван город Тверь', 'нефритовый стержень', 'кошачья жена', 'товарищ Xі', 'осуждение партией',
-                 'двойное чаепитие', 'китайский муж русская жена', 'секретарь компартии', 'кормление рис', 'много смех',
-                 'гунны', 'great chinese firewall', 'кручение', 'Тайвань', 'юань', 'Тибет', 'Ухань', 'Пекин', 'товарищ',
-                 'Китайская жена']
-
-        def convert(text):
-            new_string = text.lower()
-            args = new_string.replace(',', '').replace('.', '').split(' ')
-            for k in args:
-                count = 0
-                for word in key:
-                    if word == k:
-                        new_string = new_string.replace(k, value[count])
-                    count += 1
-            return new_string
-        await ctx.send(convert(args))
+            await ctx.send(embed=embed_generator('Ашибка!', e))
 
 
 def setup(bot):

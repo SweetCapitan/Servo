@@ -1,10 +1,14 @@
 import datetime
+import discord
 from discord.ext import commands
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
+from discord_slash.model import SlashCommandOptionType
 import os
 import sys
 
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, embed_generator, pluralize, perms
 
 text = '        \                           /\n' \
        '         \                         /\n' \
@@ -37,47 +41,31 @@ class Chat(commands.Cog):
 
     logger = Logger()
 
-    @commands.command(aliases=['cl', 'purge'],
-                      description='Эта команда позволяет удалять сообщения из канала, в котором была вызвана команда.',
-                      brief='Удалить сообщения из канала.',
-                      help='- Удаление сообщений указанного пользователя -\n'
-                           'Эта опция позволяет удалить n сообщений. Если пользователь упоминается в конце,'
-                           'тогда будут удалены ТОЛЬКО сообщения указанного пользователя.',
-                      usage='<(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]>\n'
-                            f'clear <(UTC TIME!)[hour] [min] [sec] [day] [mount] [year]> @Somebody\n'
-                            f'clear 10\n'
-                            f'clear 10 @Somebody')
-    @commands.has_permissions(manage_messages=True)
-    async def clear(self, ctx, *args):
-        if not args:
-            await result_embed('ОшибОЧКА!', 'Укажите аргументы и повторите попытку.', ctx)
-            return
-        chan = ctx.message.channel
-        await ctx.message.delete()
-        if len(args) == 7:
+    @cog_ext.cog_slash(name='clear', description='Очистка сообщений',
+                       permissions=perms,
+                       options=[
+                           create_option(
+                               name='число_сообщений',
+                               description='Введите число сообщений, которое хотите удалить',
+                               option_type=SlashCommandOptionType.INTEGER,
+                               required=True),
+                           create_option(
+                               name='пользователь',
+                               description='Если хотите удалить сообщения определенного пользователя, укажите его',
+                               option_type=6,
+                               required=False)])
+    async def clear(self, ctx: SlashContext, num_mes: int, *user: discord.User):
+        chan = ctx.channel
+        if not user:
+            deleted = await chan.purge(limit=num_mes)
+        elif user[0]:
             def check(msg):
-                return msg.author == ctx.message.mentions[0]
+                return msg.author == user[0]
 
-            deleted = await chan.purge(check=check,
-                                       after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
-                                                               int(args[0]), int(args[1]), int(args[2])))
-        elif len(args) == 6:
-            deleted = await chan.purge(
-                after=datetime.datetime(int(args[5]), int(args[4]), int(args[3]),
-                                        int(args[0]), int(args[1]), int(args[2])))
-        elif len(args) == 2:
-            def check(msg):
-                return msg.author == ctx.message.mentions[0]
+            deleted = await chan.purge(limit=num_mes, check=check)
 
-            deleted = await chan.purge(limit=int(args[0]), check=check)
-        else:
-            deleted = await chan.purge(limit=int(args[0]))
-
-        # await chan.send('Удалено %s {}'.format(pluralize(len(deleted),
-        #                                                  'сообщение', 'сообщения', 'сообщений')) % len(deleted))
-        await result_embed('Успешно!', 'Удалено %s {}'
-                           .format(pluralize(len(deleted), 'сообщение', 'сообщения', 'сообщений')) % len(deleted), ctx)
-        self.logger.comm(f'CLEAR. Author: {ctx.message.author}')
+        await ctx.send(embed=embed_generator('Успешно!', f'Удалено {len(deleted)} сообщений.'))
+        self.logger.comm(f'CLEAR. Author: {ctx.author}')
 
     @commands.Cog.listener()
     async def on_message(self, message):

@@ -1,12 +1,14 @@
 import os
 import random
 from discord.ext import commands
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
+from discord_slash.model import SlashCommandOptionType
 import configparser
 import asyncio
 import sys
-
 sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Lib import Logger, embed_generator, pluralize, perms
 
 notification_channel = 738855014377848943
 config = configparser.ConfigParser()
@@ -72,22 +74,29 @@ class Logging(commands.Cog):
         await result_embed('Разбанен!', choice_phrase(member, 'unban'), self.channel)
         self.logger.log(f'[Unban] Guild: {guild} User: {member}')
 
-    @commands.command()
-    async def kgb(self, ctx, state):
-        if state.lower() == 'true' or state.lower() == 'on':
+    @cog_ext.cog_slash(name='KGB', description='Переключение режима прослушки удаленных/измененных сообщений.',
+                       permissions=perms,
+                       options=[create_option(
+                           name='режим',
+                           description='Переключить режим',
+                           option_type=SlashCommandOptionType.BOOLEAN,
+                           required=True
+                       )])
+    async def kgb(self, ctx: SlashContext, state: bool):
+        if state:
             config.set('Setting', 'kgb_mode', 'True')
             with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
             config.read('setting.ini')
             self.KGB_MODE = config.get('Setting', 'kgb_mode')
-            await result_embed('Успешно!', 'Режим доностчика активен!', ctx)
-        elif state.lower() == 'false' or state.lower() == 'off':
+            await ctx.send(embed=embed_generator('Успешно!', 'Режим доностчика активен!'))
+        elif not state:
             config.set('Setting', 'kgb_mode', 'False')
             with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
             config.read('setting.ini')
             self.KGB_MODE = config.get('Setting', 'kgb_mode')
-            await result_embed('Успешно!', 'Режим доностчика деактивирован!', ctx)
+            await ctx.send(embed=embed_generator('Успешно!', 'Режим доностчика деактивирован!'))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
@@ -103,8 +112,6 @@ class Logging(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, ex):
         await ctx.send(f'{ctx.message.author.mention} {ex}')
-
-
 
 
 def setup(bot):

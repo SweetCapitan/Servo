@@ -4,7 +4,12 @@ from datetime import datetime
 # kernel32 = ctypes.windll.kernel32
 # kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 import discord
+from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash.utils.manage_commands import create_option, create_choice, create_permission,\
+    create_multi_ids_permission
+from discord_slash.model import SlashCommandPermissionType
 import configparser
+import os
 
 
 class Logger:
@@ -26,9 +31,13 @@ class Logger:
         print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
 
 
-async def result_embed(result_state, description, message):
+def result_embed():
+    pass
+
+
+def embed_generator(result_state, description):
     embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-    await message.send(embed=embed)
+    return embed
 
 
 def pluralize(source, first, second, third):
@@ -44,7 +53,10 @@ def pluralize(source, first, second, third):
         return third
 
 
-# TODO Дописать парсер ключей и добавить его использвание в некоторые функции
-# def key_parser(string):   Це альфа альфа альфа бета гамма тест парсера ключей, он тут чтобы не забыть про него
-#     parser = re.search(r'--([^\s=]+)(?:=(\S+))?', string)
-#     return parser.group(2)
+perms = {
+    os.environ.get('SERVER_ID'): [
+        create_permission(os.environ.get('MODERATOR_ROLE_ID'), SlashCommandPermissionType.ROLE, True),
+        create_permission(os.environ.get('SERVER_ID'), SlashCommandPermissionType.ROLE, False)]
+    # Если хотите отключить обычным пользователям использовать /команду, в аргументах команды укажите
+    # default_permission = False. Такой костыль не обязателен.
+    }
