@@ -114,11 +114,11 @@ class Utils(commands.Cog):
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
-    @cog_ext.cog_slash(name='execute',
-                       description='Эта команда позволяет выполнять код Python.',
-                       options=[create_option(name='code', description='Код на Питухоне', required=True,
-                                              option_type=SlashCommandOptionType.STRING)], permissions=perms)
-    async def execute(self, ctx: SlashContext, code: str = 'print("Загадка от Жака. Где?")'):
+    @cog_ext.cog_slash(name='exec',
+                       description='Эта команда позволяет выполнять код.', permissions=perms,
+                       options=[create_option(name='code', description='Код на Питухоне',
+                                              option_type=SlashCommandOptionType.STRING, required=True)])
+    async def execute(self, ctx: SlashContext, code: str):
         code = code.replace("```", "")
         out, is_error = self._exec(code.strip().rstrip(), globals(), locals())
 
