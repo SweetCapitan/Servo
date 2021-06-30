@@ -35,7 +35,7 @@ class Bot(commands.Bot):
         try:
             await slash.sync_all_commands()
         except Exception as Ex:
-            logger.warn(f'Произошла ошибка, при синхронизации slash команд!\n {Ex}')
+            logger.warn(f'Произошла ошибка при синхронизации slash команд!\n {Ex}')
         else:
             logger.log('Slash команды синхронизированны!')
         logger.log('=====================================================')

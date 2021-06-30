@@ -32,8 +32,7 @@ class Utils(commands.Cog):
     logger = Logger()
 
     @cog_ext.cog_slash(name='btc',
-                       description='Реклама YOBA в описании SERVO-BOT'
-                                   '\nЗачем боту эта функция ? А хуй ее знает ',
+                       description='Реклама YOBA в описании SERVO-BOT',
                        options=[
                            create_option(name='валюта', description='Укажите желаюмую валюту',
                                          option_type=SlashCommandOptionType.STRING, required=True,
@@ -131,10 +130,7 @@ class Utils(commands.Cog):
             self.logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
-    @cog_ext.cog_slash(name='coub',
-                       description='Вам слишком скучно и одиноко? Вы хотите с кем-нибудь поделиться годным коубом?'
-                                   'Но дискорд не позволяет его просмотреть прямо в чате?'
-                                   'Не проблема, просто введите команду с ссылкой на коуб и он сразу появится в чате!')
+    @cog_ext.cog_slash(name='coub', description='Открывает коуб прямо в чате!')
     async def coub(self, ctx: SlashContext, url_to_coub: str):
         url = "http://coub.com//api/v2/coubs" + url_to_coub[21:]
         r = requests.get(url)
