@@ -45,12 +45,12 @@ class Chat(commands.Cog):
                        permissions=perms,
                        options=[
                            create_option(
-                               name='число_сообщений',
+                               name='num_mes',
                                description='Введите число сообщений, которое хотите удалить',
                                option_type=SlashCommandOptionType.INTEGER,
                                required=True),
                            create_option(
-                               name='пользователь',
+                               name='user',
                                description='Если хотите удалить сообщения определенного пользователя, укажите его',
                                option_type=6,
                                required=False)])

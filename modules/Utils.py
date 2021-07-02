@@ -159,7 +159,7 @@ class Utils(commands.Cog):
 
     @cog_ext.cog_slash(name='rainbow',
                        description='Реклама YOBA в говнокоде Python', permissions=perms,
-                       options=[create_option(name='статус', description='Статус радуги',
+                       options=[create_option(name='state', description='Статус радуги',
                                               option_type=SlashCommandOptionType.BOOLEAN,
                                               required=True)])
     async def change_rainbow(self, ctx: SlashContext, state: bool):
