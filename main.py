@@ -25,13 +25,11 @@ class Bot(commands.Bot):
         for file in os.listdir('modules'):
             if file.endswith('.py'):
                 self.load_extension(f'modules.{file[:-3]}')
-                cog = self.get_cog(f'{file[:-3]}')
-                command = cog.get_commands()
-                command_list.append([c.name for c in command])
                 logger.log(f'Загружен модуль {file[:-3]}')
                 count += 1
+        command_list = str(await slash.to_dict())
         logger.log(f'Всего Модулей: {count}')
-        logger.log(f'Всего Команд: {len([c for m in command_list for c in m])}')
+        logger.log('Всего Команд: {}'.format(command_list.find("{'name'") - 1))
         try:
             await slash.sync_all_commands()
         except Exception as Ex:

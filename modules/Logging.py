@@ -113,6 +113,10 @@ class Logging(commands.Cog):
     async def on_command_error(self, ctx, ex):
         await ctx.send(f'{ctx.message.author.mention} {ex}')
 
+    @commands.Cog.listener()
+    async def on_slash_command_error(self, ctx, ex):
+        logger.error(f'[Slash] {ex}\n{ctx}')
+
 
 def setup(bot):
     bot.add_cog(Logging(bot))
