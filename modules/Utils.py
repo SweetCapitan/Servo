@@ -34,7 +34,7 @@ class Utils(commands.Cog):
     @cog_ext.cog_slash(name='btc',
                        description='Реклама YOBA в описании SERVO-BOT',
                        options=[
-                           create_option(name='валюта', description='Укажите желаюмую валюту',
+                           create_option(name='money_code', description='Укажите желаюмую валюту',
                                          option_type=SlashCommandOptionType.STRING, required=True,
                                          choices=[
                                              create_choice('USD', 'Доллар'),
