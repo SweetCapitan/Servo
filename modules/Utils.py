@@ -209,6 +209,7 @@ class Utils(commands.Cog):
             await ctx.send(embed=embed_generator('Успешно!', f'Статус [{text}] был установлен!'))
         except Exception as e:
             await ctx.send(embed=embed_generator('Ашибка!', e))
+        self.logger.comm(f'[Status Change] {ctx.author} {text}')
 
 
 def setup(bot):
