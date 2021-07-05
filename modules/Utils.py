@@ -155,7 +155,6 @@ class Utils(commands.Cog):
             f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song_name}``\nСсылка: {link} '
             f'\nАудио: {song["url"]}   {round(song["size"] / 1048576, 2)}mB')
         self.logger.comm(f'COUB. Author: {ctx.message.author}')
-        await ctx.message.delete()
 
     @cog_ext.cog_slash(name='rainbow',
                        description='Реклама YOBA в говнокоде Python', permissions=perms,
