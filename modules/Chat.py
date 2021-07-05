@@ -45,14 +45,14 @@ class Chat(commands.Cog):
                        permissions=perms,
                        options=[
                            create_option(
-                               name='num_mes',
+                               name='num_messages',
                                description='Введите число сообщений, которое хотите удалить',
                                option_type=SlashCommandOptionType.INTEGER,
                                required=True),
                            create_option(
                                name='user',
                                description='Если хотите удалить сообщения определенного пользователя, укажите его',
-                               option_type=6,
+                               option_type=SlashCommandOptionType.USER,
                                required=False)])
     async def clear(self, ctx: SlashContext, num_mes: int, *user: discord.User):
         chan = ctx.channel
@@ -61,9 +61,7 @@ class Chat(commands.Cog):
         elif user[0]:
             def check(msg):
                 return msg.author == user[0]
-
             deleted = await chan.purge(limit=num_mes, check=check)
-
         await ctx.send(embed=embed_generator('Успешно!', f'Удалено {len(deleted)} сообщений.'))
         self.logger.comm(f'CLEAR. Author: {ctx.author}')
 
