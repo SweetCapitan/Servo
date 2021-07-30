@@ -1,5 +1,4 @@
 discord.py
-youtube_dl
 requests
 bs4
-spotdl
+discord-py-slash-command
