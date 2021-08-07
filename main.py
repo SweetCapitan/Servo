@@ -55,7 +55,7 @@ module_List_Choices.append({"name": "Все_нахуй!!!",
 
 
 @slash.slash(name='reload', description='Перезагрузка модуля из памяти бота', permissions=perms,
-             options=[create_option(name='модуль', description='Имя модуля, который вы хотите перезапустить',
+             options=[create_option(name='module', description='Имя модуля, который вы хотите перезапустить',
                                     option_type=SlashCommandOptionType.STRING, required=True,
                                     choices=module_List_Choices)])
 async def reload(ctx: SlashContext, module):
@@ -84,7 +84,7 @@ async def reload(ctx: SlashContext, module):
 
 @slash.slash(name='load',
              description='Загружает модуль в память бота, до его перезагрузки', permissions=perms,
-             options=[create_option(name='модуль', description='Имя модуля, который вы хотите загрузить example.py',
+             options=[create_option(name='extension', description='Имя модуля, который вы хотите загрузить example.py',
                                     option_type=SlashCommandOptionType.STRING, required=True)])
 async def load(self, ctx, extension):
     self.bot.load_extension(f'modules.{extension}')
