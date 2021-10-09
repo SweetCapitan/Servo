@@ -30,6 +30,7 @@ class Utils(commands.Cog):
         self.bot = bot
 
     logger = Logger()
+    server_id = os.environ.get('SERVER_ID')
 
     @cog_ext.cog_slash(name='btc',
                        description='Реклама YOBA в описании SERVO-BOT',
@@ -40,7 +41,7 @@ class Utils(commands.Cog):
                                              create_choice('USD', 'Доллар'),
                                              create_choice('RUB', 'Рубли')
                                          ])
-                       ])
+                       ], guild_ids=server_id)
     async def crypto(self, ctx: SlashContext, money_code: str = 'USD'):
         limit = 8
         API_KEY_COINMARKET = os.environ.get('API_KEY_COINMARKET')
@@ -67,7 +68,8 @@ class Utils(commands.Cog):
         self.logger.comm('crypto_price')
 
     @cog_ext.cog_slash(name='bash',
-                       description='Выполнив команду, бот отправит в чат случайную цитату из bash.im')
+                       description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
+                       guild_ids=server_id)
     async def bash(self, ctx: SlashContext):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
@@ -117,7 +119,8 @@ class Utils(commands.Cog):
     @cog_ext.cog_slash(name='exec',
                        description='Эта команда позволяет выполнять код.', permissions=perms,
                        options=[create_option(name='code', description='Код на Питухоне',
-                                              option_type=SlashCommandOptionType.STRING, required=True)])
+                                              option_type=SlashCommandOptionType.STRING, required=True)],
+                       guild_ids=server_id)
     async def execute(self, ctx: SlashContext, code: str):
         code = code.replace("```", "")
         out, is_error = self._exec(code.strip().rstrip(), globals(), locals())
@@ -130,7 +133,7 @@ class Utils(commands.Cog):
             self.logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
-    @cog_ext.cog_slash(name='coub', description='Открывает коуб прямо в чате!')
+    @cog_ext.cog_slash(name='coub', description='Открывает коуб прямо в чате!', guild_ids=server_id)
     async def coub(self, ctx: SlashContext, url_to_coub: str):
         url = "http://coub.com//api/v2/coubs" + url_to_coub[21:]
         r = requests.get(url)
@@ -160,7 +163,8 @@ class Utils(commands.Cog):
                        description='Реклама YOBA в говнокоде Python', permissions=perms,
                        options=[create_option(name='state', description='Статус радуги',
                                               option_type=SlashCommandOptionType.BOOLEAN,
-                                              required=True)])
+                                              required=True)],
+                       guild_ids=server_id)
     async def change_rainbow(self, ctx: SlashContext, state: bool):
         rainbow_role_name = config.get('Setting', 'role_rainbow')
         rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
@@ -194,12 +198,14 @@ class Utils(commands.Cog):
                                                      f'``{rainbow_role_name}``'))
 
     @cog_ext.cog_slash(name='choice',
-                       description='Выбирает одно из нескольких значений, указанных через запятую')
+                       description='Выбирает одно из нескольких значений, указанных через запятую',
+                       guild_ids=server_id)
     async def choice(self, ctx: SlashContext, option: str):
         await ctx.send(f'Я выбираю: {random.choice(option.split(", "))}')
 
     @cog_ext.cog_slash(name='status',
-                       description='Задает текст, который будет отображаться в статусе бота', permissions=perms)
+                       description='Задает текст, который будет отображаться в статусе бота', permissions=perms,
+                       guild_ids=server_id)
     async def set_status(self, ctx: SlashContext, text: str):
         try:
             config.set('Setting', 'streaming_status_text', text)

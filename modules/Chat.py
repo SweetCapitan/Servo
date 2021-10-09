@@ -53,7 +53,8 @@ class Chat(commands.Cog):
                                name='user',
                                description='Если хотите удалить сообщения определенного пользователя, укажите его',
                                option_type=SlashCommandOptionType.USER,
-                               required=False)])
+                               required=False)],
+                       guild_ids=os.environ.get('SERVER_ID'))
     async def clear(self, ctx: SlashContext, num_mes: int, *user: discord.User):
         chan = ctx.channel
         if not user:

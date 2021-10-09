@@ -7,6 +7,7 @@ from discord_slash import SlashCommand, cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
 from discord_slash.model import SlashCommandOptionType
 import config
+from discord_webhook import DiscordWebhook
 from Lib import Logger, embed_generator, pluralize, perms
 
 bot_start_time = time.time()
@@ -33,6 +34,8 @@ class Bot(commands.Bot):
         try:
             await slash.sync_all_commands()
         except Exception as Ex:
+            wh = DiscordWebhook(url=os.environ.get['WH_URL'], content='Ошибка Сихронизации slash команд!')
+            wh.execute()
             logger.warn(f'Произошла ошибка при синхронизации slash команд!\n {Ex}')
         else:
             logger.log('Slash команды синхронизированны!')

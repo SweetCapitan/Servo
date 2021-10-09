@@ -49,7 +49,6 @@ class Logging(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel = bot.get_channel(notification_channel)
-        # bot.loop.create_task(self.check_kgb())
 
         config.read('setting.ini')
         self.KGB_MODE = bool(config.get('Setting', 'kgb_mode'))
@@ -81,7 +80,7 @@ class Logging(commands.Cog):
                            description='Переключить режим',
                            option_type=SlashCommandOptionType.BOOLEAN,
                            required=True
-                       )])
+                       )], guild_ids=os.environ.get('SERVER_ID'))
     async def kgb(self, ctx: SlashContext, state: bool):
         if state:
             config.set('Setting', 'kgb_mode', 'True')
