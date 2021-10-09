@@ -34,7 +34,7 @@ class Bot(commands.Bot):
         try:
             await slash.sync_all_commands()
         except Exception as Ex:
-            wh = DiscordWebhook(url=os.environ.get['WH_URL'], content='Ошибка Сихронизации slash команд!')
+            wh = DiscordWebhook(url=os.environ.get('WH_URL'), content='Ошибка Сихронизации slash команд!')
             wh.execute()
             logger.warn(f'Произошла ошибка при синхронизации slash команд!\n {Ex}')
         else:

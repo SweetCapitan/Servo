@@ -14,6 +14,7 @@ notification_channel = 738855014377848943
 config = configparser.ConfigParser()
 
 logger = Logger()
+server_ids = [int(os.environ.get('SERVER_ID'))]
 
 
 def choice_phrase(member: str, event: str):
@@ -80,7 +81,7 @@ class Logging(commands.Cog):
                            description='Переключить режим',
                            option_type=SlashCommandOptionType.BOOLEAN,
                            required=True
-                       )], guild_ids=os.environ.get('SERVER_ID'))
+                       )], guild_ids=server_ids)
     async def kgb(self, ctx: SlashContext, state: bool):
         if state:
             config.set('Setting', 'kgb_mode', 'True')

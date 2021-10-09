@@ -40,6 +40,7 @@ class Chat(commands.Cog):
         self.bot = bot
 
     logger = Logger()
+    server_ids = [int(os.environ.get('SERVER_ID'))]
 
     @cog_ext.cog_slash(name='clear', description='Очистка сообщений',
                        permissions=perms,
@@ -54,7 +55,7 @@ class Chat(commands.Cog):
                                description='Если хотите удалить сообщения определенного пользователя, укажите его',
                                option_type=SlashCommandOptionType.USER,
                                required=False)],
-                       guild_ids=os.environ.get('SERVER_ID'))
+                       guild_ids=server_ids)
     async def clear(self, ctx: SlashContext, num_mes: int, *user: discord.User):
         chan = ctx.channel
         if not user:
