@@ -49,8 +49,6 @@ bot = Bot(command_prefix='?', owner_id=252469010308792322,
                       'то прошу ко мне на сервер https://discord.gg/4c7TbSd')
 slash = SlashCommand(bot, sync_commands=True)
 
-os.environ['PREFIX'] = bot.command_prefix
-
 module_List_Choices = [{"name": str(file[:-3]),
                         "value": str(file[:-3])} for file in os.listdir('modules') if file.endswith('.py')]
 module_List_Choices.append({"name": "Все_нахуй!!!",

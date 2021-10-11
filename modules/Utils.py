@@ -216,6 +216,37 @@ class Utils(commands.Cog):
             await ctx.send(embed=embed_generator('Ашибка!', e))
         self.logger.comm(f'[Status Change] {ctx.author} {text}')
 
+    @cog_ext.cog_slash(name='image_search', description='Поиск картинок в Гоголе',
+                       options=[create_option(name='query', description='поисковой запрос',
+                                              option_type=SlashCommandOptionType.STRING, required=True),
+                                create_option(name='index', description='Номер картинки',
+                                              option_type=SlashCommandOptionType.INTEGER, required=False)],
+                       guild_ids=server_ids)
+    async def image_srh(self, ctx: SlashContext, query: str, index: int = 0):
+
+        URL = f'https://customsearch.googleapis.com/customsearch/v1?cx={os.environ.get("GOOGLE_CX")}={query}&safe=off' \
+              f'&searchType=image&num=10&start=0&key={os.environ.get("G_API_KEY")} '
+        try:
+            response = requests.get(url=URL)
+            raw_data = response.json()
+
+            if response.status_code != 200:
+                await ctx.send(embed=embed_generator('Произошла ашибка API', raw_data["error"]["status"]))
+
+            if raw_data["searchInformation"]["totalResults"] == "0":
+                await ctx.send(embed=embed_generator('Wrong door lather man!',
+                                                     f'Картинка по запросу {query} не найдена!'))
+
+            image = raw_data["items"][index]
+
+            embed: discord.Embed = embed_generator('Шалость удалась!', f'Картинка по запросу:[`{query}`]. Индекс: {index}.')
+            embed.set_author(url=image["image"]["contextLink"], icon_url=image["image"]["thumbnailLink"],
+                             name=image["title"])
+            embed.set_image(url=image["link"])
+            await ctx.send(embed=embed)
+        except Exception as E:
+            await ctx.send(embed=embed_generator('Ашибка!', E))
+
 
 def setup(bot):
     bot.add_cog(Utils(bot))
