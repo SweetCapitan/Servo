@@ -259,8 +259,10 @@ class Utils(commands.Cog):
 
             message: discord.Message = await ctx.send(embed=embed, components=[control_buttons])
 
+            self.image_list = []
             for img in raw_data['items']:
                 self.image_list.append(img)
+
             self.g_query = ''
             self.g_query += query
             self.g_index = index
