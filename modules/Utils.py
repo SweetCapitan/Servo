@@ -8,9 +8,10 @@ import discord
 import requests
 from bs4 import BeautifulSoup
 from discord.ext import commands
-from discord_slash import SlashCommand, cog_ext, SlashContext
+from discord_slash import SlashCommand, cog_ext, SlashContext, ComponentContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
-from discord_slash.model import SlashCommandOptionType
+from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component
+from discord_slash.model import SlashCommandOptionType, ButtonStyle
 import sys
 import random
 import configparser
@@ -24,10 +25,22 @@ config.read('setting.ini')
 STREAMING_STATUS_TEXT = config.get('Setting', 'streaming_status_text')
 
 
+def generate_embed_image(query, index, image) -> discord.Embed:
+    embed: discord.Embed = embed_generator('Шалость удалась!', f'Картинка по запросу:[`{query}`]. Индекс: {index}.')
+    embed.set_author(url=image["image"]["contextLink"], icon_url=image["image"]["thumbnailLink"],
+                     name=image["title"])
+    embed.set_image(url=image["link"])
+    return embed
+
+
 class Utils(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        self.g_query: str = ''
+        self.g_index: int = 0
+        self.message_id: discord.Message.id = 0
+        self.image_list: list = []
 
     logger = Logger()
     server_ids = [int(os.environ.get('SERVER_ID'))]
@@ -218,14 +231,16 @@ class Utils(commands.Cog):
 
     @cog_ext.cog_slash(name='image_search', description='Поиск картинок в Гоголе',
                        options=[create_option(name='query', description='поисковой запрос',
-                                              option_type=SlashCommandOptionType.STRING, required=True),
-                                create_option(name='index', description='Номер картинки',
-                                              option_type=SlashCommandOptionType.INTEGER, required=False)],
+                                              option_type=SlashCommandOptionType.STRING, required=True)],
                        guild_ids=server_ids)
-    async def image_srh(self, ctx: SlashContext, query: str, index: int = 0):
-
+    async def image_srh(self, ctx: SlashContext, query: str):
         URL = f'https://customsearch.googleapis.com/customsearch/v1?cx={os.environ.get("GOOGLE_CX")}={query}&safe=off' \
               f'&searchType=image&num=10&start=0&key={os.environ.get("G_API_KEY")} '
+
+        control_buttons = create_actionrow(
+            create_button(style=ButtonStyle.blue, label='<', custom_id='backward_button'),
+            create_button(style=ButtonStyle.blue, label='>', custom_id='forward_button'))
+
         try:
             response = requests.get(url=URL)
             raw_data = response.json()
@@ -236,16 +251,35 @@ class Utils(commands.Cog):
             if raw_data["searchInformation"]["totalResults"] == "0":
                 await ctx.send(embed=embed_generator('Wrong door lather man!',
                                                      f'Картинка по запросу {query} не найдена!'))
+            index = 0
 
             image = raw_data["items"][index]
 
-            embed: discord.Embed = embed_generator('Шалость удалась!', f'Картинка по запросу:[`{query}`]. Индекс: {index}.')
-            embed.set_author(url=image["image"]["contextLink"], icon_url=image["image"]["thumbnailLink"],
-                             name=image["title"])
-            embed.set_image(url=image["link"])
-            await ctx.send(embed=embed)
+            embed = generate_embed_image(query, index, image)
+
+            message: discord.Message = await ctx.send(embed=embed, components=[control_buttons])
+
+            for img in raw_data['items']:
+                self.image_list.append(img)
+            self.g_query = ''
+            self.g_query += query
+            self.g_index = index
+            self.message_id = message.id
+
         except Exception as E:
             await ctx.send(embed=embed_generator('Ашибка!', E))
+
+    @commands.Cog.listener()
+    async def on_component(self, ctx: ComponentContext):
+
+        if ctx.origin_message_id == self.message_id:
+            if 0 <= self.g_index <= 10:
+                if ctx.custom_id == 'forward_button' and self.g_index < 10:
+                    self.g_index += 1
+                elif ctx.custom_id == 'backward_button' and self.g_index > 0:
+                    self.g_index -= 1
+            embed = generate_embed_image(self.g_query, self.g_index, self.image_list[self.g_index])
+            await ctx.edit_origin(embed=embed)
 
 
 def setup(bot):
