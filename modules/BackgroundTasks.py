@@ -78,37 +78,38 @@ class BackgroundTasks(commands.Cog):
 
     async def virus(self, response_time=response_time):
         from bs4 import BeautifulSoup
-        import requests
-        resp = requests.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
-        result = BeautifulSoup(resp.text, 'html.parser')
-        info = result.findAll('span', {'class': 'c19_statistic_num'})
-        world = f'Случаев SARS2-COV в Мире: {info[3].getText().split("+")[0]} \n' \
-                f'+{info[3].getText().split("+")[1]} за текущие сутки,' \
-                f' Из них везучие бастарды: {info[2].getText()}, ded inside-ов: {info[4].getText()}'
-        russia = f'Случаев SARS2-COV в России: {info[0].getText().split("+")[0]} +{info[0].getText().split("+")[1]} ' \
-                 f'новых за сутки. \n' \
-                 f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}\n' \
-                 f'Статистику по каждому городу можно посмотреть тут -> ' \
-                 f'https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html#map'
-        embed = Embed(title='Статистика по SARS2-COV', color=0xfa0000)
-        embed.set_author(name='Источник по статистике',
-                         url='https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
-        embed.add_field(name='В мире', value=world, inline=True)
-        embed.add_field(name='В России', value=russia, inline=True)
-        chan = self.bot.get_channel(672091108666376193)
+        import aiohttp
+        async with aiohttp.ClientSession() as session:
+            async with session.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html') as resp:
+                result = BeautifulSoup(await resp.text(), 'html.parser')
+                info = result.findAll('span', {'class': 'c19_statistic_num'})
+                world = f'Случаев SARS2-COV в Мире: {info[3].getText().split("+")[0]} \n' \
+                        f'+{info[3].getText().split("+")[1]} за текущие сутки,' \
+                        f' Из них везучие бастарды: {info[2].getText()}, ded inside-ов: {info[4].getText()}'
+                russia = f'Случаев SARS2-COV в России: {info[0].getText().split("+")[0]} +{info[0].getText().split("+")[1]} ' \
+                         f'новых за сутки. \n' \
+                         f'Из них везучие бастарды: {info[1].getText()}, ded inside-ов: {info[2].getText()}\n' \
+                         f'Статистику по каждому городу можно посмотреть тут -> ' \
+                         f'https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html#map'
+                embed = Embed(title='Статистика по SARS2-COV', color=0xfa0000)
+                embed.set_author(name='Источник по статистике',
+                                 url='https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
+                embed.add_field(name='В мире', value=world, inline=True)
+                embed.add_field(name='В России', value=russia, inline=True)
+                chan = self.bot.get_channel(672091108666376193)
 
-        if response_time:
-            _response_time = int(response_time)
-            while True:
-                time_embed = time.time()
-                if time_embed >= _response_time:
-                    _response_time += 86400
-                    config.set('Setting', 'covid_time', str(_response_time))
-                    with open('setting.ini', 'w') as configFile:
-                        config.write(configFile)
-                    await chan.send(embed=embed)
-                else:
-                    await asyncio.sleep(30)
+                if response_time:
+                    _response_time = int(response_time)
+                    while True:
+                        time_embed = time.time()
+                        if time_embed >= _response_time:
+                            _response_time += 86400
+                            config.set('Setting', 'covid_time', str(_response_time))
+                            with open('setting.ini', 'w') as configFile:
+                                config.write(configFile)
+                            await chan.send(embed=embed)
+                        else:
+                            await asyncio.sleep(30)
 
 
 def setup(bot):
