@@ -97,6 +97,7 @@ class BackgroundTasks(commands.Cog):
                                      url='https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html')
                     embed.add_field(name='В мире', value=world, inline=True)
                     embed.add_field(name='В России', value=russia, inline=True)
+                    return embed
 
         if response_time:
             _response_time = int(response_time)
@@ -108,7 +109,7 @@ class BackgroundTasks(commands.Cog):
                     config.set('Setting', 'covid_time', str(_response_time))
                     with open('setting.ini', 'w') as configFile:
                         config.write(configFile)
-                    await get_req()
+                    embed: discord.Embed = await get_req()
                     await chan.send(embed=embed)
                 else:
                     await asyncio.sleep(30)
