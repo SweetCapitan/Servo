@@ -30,11 +30,11 @@ class Logger:
 
 class ResultEmbeds:
     def error(self, description):
-        embed = discord.Embed(title='⚠️ Криворукий уебан, у тебя ошибка! ⚠️', description=description, color=0xf44336)
+        embed = discord.Embed(title='❌️ Криворукий уебан, у тебя ошибка! ❌', description=description, color=0xf44336)
         return embed
 
     def done(self, description):
-        embed = discord.Embed(title='Успешно', description=description, color=0x8fce00)
+        embed = discord.Embed(title='✔️ Успешно', description=description, color=0x8fce00)
         return embed
 
     def embed(self, title, description):
@@ -42,7 +42,7 @@ class ResultEmbeds:
         return embed
 
     def warn(self, description):
-        embed = discord.Embed(title='Что-то пошло не так', description=description, color=0xFFFF00)
+        embed = discord.Embed(title='⚠️ Что-то пошло не так ⚠️', description=description, color=0xFFFF00)
         return embed
 
 
