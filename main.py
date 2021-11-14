@@ -8,6 +8,10 @@ from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.model import SlashCommandOptionType
 from discord_webhook import DiscordWebhook
+import sys
+import os
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.dirname(SCRIPT_DIR))
 from Servo.Utilities.Lib import Logger, pluralize, perms, ResultEmbeds
 
 bot_start_time = time.time()
