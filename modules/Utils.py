@@ -15,18 +15,17 @@ from discord_slash.model import SlashCommandOptionType, ButtonStyle
 import sys
 import random
 import configparser
-
-sys.path.append('..')
-from Lib import Logger, embed_generator, pluralize, perms
+from Servo.Utilities.Lib import Logger, ResultEmbeds, pluralize, perms
 
 BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 config = configparser.ConfigParser()
 config.read('setting.ini')
+re = ResultEmbeds()
 STREAMING_STATUS_TEXT = config.get('Setting', 'streaming_status_text')
 
 
 def generate_embed_image(query, index, image) -> discord.Embed:
-    embed: discord.Embed = embed_generator('Шалость удалась!', f'Картинка по запросу:[`{query}`]. Индекс: {index}.')
+    embed: discord.Embed = re.done(f'Картинка по запросу:[`{query}`]. Индекс: {index}.')
     embed.set_author(url=image["image"]["contextLink"], icon_url=image["image"]["thumbnailLink"],
                      name=image["title"])
     embed.set_image(url=image["link"])
@@ -90,7 +89,7 @@ class Utils(commands.Cog):
         root = BeautifulSoup(rs.text, 'html.parser')
         mydivs = root.find("div", {"class": "quote__body"})
         quote = mydivs.getText('\n', strip=True)
-        await ctx.send(embed=embed_generator('Рандомная цитата с Bash.im', str(quote)))
+        await ctx.send(embed=re.done('Рандомная цитата с Bash.im\n' + str(quote)))
         self.logger.comm(f'BASH. Author: {ctx.author}')
 
     # -----------------------------------------Start of IteratorW Code -------------------------------------------------
@@ -139,10 +138,10 @@ class Utils(commands.Cog):
         out, is_error = self._exec(code.strip().rstrip(), globals(), locals())
 
         if is_error:
-            await ctx.send(embed=embed_generator('⚠️ Криворукий уебан, у тебя ошибка! ⚠️', out))
+            await ctx.send(embed=re.error(out))
             self.logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.author}\n{out}')
         else:
-            await ctx.send(embed=embed_generator('Код успешно выполнен!', out))
+            await ctx.send(embed=re.done('Код успешно выполнен!\n' + out))
             self.logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
@@ -165,7 +164,7 @@ class Utils(commands.Cog):
         try:
             link = coub_data["file_versions"]["share"]["default"]
         except Exception as e:
-            await result_embed('Упс...', 'Что-то пошло не так, проверьте ссылку', ctx)
+            await ctx.send(embed=re.warn('Что-то пошло не так, проверьте ссылку'))
             return
         await ctx.send(
             f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song_name}``\nСсылка: {link} '
@@ -187,13 +186,13 @@ class Utils(commands.Cog):
                 config.set('Setting', 'role_rainbow_status', 'True')
                 with open('setting.ini', 'w', encoding='utf-8') as configFile:
                     config.write(configFile)
-                await ctx.send(embed=embed_generator('Модуль [RAINBOW]', 'Включен!'))
+                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
                 self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             elif not state and rainbow_role_status:
                 config.set('Setting', 'role_rainbow_status', 'False')
                 with open('setting.ini', 'w', encoding='utf-8') as configFile:
                     config.write(configFile)
-                await ctx.send(embed=embed_generator('Модуль [RAINBOW]', 'Выключен!'))
+                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Выключен!'))
                 self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
             try:
@@ -201,20 +200,20 @@ class Utils(commands.Cog):
                                                 name='Rainbow',
                                                 hoist=True,
                                                 reason='SERVO-BOT Автоматическое добавление роли!')
-                await ctx.send(embed=embed_generator('[RAINBOW]',
-                                                     'Т.к. роль не была найдена, она была добавлена автоматически!\n'
-                                                     'Пожалуйста добавте эту роль, тем кому вы хотите сделать '
-                                                     'радужный никнейм :3'))
+                await ctx.send(embed=re.embed('``RAINBOW``',
+                                              'Т.к. роль не была найдена, она была добавлена автоматически!\n'
+                                              'Пожалуйста добавте эту роль, тем кому вы хотите сделать '
+                                              'радужный никнейм :3'))
             except discord.Forbidden:
-                await ctx.send(embed=embed_generator('Прав не завезли!',
-                                                     f'Добавте боту права "manage_roles" или сами создайте роль '
-                                                     f'``{rainbow_role_name}``'))
+                await ctx.send(embed=re.warn('Прав не завезли!\n'
+                                              'Добавте боту права "manage_roles" или сами создайте роль '
+                                              f'``{rainbow_role_name}``'))
 
     @cog_ext.cog_slash(name='choice',
                        description='Выбирает одно из нескольких значений, указанных через запятую',
                        guild_ids=server_ids)
     async def choice(self, ctx: SlashContext, option: str):
-        await ctx.send(f'Я выбираю: {random.choice(option.split(", "))}')
+        await ctx.send(embed=re.done(f'Я выбираю: {random.choice(option.split(", "))}'))
 
     @cog_ext.cog_slash(name='status',
                        description='Задает текст, который будет отображаться в статусе бота', permissions=perms,
@@ -224,9 +223,9 @@ class Utils(commands.Cog):
             config.set('Setting', 'streaming_status_text', text)
             with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
-            await ctx.send(embed=embed_generator('Успешно!', f'Статус [{text}] был установлен!'))
+            await ctx.send(embed=re.done(f'Статус [{text}] был установлен!'))
         except Exception as e:
-            await ctx.send(embed=embed_generator('Ашибка!', e))
+            await ctx.send(embed=re.error(e))
         self.logger.comm(f'[Status Change] {ctx.author} {text}')
 
     @cog_ext.cog_slash(name='image_search', description='Поиск картинок в Гоголе',
@@ -246,11 +245,10 @@ class Utils(commands.Cog):
             raw_data = response.json()
 
             if response.status_code != 200:
-                await ctx.send(embed=embed_generator('Произошла ашибка API', raw_data["error"]["status"]))
+                await ctx.send(embed=re.error('Произошла ашибка API\n' + raw_data["error"]["status"]))
 
             if raw_data["searchInformation"]["totalResults"] == "0":
-                await ctx.send(embed=embed_generator('Wrong door lather man!',
-                                                     f'Картинка по запросу {query} не найдена!'))
+                await ctx.send(embed=re.warn(f'Картинка по запросу {query} не найдена!'))
             index = 0
 
             image = raw_data["items"][index]
@@ -269,7 +267,7 @@ class Utils(commands.Cog):
             self.message_id = message.id
 
         except Exception as E:
-            await ctx.send(embed=embed_generator('Ашибка!', E))
+            await ctx.send(embed=re.error(E))
 
     @commands.Cog.listener()
     async def on_component(self, ctx: ComponentContext):

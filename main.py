@@ -1,17 +1,18 @@
 import os
 import time
+import config
 # noinspection PyUnresolvedReferences,PyPackageRequirements
 import discord_slash
 from discord.ext import commands
-from discord_slash import SlashCommand, cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
+from discord_slash import SlashCommand, SlashContext
+from discord_slash.utils.manage_commands import create_option
 from discord_slash.model import SlashCommandOptionType
-import config
 from discord_webhook import DiscordWebhook
-from Lib import Logger, embed_generator, pluralize, perms
+from Servo.Utilities.Lib import Logger, pluralize, perms, ResultEmbeds
 
 bot_start_time = time.time()
 logger = Logger()
+re = ResultEmbeds()
 
 
 class Bot(commands.Bot):
@@ -73,13 +74,13 @@ async def reload(ctx: SlashContext, module):
         module_list_text = ''
         for mod in module_list:
             module_list_text = module_list_text + mod
-        await ctx.send(embed=embed_generator(f'Всего модулей перезагружено: {count}\n',
-                                             f'{module_list_text}'))
+        await ctx.send(embed=re.done(f'Всего модулей перезагружено: {count}\n{module_list_text}'))
         logger.comm(f'RELOAD module: [{module}]. Author: {ctx.author}')
     else:
         bot.unload_extension(f'modules.{module}')
         bot.load_extension(f'modules.{module}')
-        await ctx.send(embed=embed_generator('Перезагружен!', f'Модуль [{module}] перезагружен'))
+        await ctx.send(embed=re.done(f'Модуль [{module}] перезагружен'))
+        # TODO Доделать импорты из Utilities
         logger.comm(f'RELOAD module: [{module}]. Author: {ctx.author}')
 
 

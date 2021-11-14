@@ -1,18 +1,17 @@
 import os
 import random
+import discord
 from discord.ext import commands
 from discord_slash import SlashCommand, cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
 from discord_slash.model import SlashCommandOptionType
 import configparser
 import asyncio
-import sys
-sys.path.append('..')
-from Lib import Logger, embed_generator, pluralize, perms
+from Servo.Utilities.Lib import Logger, ResultEmbeds, pluralize, perms
 
 notification_channel = 738855014377848943
 config = configparser.ConfigParser()
-
+re = ResultEmbeds()
 logger = Logger()
 server_ids = [int(os.environ.get('SERVER_ID'))]
 
@@ -49,29 +48,29 @@ class Logging(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.channel = bot.get_channel(notification_channel)
+        self.channel: discord.TextChannel = bot.get_channel(notification_channel)
 
         config.read('setting.ini')
         self.KGB_MODE = bool(config.get('Setting', 'kgb_mode'))
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
-        await result_embed('Зашел на сервер!', choice_phrase(member, 'join'), self.channel)
+        await self.channel.send(embed=re.embed('Зашел на сервер!', choice_phrase(member, 'join')))
         self.logger.log(f'{member} logged into the server')
 
     @commands.Cog.listener()
     async def on_member_remove(self, member):
-        await result_embed('Вышел с сервера!', choice_phrase(member, 'leave'), self.channel)
+        await self.channel.send(embed=re.embed('Вышел с сервера!', choice_phrase(member, 'leave')))
         self.logger.log(f'{member} logged into the server')
 
     @commands.Cog.listener()
     async def on_member_ban(self, guild, member):
-        await result_embed('Забанен!', choice_phrase(member, 'ban'), self.channel)
+        await self.channel.send(embed=re.embed('Забанен!', choice_phrase(member, 'ban')))
         self.logger.log(f'[Ban] Guild: {guild} User: {member}')
 
     @commands.Cog.listener()
     async def on_member_unban(self, guild, member):
-        await result_embed('Разбанен!', choice_phrase(member, 'unban'), self.channel)
+        await self.channel.send(embed=re.embed('Разбанен!', choice_phrase(member, 'unban')))
         self.logger.log(f'[Unban] Guild: {guild} User: {member}')
 
     @cog_ext.cog_slash(name='KGB', description='Переключение режима прослушки удаленных/измененных сообщений.',
@@ -89,14 +88,14 @@ class Logging(commands.Cog):
                 config.write(configFile)
             config.read('setting.ini')
             self.KGB_MODE = config.get('Setting', 'kgb_mode')
-            await ctx.send(embed=embed_generator('Успешно!', 'Режим доностчика активен!'))
+            await ctx.send(embed=re.done('Режим доностчика активен!'))
         elif not state:
             config.set('Setting', 'kgb_mode', 'False')
             with open('setting.ini', 'w', encoding='utf-8') as configFile:
                 config.write(configFile)
             config.read('setting.ini')
             self.KGB_MODE = config.get('Setting', 'kgb_mode')
-            await ctx.send(embed=embed_generator('Успешно!', 'Режим доностчика деактивирован!'))
+            await ctx.send(embed=re.done('Режим доностчика деактивирован!'))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):

@@ -1,8 +1,5 @@
 import re
 from datetime import datetime
-# import ctypes  # Це костыль для отображения цветов в консоли Windows
-# kernel32 = ctypes.windll.kernel32
-# kernel32.SetConsoleMode(kernel32.GetStdHandle(-11), 7)
 import discord
 from discord_slash import SlashCommand, cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission,\
@@ -31,13 +28,22 @@ class Logger:
         print(f"\033[32m {self.get_time()} [Logs][Command] \033[37m{str(text)}")
 
 
-def result_embed():
-    pass
+class ResultEmbeds:
+    def error(self, description):
+        embed = discord.Embed(title='⚠️ Криворукий уебан, у тебя ошибка! ⚠️', description=description, color=0xf44336)
+        return embed
 
+    def done(self, description):
+        embed = discord.Embed(title='Успешно', description=description, color=0x8fce00)
+        return embed
 
-def embed_generator(result_state, description):
-    embed = discord.Embed(title=result_state, description=description, color=0xd5de21)
-    return embed
+    def embed(self, title, description):
+        embed = discord.Embed(title=title, description=description, color=0x008080)
+        return embed
+
+    def warn(self, description):
+        embed = discord.Embed(title='Что-то пошло не так', description=description, color=0xFFFF00)
+        return embed
 
 
 def pluralize(source, first, second, third):

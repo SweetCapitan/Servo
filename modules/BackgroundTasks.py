@@ -9,9 +9,7 @@ import sys
 import configparser
 from bs4 import BeautifulSoup
 import aiohttp
-
-sys.path.append('..')
-from Lib import Logger, result_embed, pluralize
+from Servo.Utilities.Lib import Logger, pluralize
 
 logger = Logger()
 start_time = time.time()
@@ -28,10 +26,8 @@ class BackgroundTasks(commands.Cog):
         self.bot = bot
         bot.loop.create_task(self.status())
         bot.loop.create_task(self.virus())
-        # Some Shit
         if rainbow_role_status:
             bot.loop.create_task(self.rainbow(530374773612478475))
-        # asyncio.run_coroutine_threadsafe(self.rainbow_change, self.bot.loop)
 
     async def rainbow(self, server_id):
         hue = 0

@@ -5,11 +5,9 @@ from discord_slash import SlashCommand, cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
 from discord_slash.model import SlashCommandOptionType
 import os
-import sys
+from Servo.Utilities.Lib import Logger, pluralize, perms, ResultEmbeds
 
-sys.path.append('..')
-from Lib import Logger, embed_generator, pluralize, perms
-
+re = ResultEmbeds()
 text = '        \                           /\n' \
        '         \                         /\n' \
        '          \ Видимо кого-то послали/\n' \
@@ -63,8 +61,9 @@ class Chat(commands.Cog):
         elif user[0]:
             def check(msg):
                 return msg.author == user[0]
+
             deleted = await chan.purge(limit=num_mes, check=check)
-        await ctx.send(embed=embed_generator('Успешно!', f'Удалено {len(deleted)} сообщений.'))
+        await ctx.send(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
         self.logger.comm(f'CLEAR. Author: {ctx.author}')
 
     @commands.Cog.listener()
