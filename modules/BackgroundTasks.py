@@ -6,9 +6,9 @@ from discord.ext import commands
 from colorsys import hls_to_rgb
 from discord import Embed
 import sys
-import configparser
 from bs4 import BeautifulSoup
 import aiohttp
+<<<<<<< HEAD
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.servomysql.servo_mysql import ServoMySQL
@@ -21,6 +21,17 @@ db = ServoMySQL()
 response_time = db.get_setting('covid_time')
 rainbow_role_name = db.get_setting('role_rainbow')
 rainbow_role_status = db.get_setting('role_rainbow_status', boolean=True)
+=======
+from Utilities.embeds import pluralize
+import Utilities.logger as logger
+from Utilities.servomysql.mysql import ServoMySQL
+
+get_setting = ServoMySQL().get_setting
+start_time = time.time()
+response_time = get_setting('covid_time')
+rainbow_role_name = get_setting('role_rainbow')
+rainbow_role_status = get_setting('role_rainbow_status', boolean=True)
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
 
 
 class BackgroundTasks(commands.Cog):
@@ -28,7 +39,7 @@ class BackgroundTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         bot.loop.create_task(self.status())
-        bot.loop.create_task(self.virus())
+        # bot.loop.create_task(self.virus())
         if rainbow_role_status:
             bot.loop.create_task(self.rainbow(530374773612478475))
 
@@ -56,7 +67,11 @@ class BackgroundTasks(commands.Cog):
 
     async def status(self):
         while not self.bot.is_closed():
+<<<<<<< HEAD
             streaming_status_text = db.get_setting('streaming_status_text')
+=======
+            streaming_status_text = get_setting('streaming_status_text')
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
             try:
                 uptime_sec, uptime_min, uptime_hour, uptime_day = self.get_uptime()
                 uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
@@ -104,7 +119,11 @@ class BackgroundTasks(commands.Cog):
                 time_embed = time.time()
                 if time_embed >= _response_time:
                     _response_time += 86400
+<<<<<<< HEAD
                     db.update_setting('covid_time', _response_time)
+=======
+                    Utilities.Lib.QueryToDatabase().update_setting('covid_time', _response_time)
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
                     embed: discord.Embed = await get_req()
                     await chan.send(embed=embed)
                 else:

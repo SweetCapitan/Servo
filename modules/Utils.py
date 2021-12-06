@@ -14,6 +14,7 @@ from discord_slash.utils.manage_components import create_button, create_actionro
 from discord_slash.model import SlashCommandOptionType, ButtonStyle
 import sys
 import random
+<<<<<<< HEAD
 import configparser
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
@@ -25,6 +26,19 @@ btc_price_url_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?
 db = ServoMySQL()
 re = ResultEmbeds()
 streaming_status_text = db.get_setting('streaming_status_text')
+=======
+
+from Utilities.servomysql.mysql import ServoMySQL
+from Utilities.embeds import ResultEmbeds, pluralize, perms
+import Utilities.logger as logger
+
+BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
+re = ResultEmbeds()
+
+get_setting = ServoMySQL().get_setting
+update_setting = ServoMySQL().update_setting
+STREAMING_STATUS_TEXT = get_setting('streaming_status_text')
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
 
 
 def generate_embed_image(query, index, image) -> discord.Embed:
@@ -185,11 +199,19 @@ class Utils(commands.Cog):
         role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
         if role is not None:
             if state and not rainbow_role_status:
+<<<<<<< HEAD
                 db.update_setting('role_rainbow_status', True)
                 await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
                 logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             elif not state and rainbow_role_status:
                 db.update_setting('role_rainbow_status', False)
+=======
+                update_setting('role_rainbow_status', True)
+                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
+                logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
+            elif not state and rainbow_role_status:
+                update_setting('role_rainbow_status', False)
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
                 await ctx.send(embed=re.done('Модуль ``RAINBOW`` Выключен!'))
                 logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
@@ -218,7 +240,11 @@ class Utils(commands.Cog):
                        guild_ids=server_ids)
     async def set_status(self, ctx: SlashContext, text: str):
         try:
+<<<<<<< HEAD
             db.update_setting('streaming_status_text', text)
+=======
+            update_setting('streaming_status_text', text)
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
             await ctx.send(embed=re.done(f'Статус [{text}] был установлен!'))
         except Exception as e:
             await ctx.send(embed=re.error(e))

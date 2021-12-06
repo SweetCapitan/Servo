@@ -1,15 +1,18 @@
 import datetime
 import discord
 from discord.ext import commands
-from discord_slash import SlashCommand, cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
-from discord_slash.model import SlashCommandOptionType
 import os
+<<<<<<< HEAD
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.webhook import send_webhook
 from Utilities.perms import perms
 from Utilities.servomysql.servo_mysql import ServoMySQL
+=======
+from Utilities.embeds import pluralize, perms, ResultEmbeds
+import Utilities.logger as logger
+from Utilities.servomysql.mysql import ServoMySQL
+>>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
 
 re = ResultEmbeds()
 db = ServoMySQL()
@@ -58,15 +61,15 @@ class Chat(commands.Cog):
                                option_type=SlashCommandOptionType.USER,
                                required=False)],
                        guild_ids=server_ids)
-    async def clear(self, ctx: SlashContext, num_mes: int, *user: discord.User):
+    async def clear(self, ctx: SlashContext, num_messages: int, *user: discord.User):
         chan = ctx.channel
         if not user:
-            deleted = await chan.purge(limit=num_mes)
+            deleted = await chan.purge(limit=num_messages)
         elif user[0]:
             def check(msg):
                 return msg.author == user[0]
 
-            deleted = await chan.purge(limit=num_mes, check=check)
+            deleted = await chan.purge(limit=num_messages, check=check)
         await ctx.send(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
         logger.comm(f'CLEAR. Author: {ctx.author}')
 
