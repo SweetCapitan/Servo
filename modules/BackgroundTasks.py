@@ -9,15 +9,18 @@ import sys
 import configparser
 from bs4 import BeautifulSoup
 import aiohttp
-from Servo.Utilities.Lib import Logger, pluralize
+from Utilities import logger
+from Utilities.embeds import pluralize, ResultEmbeds
+from Utilities.servomysql.mysql import ServoMySQL
 
-logger = Logger()
+
 start_time = time.time()
-config = configparser.ConfigParser()
-config.read('setting.ini')
-response_time = config.get('Setting', 'covid_time')
-rainbow_role_name = config.get('Setting', 'role_rainbow')
-rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
+re = ResultEmbeds()
+db = ServoMySQL()
+
+response_time = db.get_setting('covid_time')
+rainbow_role_name = db.get_setting('role_rainbow')
+rainbow_role_status = db.get_setting('role_rainbow_status', boolean=True)
 
 
 class BackgroundTasks(commands.Cog):
@@ -53,8 +56,7 @@ class BackgroundTasks(commands.Cog):
 
     async def status(self):
         while not self.bot.is_closed():
-            config.read('setting.ini', encoding='utf-8')
-            streaming_status_text = config.get('Setting', 'streaming_status_text')
+            streaming_status_text = db.get_setting('streaming_status_text')
             try:
                 uptime_sec, uptime_min, uptime_hour, uptime_day = self.get_uptime()
                 uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
@@ -102,9 +104,7 @@ class BackgroundTasks(commands.Cog):
                 time_embed = time.time()
                 if time_embed >= _response_time:
                     _response_time += 86400
-                    config.set('Setting', 'covid_time', str(_response_time))
-                    with open('setting.ini', 'w') as configFile:
-                        config.write(configFile)
+                    db.update_setting('covid_time', _response_time)
                     embed: discord.Embed = await get_req()
                     await chan.send(embed=embed)
                 else:

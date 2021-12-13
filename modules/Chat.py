@@ -5,9 +5,14 @@ from discord_slash import SlashCommand, cog_ext, SlashContext
 from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
 from discord_slash.model import SlashCommandOptionType
 import os
-from Servo.Utilities.Lib import Logger, pluralize, perms, ResultEmbeds
+from Utilities import logger
+from Utilities.embeds import pluralize, ResultEmbeds
+from Utilities.webhook import send_webhook
+from Utilities.perms import perms
+from Utilities.servomysql.mysql import ServoMySQL
 
 re = ResultEmbeds()
+db = ServoMySQL()
 text = '        \                           /\n' \
        '         \                         /\n' \
        '          \ Видимо кого-то послали/\n' \
@@ -37,7 +42,6 @@ class Chat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    logger = Logger()
     server_ids = [int(os.environ.get('SERVER_ID'))]
 
     @cog_ext.cog_slash(name='clear', description='Очистка сообщений',
@@ -64,7 +68,7 @@ class Chat(commands.Cog):
 
             deleted = await chan.purge(limit=num_mes, check=check)
         await ctx.send(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
-        self.logger.comm(f'CLEAR. Author: {ctx.author}')
+        logger.comm(f'CLEAR. Author: {ctx.author}')
 
     @commands.Cog.listener()
     async def on_message(self, message):

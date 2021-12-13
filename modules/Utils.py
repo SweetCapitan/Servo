@@ -15,13 +15,16 @@ from discord_slash.model import SlashCommandOptionType, ButtonStyle
 import sys
 import random
 import configparser
-from Servo.Utilities.Lib import Logger, ResultEmbeds, pluralize, perms
+from Utilities import logger
+from Utilities.embeds import pluralize, ResultEmbeds
+from Utilities.webhook import send_webhook
+from Utilities.perms import perms
+from Utilities.servomysql.mysql import ServoMySQL
 
-BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
-config = configparser.ConfigParser()
-config.read('setting.ini')
+btc_price_url_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
+db = ServoMySQL()
 re = ResultEmbeds()
-STREAMING_STATUS_TEXT = config.get('Setting', 'streaming_status_text')
+streaming_status_text = db.get_setting('streaming_status_text')
 
 
 def generate_embed_image(query, index, image) -> discord.Embed:
@@ -41,7 +44,6 @@ class Utils(commands.Cog):
         self.message_id: discord.Message.id = 0
         self.image_list: list = []
 
-    logger = Logger()
     server_ids = [int(os.environ.get('SERVER_ID'))]
 
     @cog_ext.cog_slash(name='btc',
@@ -56,9 +58,9 @@ class Utils(commands.Cog):
                        ], guild_ids=server_ids)
     async def crypto(self, ctx: SlashContext, money_code: str = 'USD'):
         limit = 8
-        API_KEY_COINMARKET = os.environ.get('API_KEY_COINMARKET')
+        api_key_coinmarket = os.environ.get('API_KEY_COINMARKET')
         url_usd = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/' \
-                  f'listings/latest?start=1&limit={limit}&convert={money_code}&CMC_PRO_API_KEY={API_KEY_COINMARKET}'
+                  f'listings/latest?start=1&limit={limit}&convert={money_code}&CMC_PRO_API_KEY={api_key_coinmarket}'
         req = requests.get(url_usd)
         req_json = req.json()
         embed = discord.Embed(title="Стоимости криптовалют",
@@ -77,7 +79,7 @@ class Utils(commands.Cog):
                                 round(((int(float(price)) / 100) * int(float(i['quote'][money_code]
                                                                              ['percent_change_7d']))), 1)), inline=True)
         await ctx.send(embed=embed)
-        self.logger.comm('crypto_price')
+        logger.comm('crypto_price')
 
     @cog_ext.cog_slash(name='bash',
                        description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
@@ -90,7 +92,7 @@ class Utils(commands.Cog):
         mydivs = root.find("div", {"class": "quote__body"})
         quote = mydivs.getText('\n', strip=True)
         await ctx.send(embed=re.done('Рандомная цитата с Bash.im\n' + str(quote)))
-        self.logger.comm(f'BASH. Author: {ctx.author}')
+        logger.comm(f'BASH. Author: {ctx.author}')
 
     # -----------------------------------------Start of IteratorW Code -------------------------------------------------
     class MyGlobals(dict):
@@ -139,10 +141,10 @@ class Utils(commands.Cog):
 
         if is_error:
             await ctx.send(embed=re.error(out))
-            self.logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.author}\n{out}')
+            logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.author}\n{out}')
         else:
             await ctx.send(embed=re.done('Код успешно выполнен!\n' + out))
-            self.logger.comm(f'EXECUTE. Author: {ctx.author}')
+            logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
     @cog_ext.cog_slash(name='coub', description='Открывает коуб прямо в чате!', guild_ids=server_ids)
@@ -169,7 +171,7 @@ class Utils(commands.Cog):
         await ctx.send(
             f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song_name}``\nСсылка: {link} '
             f'\nАудио: {song["url"]}   {round(song["size"] / 1048576, 2)}mB')
-        self.logger.comm(f'COUB. Author: {ctx.message.author}')
+        logger.comm(f'COUB. Author: {ctx.message.author}')
 
     @cog_ext.cog_slash(name='rainbow',
                        description='Реклама YOBA в говнокоде Python', permissions=perms,
@@ -178,22 +180,18 @@ class Utils(commands.Cog):
                                               required=True)],
                        guild_ids=server_ids)
     async def change_rainbow(self, ctx: SlashContext, state: bool):
-        rainbow_role_name = config.get('Setting', 'role_rainbow')
-        rainbow_role_status = bool(config.get('Setting', 'role_rainbow_status'))
+        rainbow_role_name = db.get_setting('role_rainbow')
+        rainbow_role_status = db.get_setting('role_rainbow_status', boolean=True)
         role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
         if role is not None:
             if state and not rainbow_role_status:
-                config.set('Setting', 'role_rainbow_status', 'True')
-                with open('setting.ini', 'w', encoding='utf-8') as configFile:
-                    config.write(configFile)
+                db.update_setting('role_rainbow_status', True)
                 await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
-                self.logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
+                logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             elif not state and rainbow_role_status:
-                config.set('Setting', 'role_rainbow_status', 'False')
-                with open('setting.ini', 'w', encoding='utf-8') as configFile:
-                    config.write(configFile)
+                db.update_setting('role_rainbow_status', False)
                 await ctx.send(embed=re.done('Модуль ``RAINBOW`` Выключен!'))
-                self.logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
+                logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
             try:
                 await discord.Guild.create_role(ctx.guild,
@@ -220,13 +218,11 @@ class Utils(commands.Cog):
                        guild_ids=server_ids)
     async def set_status(self, ctx: SlashContext, text: str):
         try:
-            config.set('Setting', 'streaming_status_text', text)
-            with open('setting.ini', 'w', encoding='utf-8') as configFile:
-                config.write(configFile)
+            db.update_setting('streaming_status_text', text)
             await ctx.send(embed=re.done(f'Статус [{text}] был установлен!'))
         except Exception as e:
             await ctx.send(embed=re.error(e))
-        self.logger.comm(f'[Status Change] {ctx.author} {text}')
+        logger.comm(f'[Status Change] {ctx.author} {text}')
 
     @cog_ext.cog_slash(name='image_search', description='Поиск картинок в Гоголе',
                        options=[create_option(name='query', description='поисковой запрос',
