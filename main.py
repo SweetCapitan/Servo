@@ -15,7 +15,9 @@ from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.webhook import send_webhook
 from Utilities.perms import perms
+from Utilities.servomysql.servo_mysql import ServoMySQL
 
+db = ServoMySQL()
 bot_start_time = time.time()
 re = ResultEmbeds()
 
@@ -44,6 +46,7 @@ class Bot(commands.Bot):
             logger.warn(f'Произошла ошибка при синхронизации slash команд!\n {Ex}')
         else:
             logger.log('Slash команды синхронизированны!')
+        logger.log(db.init())
         logger.log('=====================================================')
         bot_time = round(time.time() - bot_start_time)
         logger.log(f'Загрузка завершена за {str(bot_time) + pluralize(bot_time, " секунду", " секунды", " секунд")}!')

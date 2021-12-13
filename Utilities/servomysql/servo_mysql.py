@@ -46,7 +46,7 @@ class ServoMySQL:
             else:
                 return E
         else:
-            print('Done! Table created.')
+            return 'Done! Table created.'
         finally:
             cursor.close()
             cnx.close()
