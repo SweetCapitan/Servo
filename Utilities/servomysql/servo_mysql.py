@@ -14,20 +14,6 @@ class ServoMySQL:
             'port': '3306'
         }
 
-    def init(self):
-        try:
-            cnx = mysql.connector.connect(**self.config)
-        except mysql.connector.Error as E:
-            if E.errno == err_code.ER_ACCESS_DENIED_ERROR:
-                return "Something is wrong with your user name or password"
-            elif E.errno == err_code.ER_BAD_DB_ERROR:
-                return "Database does not exist"
-            else:
-                return E
-        else:
-            cnx.close()
-            return "Succ"
-
     def get_setting(self, name, **boolean):
         cnx = mysql.connector.Connect(**self.config)
         cursor = cnx.cursor()
@@ -50,17 +36,17 @@ class ServoMySQL:
         cnx = mysql.connector.Connect(**self.config)
         cursor = cnx.cursor()
         try:
-            cursor.execute("CREATE TABLE `settings` ("
+            cursor.execute("CREATE TABLE IF NOT EXISTS `settings` ("
                            "    `name` VARCHAR(32),    "
                            "    `value` VARCHAR(32),    "
                            "    `boolean` INT(1))  ")
         except mysql.connector.Error as E:
             if E.errno == err_code.ER_TABLE_EXISTS_ERROR:
-                return 'Already exist'
+                return 'Table already exist'
             else:
                 return E
         else:
-            return 'Done! Table created.'
+            print('Done! Table created.')
         finally:
             cursor.close()
             cnx.close()
@@ -72,27 +58,33 @@ class ServoMySQL:
             settings = ("INSERT INTO settings "
                         "(name, value, boolean)"
                         "VALUES (%(name)s, %(value)s, %(boolean)s)")
-            data = None
+            null = None
             settings_data = [
-                {'name': 'covid_time', 'value': 1636945200, 'boolean': data},
-                {'name': 'streaming_status_text', 'value': 'MYSQL-POWER!', 'boolean': data},
-                {'name': 'role_rainbow', 'value': 'Rainbow', 'boolean': data},
-                {'name': 'role_rainbow_status', 'value': data, 'boolean': 0},
-                {'name': 'kgb_mode', 'value': data, 'boolean': 0}]
+                {'name': 'covid_time', 'value': 1636945200, 'boolean': null},
+                {'name': 'streaming_status_text', 'value': 'MYSQL-POWER!', 'boolean': null},
+                {'name': 'role_rainbow', 'value': 'Rainbow', 'boolean': null},
+                {'name': 'role_rainbow_status', 'value': null, 'boolean': 0},
+                {'name': 'kgb_mode', 'value': null, 'boolean': 0}]
+            '''
+            
+            Это список настроек необходимых для стабильной работы бота, добавьте сюда массив, если необходимо добавить 
+            новую настройку {'name': 'имя параметра', 'value' 'его значение': , 'boolean': 0 or 1}. Если необходимо 
+            оставить поле пустым, то укажите None или null. 
+            
+            '''
             for i in settings_data:
                 cursor.execute(settings, i)
         except mysql.connector.Error as E:
             return E
         else:
-            return 'Done! Settings has been filled!'
+            print('Done! Settings has been filled!')
         finally:
             cnx.commit()
             cursor.close()
             cnx.close()
 
     def remove(self):
-        pass
-        return data
+        pass  # Зарезервированно до востребованности
 
     def update_setting(self, name, value):
         value = boolean_converter(value)
@@ -110,3 +102,19 @@ class ServoMySQL:
 
         except Exception as E:
             return E
+
+    def init(self):
+
+        self.create_table_setting()
+        try:
+            with mysql.connector.Connect(**self.config) as cnx:
+                with cnx.cursor(buffered=True) as cursor:
+
+                    cursor.execute('SELECT * FROM settings')
+                    if cursor.rowcount == 0:
+                        self.fill_settings()
+                    else:
+                        return 'Table settings already filled'
+
+        except Exception as E:
+            return f'Error: {E}'

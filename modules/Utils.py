@@ -19,7 +19,7 @@ from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.webhook import send_webhook
 from Utilities.perms import perms
-from Utilities.servomysql.mysql import ServoMySQL
+from Utilities.servomysql.servo_mysql import ServoMySQL
 
 btc_price_url_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 db = ServoMySQL()

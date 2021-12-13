@@ -10,7 +10,7 @@ import asyncio
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.perms import perms
-from Utilities.servomysql.mysql import ServoMySQL
+from Utilities.servomysql.servo_mysql import ServoMySQL
 
 notification_channel = 738855014377848943
 re = ResultEmbeds()

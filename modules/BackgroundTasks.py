@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 import aiohttp
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
-from Utilities.servomysql.mysql import ServoMySQL
+from Utilities.servomysql.servo_mysql import ServoMySQL
 
 
 start_time = time.time()
