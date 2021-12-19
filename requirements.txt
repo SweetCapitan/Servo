@@ -1,5 +1,8 @@
 discord.py
-requests
-bs4
+requests~=2.26.0
+bs4~=0.0.1
 discord-py-slash-command
 discord-webhook
+beautifulsoup4
+aiohttp
+mysql-connector-python

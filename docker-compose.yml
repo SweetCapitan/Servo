@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+
+  database:
+    image: mysql:latest
+    volumes:
+      - servo-db:/var/lib/mysql
+    environment:
+      MYSQL_USER: root
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: servo
+    ports:
+      - "3306:3306"
+  bot:
+    build:
+      dockerfile: Dockerfile
+    depends_on:
+      - database
+    environment:
+      MYSQL_HOST: database
+      MYSQL_USER: root
+      MYSQL_PASSWORD: root
+      MYSQL_DB: servo
+
+volumes:
+  servo-db:

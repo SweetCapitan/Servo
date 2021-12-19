@@ -1,21 +1,24 @@
 import os
 import time
 import config
-# noinspection PyUnresolvedReferences,PyPackageRequirements
 import discord_slash
 from discord.ext import commands
 from discord_slash import SlashCommand, SlashContext
 from discord_slash.utils.manage_commands import create_option
 from discord_slash.model import SlashCommandOptionType
-from discord_webhook import DiscordWebhook
 import sys
 import os
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(os.path.dirname(SCRIPT_DIR))
-from Servo.Utilities.Lib import Logger, pluralize, perms, ResultEmbeds
+from Utilities import logger
+from Utilities.embeds import pluralize, ResultEmbeds
+from Utilities.webhook import send_webhook
+from Utilities.perms import perms
+from Utilities.servomysql.servo_mysql import ServoMySQL
 
+db = ServoMySQL()
 bot_start_time = time.time()
-logger = Logger()
 re = ResultEmbeds()
 
 
@@ -39,11 +42,11 @@ class Bot(commands.Bot):
         try:
             await slash.sync_all_commands()
         except Exception as Ex:
-            wh = DiscordWebhook(url=os.environ.get('WH_URL'), content='Ошибка Сихронизации slash команд!')
-            wh.execute()
+            await send_webhook(os.environ.get('WH_URL'), 'Ошибка Сихронизации slash команд!')
             logger.warn(f'Произошла ошибка при синхронизации slash команд!\n {Ex}')
         else:
             logger.log('Slash команды синхронизированны!')
+        logger.log(db.init())
         logger.log('=====================================================')
         bot_time = round(time.time() - bot_start_time)
         logger.log(f'Загрузка завершена за {str(bot_time) + pluralize(bot_time, " секунду", " секунды", " секунд")}!')
@@ -94,7 +97,7 @@ async def reload(ctx: SlashContext, module):
                                     option_type=SlashCommandOptionType.STRING, required=True)])
 async def load(self, ctx, extension):
     self.bot.load_extension(f'modules.{extension}')
-    await result_embed('Загружен!', f'Модуль [{extension}] Загружен', ctx)
+    await re.done(f'Модуль [{extension}] Загружен')
     self.logger.comm(f'LOAD module: {extension}. Author: {ctx.message.author}')
 
 
