@@ -1,4 +1,5 @@
-# Servo
+# Servo 
+[![CI/CD](https://github.com/SweetCapitan/Servo/actions/workflows/main.yml/badge.svg)](https://github.com/SweetCapitan/Servo/actions/workflows/main.yml)
 
 Простой бот написанный на языке python с использованием библиотеки [discord.py](https://github.com/Rapptz/discord.py). Имеет минимальный требуемый функционал, включая удобные средста модерирования чата, разнообразные утилиты для поиска видео и воиспроизведения музыки в голосовых каналах.
 
