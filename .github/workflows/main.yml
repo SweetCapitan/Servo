@@ -35,13 +35,12 @@ jobs:
     
     steps: 
       
-      - name: executing remote ssh commands using password
-        uses: appleboy/ssh-action@master
+      - name: Deploy to Docker compose
+        uses: wshihadeh/docker-deployment-action@v2
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.KEY }}
-          port: ${{ secrets.PORT }}
-          script: |
-           docker pull $LOGIN/$NAME:${GITHUB_REF:11}
-           docker compose up
+          remote_docker_host: ${{ secrets.HOST }}
+          ssh_private_key: ${{ secrets.KEY }}
+          copy_stack_file: true
+          stack_file_name: docker-compose.yaml
+          args: servo_test
+          pull_images_first: true
