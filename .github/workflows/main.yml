@@ -42,4 +42,6 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          script: docker ps
+          script: |
+           docker pull $LOGIN/$NAME:${GITHUB_REF:11}
+           docker compose up
