@@ -29,19 +29,3 @@ jobs:
       - name: Push image to docker.io
         run: docker push $LOGIN/$NAME:${GITHUB_REF:11}
         
-  deploy:
-    needs: [build_and_push_docker_image]
-    runs-on: ubuntu-latest
-    
-    steps: 
-      
-      - name: Deploy to Docker compose
-        uses: wshihadeh/docker-deployment-action@v2
-        with:
-          remote_docker_host: ${{ secrets.HOST }}
-          ssh_private_key: ${{ secrets.KEY }}
-          ssh_public_key: ${{ secrets.KEY_PUB }}
-          copy_stack_file: true
-          stack_file_name: docker-compose.yaml
-          args: servo_test
-          pull_images_first: true
