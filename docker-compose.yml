@@ -25,8 +25,8 @@ services:
       - database
     environment:
       MYSQL_HOST: database
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_USER: ${DATABASE_USER}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_DB: servo
     env_file:
       - config
