@@ -62,7 +62,7 @@ class ServoMySQL:
                         "VALUES (%(name)s, %(value)s, %(boolean)s)")
             null = None
             settings_data = [
-                {'name': 'covid_time', 'value': 1636945200, 'boolean': null},
+                {'name': 'covid_time', 'value': 1643703600, 'boolean': null},
                 {'name': 'streaming_status_text', 'value': 'MYSQL-POWER!', 'boolean': null},
                 {'name': 'role_rainbow', 'value': 'Rainbow', 'boolean': null},
                 {'name': 'role_rainbow_status', 'value': null, 'boolean': 0},

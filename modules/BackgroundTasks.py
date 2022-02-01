@@ -108,7 +108,7 @@ class BackgroundTasks(commands.Cog):
                     embed: discord.Embed = await get_req()
                     await chan.send(embed=embed)
                 else:
-                    await asyncio.sleep(30)
+                    await asyncio.sleep(60)
 
 
 def setup(bot):
