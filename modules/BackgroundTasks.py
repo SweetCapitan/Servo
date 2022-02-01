@@ -28,7 +28,7 @@ class BackgroundTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         bot.loop.create_task(self.status())
-        # bot.loop.create_task(self.virus())
+        bot.loop.create_task(self.virus())
         if rainbow_role_status:
             bot.loop.create_task(self.rainbow(530374773612478475))
 
@@ -76,7 +76,7 @@ class BackgroundTasks(commands.Cog):
             except Exception as e:
                 logger.error(e)
 
-    async def virus(self, response_time=response_time):
+    async def virus(self):
         async def get_req():
             async with aiohttp.ClientSession() as session:
                 async with session.get('https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html') as resp:

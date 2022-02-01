@@ -89,11 +89,12 @@ class ServoMySQL:
         pass  # Зарезервированно до востребованности
 
     def update_setting(self, name, value):
-        value = boolean_converter(value)
+        if not isinstance(value, int):
+            value = boolean_converter(value)
         try:
             with mysql.connector.Connect(**self.config) as cnx:
                 with cnx.cursor() as cursor:
-                    if isinstance(value, str):
+                    if isinstance(value, (str, int)):
                         cursor.execute(f'UPDATE settings SET settings.value = "{value}" WHERE name = "{name}"')
                         cnx.commit()
                         return f'Done! Value {value} Inserted into {name}'
@@ -115,8 +116,9 @@ class ServoMySQL:
                     cursor.execute('SELECT * FROM settings')
                     if cursor.rowcount == 0:
                         self.fill_settings()
-                    else:
                         return 'Migration successfully completed'
+                    else:
+                        return "DB already exist"
 
         except Exception as E:
             return f'Error: {E}'

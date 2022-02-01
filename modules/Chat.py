@@ -1,22 +1,16 @@
 import datetime
 import discord
 from discord.ext import commands
+from discord.commands import Option, slash_command
 import os
-<<<<<<< HEAD
 from Utilities import logger
-from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.webhook import send_webhook
-from Utilities.perms import perms
 from Utilities.servomysql.servo_mysql import ServoMySQL
-=======
-from Utilities.embeds import pluralize, perms, ResultEmbeds
-import Utilities.logger as logger
-from Utilities.servomysql.mysql import ServoMySQL
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
+from Utilities.embeds import pluralize, ResultEmbeds
 
 re = ResultEmbeds()
 db = ServoMySQL()
-text = '        \                           /\n' \
+text = '''        \                           /\n' \
        '         \                         /\n' \
        '          \ Видимо кого-то послали/\n' \
        '           ]   на 3 буквы ...    [    ,"|\n' \
@@ -37,7 +31,7 @@ text = '        \                           /\n' \
        '           ]         N H         [\n' \
        '          /          N            \ \n' \
        '         /           q,            \ \n' \
-       '        /                           \ \n'
+       '        /                           \ \n'''
 
 
 class Chat(commands.Cog):
@@ -47,21 +41,12 @@ class Chat(commands.Cog):
 
     server_ids = [int(os.environ.get('SERVER_ID'))]
 
-    @cog_ext.cog_slash(name='clear', description='Очистка сообщений',
-                       permissions=perms,
-                       options=[
-                           create_option(
-                               name='num_messages',
-                               description='Введите число сообщений, которое хотите удалить',
-                               option_type=SlashCommandOptionType.INTEGER,
-                               required=True),
-                           create_option(
-                               name='user',
-                               description='Если хотите удалить сообщения определенного пользователя, укажите его',
-                               option_type=SlashCommandOptionType.USER,
-                               required=False)],
-                       guild_ids=server_ids)
-    async def clear(self, ctx: SlashContext, num_messages: int, *user: discord.User):
+    @slash_command(name='clear', description='Очистка сообщений', guild_ids=server_ids)
+    async def clear(self, ctx,
+                    num_messages: Option(int, min_value=1, max_value=200, description='кол-во сообщений для удаления'),
+                    *user: Option(discord.User, description="укажите, чьи сообщения удалить", required=False)):
+        if not ctx.author.guild_permissions.manage_messages:
+            return ctx.respond("Прав не завезли!", ephemeral=True)
         chan = ctx.channel
         if not user:
             deleted = await chan.purge(limit=num_messages)
@@ -70,8 +55,8 @@ class Chat(commands.Cog):
                 return msg.author == user[0]
 
             deleted = await chan.purge(limit=num_messages, check=check)
-        await ctx.send(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
         logger.comm(f'CLEAR. Author: {ctx.author}')
+        return await ctx.respond(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
 
     @commands.Cog.listener()
     async def on_message(self, message):
