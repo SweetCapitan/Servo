@@ -20,7 +20,7 @@ services:
   bot:
     build:
       dockerfile: Dockerfile
-      context: ./
+    image: sweetcapitan/servo:latest
     depends_on:
       - database
     environment:

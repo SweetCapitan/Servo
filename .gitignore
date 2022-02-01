@@ -1,5 +1,5 @@
 *.pyc
-config.py
+../../AppData/Roaming/JetBrains/PyCharmCE2021.2/scratches/config.py
 .idea
 venv
 ./Cogs
