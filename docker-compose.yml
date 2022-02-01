@@ -12,9 +12,15 @@ services:
       MYSQL_DATABASE: servo
     ports:
       - "3306:3306"
+  adminer:
+    image: adminer:latest
+    restart: always
+    ports:
+      - "8080:8080"
   bot:
     build:
       dockerfile: Dockerfile
+      context: ./
     depends_on:
       - database
     environment:
@@ -22,6 +28,8 @@ services:
       MYSQL_USER: root
       MYSQL_PASSWORD: root
       MYSQL_DB: servo
+    env_file:
+      - config
 
 volumes:
   servo-db:
