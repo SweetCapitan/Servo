@@ -1,13 +1,11 @@
-<<<<<<< HEAD
 discord.py
 requests~=2.26.0
 bs4~=0.0.1
 discord-py-slash-command
 discord-webhook
-beautifulsoup4
-aiohttp
-=======
+beautifulsoup4~=4.10.0
+aiohttp~=3.7.4.post0
 requests
 bs4
->>>>>>> a849ce1 ([Update] requirements.txt)
-mysql-connector-python
+mysql-connector-python~=8.0.27
+py-cord==2.0.0b1
