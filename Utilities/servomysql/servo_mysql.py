@@ -1,3 +1,5 @@
+import os
+
 import mysql.connector
 import mysqlx.errorcode as err_code
 from .booleanconverter import boolean_converter
@@ -7,8 +9,8 @@ class ServoMySQL:
 
     def __init__(self):
         self.config = {
-            'user': 'root',
-            'passwd': 'root',
+            'user': f'{os.environ.get("DATABASE_USER")}',
+            'passwd': f'{os.environ.get("DATABASE_PASSWORD")}',
             'host': 'host.docker.internal',
             'db': 'servo',
             'port': '3306'
@@ -114,7 +116,7 @@ class ServoMySQL:
                     if cursor.rowcount == 0:
                         self.fill_settings()
                     else:
-                        return 'Table settings already filled'
+                        return 'Migration successfully completed'
 
         except Exception as E:
             return f'Error: {E}'
