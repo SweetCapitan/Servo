@@ -8,7 +8,6 @@ from discord import Embed
 import sys
 from bs4 import BeautifulSoup
 import aiohttp
-from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.servomysql.servo_mysql import ServoMySQL
 from Utilities.embeds import pluralize

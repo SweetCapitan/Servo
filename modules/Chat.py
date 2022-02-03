@@ -1,7 +1,8 @@
 import datetime
 import discord
-from discord.ext import commands
-from discord.commands import Option, slash_command
+from discord import Option
+from discord.commands import SlashCommandGroup, slash_command
+from discord.ext import commands, pages
 import os
 from Utilities import logger
 from Utilities.webhook import send_webhook
@@ -39,7 +40,7 @@ class Chat(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
 
-    server_ids = [int(os.environ.get('SERVER_ID'))]
+    server_ids = [530374773612478475]
 
     @slash_command(name='clear', description='Очистка сообщений', guild_ids=server_ids)
     async def clear(self, ctx,
@@ -56,7 +57,7 @@ class Chat(commands.Cog):
 
             deleted = await chan.purge(limit=num_messages, check=check)
         logger.comm(f'CLEAR. Author: {ctx.author}')
-        return await ctx.respond(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
+        await ctx.respond(embed=re.done(f'Удалено {len(deleted)} сообщений.'))
 
     @commands.Cog.listener()
     async def on_message(self, message):
