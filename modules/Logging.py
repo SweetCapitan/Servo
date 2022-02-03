@@ -2,30 +2,18 @@ import os
 import random
 import discord
 from discord.ext import commands
-from discord_slash import SlashCommand, cog_ext, SlashContext
-from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
-from discord_slash.model import SlashCommandOptionType
+from discord.ext.commands import slash_command
+from discord.commands.options import Option
 import asyncio
-<<<<<<< HEAD
 from Utilities import logger
 from Utilities.embeds import pluralize, ResultEmbeds
-from Utilities.perms import perms
 from Utilities.servomysql.servo_mysql import ServoMySQL
+from Utilities.embeds import ResultEmbeds, pluralize
+import Utilities.logger as logger
 
 notification_channel = 738855014377848943
 re = ResultEmbeds()
 db = ServoMySQL()
-=======
-from Utilities.embeds import ResultEmbeds, pluralize, perms
-from Utilities.servomysql.mysql import ServoMySQL
-import Utilities.logger as logger
-
-notification_channel = 738855014377848943
-get_setting = ServoMySQL().get_setting
-update_setting = ServoMySQL().update_setting
-re = ResultEmbeds()
-
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
 server_ids = [int(os.environ.get('SERVER_ID'))]
 
 
@@ -62,11 +50,8 @@ class Logging(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.channel: discord.TextChannel = bot.get_channel(notification_channel)
-<<<<<<< HEAD
         self.KGB_MODE = db.get_setting('kgb_mode', boolean=True)
-=======
-        self.KGB_MODE = get_setting('kgb_mode', boolean=True)
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
+        self.KGB_MODE = db.get_setting('kgb_mode', boolean=True)
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -88,32 +73,17 @@ class Logging(commands.Cog):
         await self.channel.send(embed=re.embed('Разбанен!', choice_phrase(member, 'unban')))
         logger.log(f'[Unban] Guild: {guild} User: {member}')
 
-    @cog_ext.cog_slash(name='KGB', description='Переключение режима прослушки удаленных/измененных сообщений.',
-                       permissions=perms,
-                       options=[create_option(
-                           name='state',
-                           description='Переключить режим',
-                           option_type=SlashCommandOptionType.BOOLEAN,
-                           required=True
-                       )], guild_ids=server_ids)
-    async def kgb(self, ctx: SlashContext, state: bool):
+    @slash_command(name='kgb', description='Переключение режима прослушки удаленных/измененных сообщений.',
+                   guild_ids=server_ids)
+    async def kgb(self, ctx, state: Option(bool, description="On or Off kgb mode")):
         if state:
-<<<<<<< HEAD
             db.update_setting('kgb_mode', True)
-            self.KGB_MODE = db.get_setting('kgb_mode')
-            await ctx.send(embed=re.done('Режим доностчика активен!'))
+            self.KGB_MODE = db.get_setting('kgb_mode', boolean=True)
+            await ctx.respond(embed=re.done('Режим доностчика активен!'))
         elif not state:
-            db.update_setting('kgb_mode', 'False')
-            self.KGB_MODE = db.get_setting('kgb_mode')
-=======
-            update_setting('kgb_mode', True)
-            self.KGB_MODE = get_setting('kgb_mode', boolean=True)
-            await ctx.send(embed=re.done('Режим доностчика активен!'))
-        elif not state:
-            update_setting('kgb_mode', False)
-            self.KGB_MODE = get_setting('kgb_mode', boolean=True)
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
-            await ctx.send(embed=re.done('Режим доностчика деактивирован!'))
+            db.update_setting('kgb_mode', False)
+            self.KGB_MODE = db.get_setting('kgb_mode', boolean=True)
+            await ctx.respond(embed=re.done('Режим доностчика деактивирован!'))
 
     @commands.Cog.listener()
     async def on_message_delete(self, message):
