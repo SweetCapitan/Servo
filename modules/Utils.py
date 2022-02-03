@@ -7,38 +7,20 @@ from contextlib import redirect_stdout
 import discord
 import requests
 from bs4 import BeautifulSoup
-from discord.ext import commands
-from discord_slash import SlashCommand, cog_ext, SlashContext, ComponentContext
-from discord_slash.utils.manage_commands import create_option, create_choice, create_permission
-from discord_slash.utils.manage_components import create_button, create_actionrow, wait_for_component
-from discord_slash.model import SlashCommandOptionType, ButtonStyle
+from discord.ext import commands, pages
+from discord.ext.commands import slash_command
+from discord.commands import Option
 import sys
 import random
-<<<<<<< HEAD
-import configparser
-from Utilities import logger
+import Utilities.logger as logger
 from Utilities.embeds import pluralize, ResultEmbeds
 from Utilities.webhook import send_webhook
-from Utilities.perms import perms
 from Utilities.servomysql.servo_mysql import ServoMySQL
 
 btc_price_url_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
 db = ServoMySQL()
 re = ResultEmbeds()
 streaming_status_text = db.get_setting('streaming_status_text')
-=======
-
-from Utilities.servomysql.mysql import ServoMySQL
-from Utilities.embeds import ResultEmbeds, pluralize, perms
-import Utilities.logger as logger
-
-BTC_PRICE_URL_coinmarketcap = 'https://api.coinmarketcap.com/v1/ticker/bitcoin/?convert=RUB'
-re = ResultEmbeds()
-
-get_setting = ServoMySQL().get_setting
-update_setting = ServoMySQL().update_setting
-STREAMING_STATUS_TEXT = get_setting('streaming_status_text')
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
 
 
 def generate_embed_image(query, index, image) -> discord.Embed:
@@ -53,24 +35,14 @@ class Utils(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        self.g_query: str = ''
-        self.g_index: int = 0
-        self.message_id: discord.Message.id = 0
-        self.image_list: list = []
+
+    def get_pages(self):
+        return self.pages
 
     server_ids = [int(os.environ.get('SERVER_ID'))]
 
-    @cog_ext.cog_slash(name='btc',
-                       description='Реклама YOBA в описании SERVO-BOT',
-                       options=[
-                           create_option(name='money_code', description='Укажите желаюмую валюту',
-                                         option_type=SlashCommandOptionType.STRING, required=True,
-                                         choices=[
-                                             create_choice('USD', 'Доллар'),
-                                             create_choice('RUB', 'Рубли')
-                                         ])
-                       ], guild_ids=server_ids)
-    async def crypto(self, ctx: SlashContext, money_code: str = 'USD'):
+    @slash_command(name='btc', description='Реклама YOBA в описании SERVO-BOT', guild_ids=server_ids)
+    async def crypto(self, ctx, money_code: Option(str, description="Желаемая валюта", choices=["RUB", "USD"])):
         limit = 8
         api_key_coinmarket = os.environ.get('API_KEY_COINMARKET')
         url_usd = f'https://pro-api.coinmarketcap.com/v1/cryptocurrency/' \
@@ -92,20 +64,20 @@ class Utils(commands.Cog):
                             value="[{}]".format(
                                 round(((int(float(price)) / 100) * int(float(i['quote'][money_code]
                                                                              ['percent_change_7d']))), 1)), inline=True)
-        await ctx.send(embed=embed)
-        logger.comm('crypto_price')
+        await ctx.respond(embed=embed)
+        logger.comm('crypto_price. Author: ' + ctx.author)
 
-    @cog_ext.cog_slash(name='bash',
-                       description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
-                       guild_ids=server_ids)
-    async def bash(self, ctx: SlashContext):
+    @slash_command(name='bash',
+                   description='Выполнив команду, бот отправит в чат случайную цитату из bash.im',
+                   guild_ids=server_ids)
+    async def bash(self, ctx):
         from bs4 import BeautifulSoup
         url = 'https://bash.im/random'
         rs = requests.get(url)
         root = BeautifulSoup(rs.text, 'html.parser')
         mydivs = root.find("div", {"class": "quote__body"})
         quote = mydivs.getText('\n', strip=True)
-        await ctx.send(embed=re.done('Рандомная цитата с Bash.im\n' + str(quote)))
+        await ctx.respond(embed=re.done('Рандомная цитата с Bash.im\n' + str(quote)))
         logger.comm(f'BASH. Author: {ctx.author}')
 
     # -----------------------------------------Start of IteratorW Code -------------------------------------------------
@@ -144,25 +116,23 @@ class Utils(commands.Cog):
     def _await(coro):  # це костыль для выполнения асинхронных функций в exec
         asyncio.ensure_future(coro)
 
-    @cog_ext.cog_slash(name='exec',
-                       description='Эта команда позволяет выполнять код.', permissions=perms,
-                       options=[create_option(name='code', description='Код на Питухоне',
-                                              option_type=SlashCommandOptionType.STRING, required=True)],
-                       guild_ids=server_ids)
-    async def execute(self, ctx: SlashContext, code: str):
+    @slash_command(name='exec', description='Эта команда позволяет выполнять код.', guild_ids=server_ids)
+    async def execute(self, ctx, code: Option(str, description="Код на питухоне", required=True)):
+        if not ctx.author.guild_permissions.manage_messages:
+            return ctx.respond("Прав не завезли!", ephemeral=True)
         code = code.replace("```", "")
         out, is_error = self._exec(code.strip().rstrip(), globals(), locals())
 
         if is_error:
-            await ctx.send(embed=re.error(out))
+            await ctx.respond(embed=re.error(out))
             logger.error(f'Unsuccessful attempt to execute code. Author: {ctx.author}\n{out}')
         else:
-            await ctx.send(embed=re.done('Код успешно выполнен!\n' + out))
+            await ctx.respond(embed=re.done('Код успешно выполнен!\n' + out))
             logger.comm(f'EXECUTE. Author: {ctx.author}')
 
     #  --------------------------------------End of ITERATORW Code------------------------------------------------------
-    @cog_ext.cog_slash(name='coub', description='Открывает коуб прямо в чате!', guild_ids=server_ids)
-    async def coub(self, ctx: SlashContext, url_to_coub: str):
+    @slash_command(name='coub', description='Открывает коуб прямо в чате!', guild_ids=server_ids)
+    async def coub(self, ctx, url_to_coub: Option(str, description="Url to Coub", required=True)):
         url = "http://coub.com//api/v2/coubs" + url_to_coub[21:]
         r = requests.get(url)
         coub_data = r.json()
@@ -179,40 +149,28 @@ class Utils(commands.Cog):
             song_name = 'Музыка не найдена!'
         try:
             link = coub_data["file_versions"]["share"]["default"]
-        except Exception as e:
-            await ctx.send(embed=re.warn('Что-то пошло не так, проверьте ссылку'))
+        except Exception:
+            await ctx.respond(embed=re.warn('Что-то пошло не так, проверьте ссылку'))
             return
-        await ctx.send(
+        await ctx.respond(
             f'Название: ``{title}``\nПросмотров: ``{views}``\nМузыка из Куба: ``{song_name}``\nСсылка: {link} '
             f'\nАудио: {song["url"]}   {round(song["size"] / 1048576, 2)}mB')
         logger.comm(f'COUB. Author: {ctx.message.author}')
 
-    @cog_ext.cog_slash(name='rainbow',
-                       description='Реклама YOBA в говнокоде Python', permissions=perms,
-                       options=[create_option(name='state', description='Статус радуги',
-                                              option_type=SlashCommandOptionType.BOOLEAN,
-                                              required=True)],
-                       guild_ids=server_ids)
-    async def change_rainbow(self, ctx: SlashContext, state: bool):
+    @slash_command(name='rainbow',
+                   description='Реклама YOBA в говнокоде Python', guild_ids=server_ids)
+    async def change_rainbow(self, ctx, state: Option(bool, description="Вкл/выкл Rainbow mode on guild")):
         rainbow_role_name = db.get_setting('role_rainbow')
         rainbow_role_status = db.get_setting('role_rainbow_status', boolean=True)
         role = discord.utils.get(ctx.guild.roles, name=rainbow_role_name)
         if role is not None:
             if state and not rainbow_role_status:
-<<<<<<< HEAD
                 db.update_setting('role_rainbow_status', True)
-                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
+                await ctx.respond(embed=re.done('Модуль ``RAINBOW`` Включен!'))
                 logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
             elif not state and rainbow_role_status:
                 db.update_setting('role_rainbow_status', False)
-=======
-                update_setting('role_rainbow_status', True)
-                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Включен!'))
-                logger.comm(f'[RAINBOW] Turn On! Guild: {ctx.guild.name}')
-            elif not state and rainbow_role_status:
-                update_setting('role_rainbow_status', False)
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
-                await ctx.send(embed=re.done('Модуль ``RAINBOW`` Выключен!'))
+                await ctx.respond(embed=re.done('Модуль ``RAINBOW`` Выключен!'))
                 logger.comm(f'[RAINBOW] Turn Off! Guild: {ctx.guild.name}')
         else:
             try:
@@ -220,50 +178,39 @@ class Utils(commands.Cog):
                                                 name='Rainbow',
                                                 hoist=True,
                                                 reason='SERVO-BOT Автоматическое добавление роли!')
-                await ctx.send(embed=re.embed('``RAINBOW``',
-                                              'Т.к. роль не была найдена, она была добавлена автоматически!\n'
-                                              'Пожалуйста добавте эту роль, тем кому вы хотите сделать '
-                                              'радужный никнейм :3'))
+                await ctx.respond(embed=re.embed('``RAINBOW``',
+                                                 'Т.к. роль не была найдена, она была добавлена автоматически!\n'
+                                                 'Пожалуйста добавте эту роль, тем кому вы хотите сделать '
+                                                 'радужный никнейм :3'))
             except discord.Forbidden:
-                await ctx.send(embed=re.warn('Прав не завезли!\n'
-                                              'Добавте боту права "manage_roles" или сами создайте роль '
-                                              f'``{rainbow_role_name}``'))
+                await ctx.respond(embed=re.warn('Прав не завезли!\n'
+                                                'Добавте боту права "manage_roles" или сами создайте роль '
+                                                f'``{rainbow_role_name}``'))
 
-    @cog_ext.cog_slash(name='choice',
-                       description='Выбирает одно из нескольких значений, указанных через запятую',
-                       guild_ids=server_ids)
-    async def choice(self, ctx: SlashContext, option: str):
-        await ctx.send(embed=re.done(f'Я выбираю: {random.choice(option.split(", "))}'))
+    @slash_command(name='choice',
+                   description='Выбирает одно из нескольких значений, указанных через запятую',
+                   guild_ids=server_ids)
+    async def choice(self, ctx, option: Option(str, description="список значений", required=True)):
+        await ctx.respond(embed=re.done(f'Я выбираю: {random.choice(option.split(", "))}'))
 
-    @cog_ext.cog_slash(name='status',
-                       description='Задает текст, который будет отображаться в статусе бота', permissions=perms,
-                       guild_ids=server_ids)
-    async def set_status(self, ctx: SlashContext, text: str):
+    @slash_command(name='status',
+                   description='Задает текст, который будет отображаться в статусе бота',
+                   guild_ids=server_ids)
+    async def set_status(self, ctx, text: Option(str, description="укажите статус бота", required=True)):
         try:
-<<<<<<< HEAD
             db.update_setting('streaming_status_text', text)
-=======
-            update_setting('streaming_status_text', text)
->>>>>>> 084e3eb ([Update] Many small updates code to work with db and new functions)
-            await ctx.send(embed=re.done(f'Статус [{text}] был установлен!'))
+            await ctx.respond(embed=re.done(f'Статус [{text}] был установлен!'))
         except Exception as e:
-            await ctx.send(embed=re.error(e))
+            await ctx.respond(embed=re.error(e))
         logger.comm(f'[Status Change] {ctx.author} {text}')
 
-    @cog_ext.cog_slash(name='image_search', description='Поиск картинок в Гоголе',
-                       options=[create_option(name='query', description='поисковой запрос',
-                                              option_type=SlashCommandOptionType.STRING, required=True)],
-                       guild_ids=server_ids)
-    async def image_srh(self, ctx: SlashContext, query: str):
-        URL = f'https://customsearch.googleapis.com/customsearch/v1?cx={os.environ.get("GOOGLE_CX")}={query}&safe=off' \
+    @slash_command(name='image_search', description='Поиск картинок в Гоголе', guild_ids=server_ids)
+    async def image_srh(self, ctx, query: Option(str, description="Поисковой запрос", required=True)):
+        url = f'https://customsearch.googleapis.com/customsearch/v1?cx={os.environ.get("GOOGLE_CX")}={query}&safe=off' \
               f'&searchType=image&num=10&start=0&key={os.environ.get("G_API_KEY")} '
 
-        control_buttons = create_actionrow(
-            create_button(style=ButtonStyle.blue, label='<', custom_id='backward_button'),
-            create_button(style=ButtonStyle.blue, label='>', custom_id='forward_button'))
-
         try:
-            response = requests.get(url=URL)
+            response = requests.get(url=url)
             raw_data = response.json()
 
             if response.status_code != 200:
@@ -275,33 +222,19 @@ class Utils(commands.Cog):
 
             image = raw_data["items"][index]
 
+            def get_embed(_index):
+                return generate_embed_image(query, _index, image)
+
             embed = generate_embed_image(query, index, image)
 
-            message: discord.Message = await ctx.send(embed=embed, components=[control_buttons])
+            self.pages = [get_embed(0), get_embed(1), get_embed(2), get_embed(3), get_embed(4),
+                          get_embed(5), get_embed(6), get_embed(7), get_embed(8), get_embed(9)]
 
-            self.image_list = []
-            for img in raw_data['items']:
-                self.image_list.append(img)
-
-            self.g_query = ''
-            self.g_query += query
-            self.g_index = index
-            self.message_id = message.id
+            paginator = pages.Paginator(pages=self.get_pages())
+            await paginator.respond(ctx.interaction, target_message=f"По запросу {query} найдено", ephemeral=False)
 
         except Exception as E:
-            await ctx.send(embed=re.error(E))
-
-    @commands.Cog.listener()
-    async def on_component(self, ctx: ComponentContext):
-
-        if ctx.origin_message_id == self.message_id:
-            if 0 <= self.g_index <= 10:
-                if ctx.custom_id == 'forward_button' and self.g_index < 10:
-                    self.g_index += 1
-                elif ctx.custom_id == 'backward_button' and self.g_index > 0:
-                    self.g_index -= 1
-            embed = generate_embed_image(self.g_query, self.g_index, self.image_list[self.g_index])
-            await ctx.edit_origin(embed=embed)
+            await ctx.respond(embed=re.error(E))
 
 
 def setup(bot):
