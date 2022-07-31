@@ -1,7 +1,7 @@
 """Small wrapper over PyMongo for easy acces to bot settings/paramets """
 
 import asyncio
-import logger
+from Utilities import logger
 import string
 import pymongo
 
@@ -26,7 +26,7 @@ async def initialize():
     await setMany(botSettings)
 
 async def set(name: string, value: string):
-    """Set specific parameter into document"""
+    """Async set specific parameter into document"""
     mydick = { "settingName": name, "settingValue": value}
     collection.insert_one(mydick)
     logger.log(f"Добавленн параметр {mydick}")
@@ -38,7 +38,11 @@ async def setMany(paramDict: dict):
 
 
 async def get(name: string):
-    """No matter how strange, this function responsible to get parameter value"""
+    """No matter how strange, this function responsible to async get parameter value"""
+    return collection.find_one({"settingName": name})
+
+def notAsyncGet(name: string):
+    """No matter how strange, this function responsible to simple get parameter value"""
     return collection.find_one({"settingName": name})
 
 async def update(name: string, value: string):

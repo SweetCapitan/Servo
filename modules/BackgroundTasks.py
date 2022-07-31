@@ -9,17 +9,12 @@ import sys
 from bs4 import BeautifulSoup
 import aiohttp
 from Utilities.embeds import pluralize, ResultEmbeds
-from Utilities.servomysql.servo_mysql import ServoMySQL
 from Utilities.embeds import pluralize
 import Utilities.logger as logger
+from Utilities import MongoDbConnector as mongo
 
 start_time = time.time()
 re = ResultEmbeds()
-db = ServoMySQL()
-
-response_time = db.get_setting('covid_time')
-rainbow_role_name = db.get_setting('role_rainbow')
-rainbow_role_status = db.get_setting('role_rainbow_status', boolean=True)
 
 
 class BackgroundTasks(commands.Cog):
@@ -27,13 +22,13 @@ class BackgroundTasks(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         bot.loop.create_task(self.status())
-        bot.loop.create_task(self.virus())
-        if rainbow_role_status:
+        # bot.loop.create_task(self.virus()) TODO Refactor this peace of code and add metrics
+        if bool(mongo.notAsyncGet('role_rainbow_status')):
             bot.loop.create_task(self.rainbow(530374773612478475))
 
     async def rainbow(self, server_id):
         hue = 0
-        role = discord.utils.get(self.bot.get_guild(server_id).roles, name=rainbow_role_name)
+        role = discord.utils.get(self.bot.get_guild(server_id).roles, name=mongo.notAsyncGet("role_rainbow"))
         while True:
             hue = (hue + 7) % 360
             rgb = [int(x * 255) for x in hls_to_rgb(hue / 360, 0.5, 1)]
@@ -55,7 +50,7 @@ class BackgroundTasks(commands.Cog):
 
     async def status(self):
         while not self.bot.is_closed():
-            streaming_status_text = db.get_setting('streaming_status_text')
+            streaming_status_text = mongo.get('streaming_status_text')
             try:
                 uptime_sec, uptime_min, uptime_hour, uptime_day = self.get_uptime()
                 uptime_name = 'Без падений уже: %s {}, %s {}, %s {}, %s {}'.format(
@@ -96,14 +91,15 @@ class BackgroundTasks(commands.Cog):
                     embed.add_field(name='В России', value=russia, inline=True)
                     return embed
 
-        if response_time:
-            _response_time = int(response_time)
+        responseTime = int(mongo.get("covid_time"))
+        if responseTime:
+            _response_time = responseTime 
             chan = self.bot.get_channel(672091108666376193)
             while True:
                 time_embed = time.time()
                 if time_embed >= _response_time:
                     _response_time += 86400
-                    db.update_setting('covid_time', _response_time)
+                    await mongo.update('covid_time', _response_time)
                     embed: discord.Embed = await get_req()
                     await chan.send(embed=embed)
                 else:
