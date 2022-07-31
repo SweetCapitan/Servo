@@ -2,34 +2,50 @@ version: '3.8'
 
 services:
 
-  database:
-    image: mysql:latest
+  mongodb:
+    image: mvertes/alpine-mongo
+    container_name: mongo-container
     volumes:
-      - servo-db:/var/lib/mysql
-    restart:
-      always
-    environment:
-      # MYSQL_USER: root
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: servo
+      - servo-db:/data/db
+    restart: always
     ports:
-      - "3306:3306"
-  # adminer:
-  #   image: adminer:latest
-  #   restart: always
-  #   ports:
-  #     - "8080:8080"
+      - 27017:27017
+    # image: mysql:latest
+    # volumes:
+    #   - servo-db:/var/lib/mysql
+    # restart:
+    #   always
+    # environment:
+    #   # MYSQL_USER: root
+    #   MYSQL_ROOT_PASSWORD: root
+    #   MYSQL_DATABASE: servo
+    # ports:
+    #   - "3307:3307"
+
+    # adminer:
+    #   image: adminer:latest
+    #   restart: always
+    #   ports:
+    #     - "8080:8080"
+    #   environment:
+    #     - ADMINER_PLUGINS=mongodb
+  mongo-exp:
+    image: mongo-express
+    depends_on:
+      - mongodb
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=mongo-container
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=ihavealongpassword
+    ports:
+      - '8081:8081'
   bot:
     build:
       dockerfile: Dockerfile
     image: sweetcapitan/servo:latest
     depends_on:
-      - database
-    environment:
-      MYSQL_HOST: database
-      # MYSQL_USER: ${DATABASE_USER}
-      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
-      MYSQL_DB: servo
+      - mongo
+    # environment: 
 
 volumes:
   servo-db:
