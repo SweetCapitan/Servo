@@ -8,8 +8,8 @@ import pymongo
 myClient = pymongo.MongoClient("mongodb://localhost:27017")
 collection = myClient["servoDb"]["settings"]
 
-"""Initialization for first start. Writes primary settings in db"""
 async def initialize():
+    """Initialization for first start. Writes primary settings in db"""
     collist = myClient["servoDb"].list_collection_names()
     if "settings" in collist:
         logger.log("БД уже существует. Пропускаю её заполнение.")
@@ -25,28 +25,28 @@ async def initialize():
                 
     await setMany(botSettings)
 
-"""Set specific parameter into document"""
 async def set(name: string, value: string):
+    """Set specific parameter into document"""
     mydick = { "settingName": name, "settingValue": value}
     collection.insert_one(mydick)
     logger.log(f"Добавленн параметр {mydick}")
 
-"""Set two or more parameters in document"""
 async def setMany(paramDict: dict):
+    """Set two or more parameters in document"""
     collection.insert_many(paramDict)
     logger.log(f"Добавленн массив параметров {paramDict}")
 
 
-"""No matter how strange, this function responsible to get parameter value"""
 async def get(name: string):
+    """No matter how strange, this function responsible to get parameter value"""
     return collection.find_one({"settingName": name})
 
-"""Of corse this is update function"""
 async def update(name: string, value: string):
+    """Of corse this is update function"""
     collection.update_one({"settingName": name}, {"$set": { "settingValue": value}})
     logger.log("Обговнен параметр %s" % {'settingName': name, 'settingValue': value})
 
-"""HACK ALL PENTAGON BASES"""
 def delete(name: string):
+    """HACK ALL PENTAGON BASES"""
     collection.delete_one({"settingName": name})
     print(f"Удален параметр {name}")
