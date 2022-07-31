@@ -9,16 +9,16 @@ services:
     restart:
       always
     environment:
-      MYSQL_USER: root
+      # MYSQL_USER: root
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: servo
     ports:
       - "3306:3306"
-  adminer:
-    image: adminer:latest
-    restart: always
-    ports:
-      - "8080:8080"
+  # adminer:
+  #   image: adminer:latest
+  #   restart: always
+  #   ports:
+  #     - "8080:8080"
   bot:
     build:
       dockerfile: Dockerfile
@@ -27,11 +27,9 @@ services:
       - database
     environment:
       MYSQL_HOST: database
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      # MYSQL_USER: ${DATABASE_USER}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
       MYSQL_DB: servo
-    env_file:
-      - config
 
 volumes:
   servo-db:
