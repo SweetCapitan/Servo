@@ -4,3 +4,4 @@ venv
 ./Cogs
 config
 .env
+config.py
